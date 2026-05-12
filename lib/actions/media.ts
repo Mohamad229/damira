@@ -14,7 +14,7 @@ const ADMIN_MEDIA_PATH = "/admin/media";
 const getMediaOptionsSchema = z.object({
   page: z.number().int().positive().optional().default(1),
   limit: z.number().int().positive().max(100).optional().default(20),
-  type: z.enum(["image", "document"]).optional(),
+  type: z.enum(["image", "document", "video"]).optional(),
   search: z.string().optional(),
   sortOrder: z.enum(["asc", "desc"]).optional().default("desc"),
 });
@@ -30,7 +30,7 @@ export type ActionState = {
   data?: unknown;
 };
 
-export type MediaType = "image" | "document";
+export type MediaType = "image" | "document" | "video";
 
 export type MediaWithUser = {
   id: string;
@@ -301,7 +301,20 @@ async function isMediaInUse(mediaUrl: string): Promise<boolean> {
       return true;
     }
 
-    // Check if media is used in page sections (stored in JSON data field)
+    const pageContentField = await db.pageContentField.findFirst({
+      where: {
+        value: {
+          contains: mediaUrl,
+        },
+      },
+      select: { id: true },
+    });
+
+    if (pageContentField) {
+      return true;
+    }
+
+    // Check if media is used in legacy page sections (stored in JSON data field)
     const pageSections = await db.pageSection.findMany({
       select: { id: true, data: true },
     });
@@ -326,9 +339,13 @@ async function isMediaInUse(mediaUrl: string): Promise<boolean> {
 
 /**
  * Extract the storage key from a media URL
- * Handles both local URLs (/uploads/filename.jpg) and S3 URLs
+ * Handles both local URLs (/uploads/filename.jpg) and Blob URLs.
  */
 function extractStorageKey(url: string): string {
+  if (url.includes(".public.blob.vercel-storage.com/")) {
+    return url;
+  }
+
   try {
     // For local storage URLs like /uploads/filename.jpg
     if (url.startsWith("/uploads/")) {

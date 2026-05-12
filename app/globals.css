@@ -143,6 +143,18 @@
   --font-heading: var(--font-montserrat), var(--font-cairo), "Cairo", var(--font-geist-sans), system-ui, sans-serif;
 }
 
+[dir="rtl"] [data-public-rtl] :where(h1, h2, h3, h4, h5, h6, p, li, label, input, textarea, select) {
+  text-align: right;
+}
+
+[dir="rtl"] [data-public-rtl] :where(.text-center, .text-center h1, .text-center h2, .text-center h3, .text-center p) {
+  text-align: center;
+}
+
+[dir="rtl"] [data-public-rtl] :where(.lucide-arrow-left, .lucide-arrow-right, .lucide-chevron-left, .lucide-chevron-right) {
+  transform: scaleX(-1);
+}
+
 /* Tailwind v4 Theme Configuration */
 @theme inline {
   /* Brand Colors */

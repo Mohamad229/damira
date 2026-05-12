@@ -1,6 +1,10 @@
 import { cache } from "react";
 
 import { getPageContent } from "@/lib/content/loaders";
+import {
+  sanitizeTemplateValue,
+  sanitizeValueAgainstTemplate,
+} from "@/lib/content/admin-template-sanitizer";
 import type { Locale } from "@/i18n/config";
 
 import { getPublicUiData } from "./mock-data";
@@ -75,7 +79,19 @@ const getManagedPublicPageDataCached = cache(
       }
 
       const current = mergedRecord[sectionKey];
-      mergedRecord[sectionKey] = deepMerge(current, override);
+      if (current === undefined) {
+        continue;
+      }
+
+      const cleanTemplate =
+        sanitizeTemplateValue(current, { pageKey, sectionKey }) ?? {};
+      const sanitizedOverride = sanitizeValueAgainstTemplate(
+        override,
+        cleanTemplate,
+        { pageKey, sectionKey },
+      );
+
+      mergedRecord[sectionKey] = deepMerge(current, sanitizedOverride);
     }
 
     return merged;

@@ -1,14 +1,5 @@
 import type { Metadata } from "next";
 
-// import { ContentSection } from "@/components/public/sections/v2/ContentSection-v2";
-// import { CtaSection } from "@/components/public/sections/v2/CtaSection-v2";
-// import { HeroSectionV2 } from "@/components/public/sections/v2/hero-section-v2";
-// import { AtAGlanceSectionV2 } from "@/components/public/sections/v2/at-a-glance-section-v2";
-// import { CoverageReachSection } from "@/components/public/sections/v2/CoverageReachSection-v2";
-// import { KeyStrengthsSectionV2 } from "@/components/public/sections/v2/KeyStrengthsSection-v2";
-// import { PortfolioPreviewSection } from "@/components/public/sections/v2/PortfolioPreviewSection-v2";
-// import { StrategicFocusSectionV2 } from "@/components/public/sections/v2/StrategicFocusSection-v2";
-
 import { HomeHeroSection } from "@/components/public/sections/home/HomeHeroSection";
 import { HomeStatsSection } from "@/components/public/sections/home/HomeStatsSection";
 import { HomeStrategicFocusSection } from "@/components/public/sections/home/HomeStrategicFocusSection";
@@ -75,10 +66,6 @@ export default async function HomePage({ params }: HomePageProps) {
       <section id="home-coverage" className="scroll-mt-28 md:scroll-mt-32">
         <HomeCoverageReachSection data={pageData.coverageReach} />
       </section>
-
-      {/* <section id="home-portfolio" className="scroll-mt-28 md:scroll-mt-32">
-        <PortfolioPreviewSection data={pageData.portfolioPreview} />
-      </section> */}
 
       <section
         id="home-success-highlight"

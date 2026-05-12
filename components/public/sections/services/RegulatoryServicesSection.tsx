@@ -8,5 +8,5 @@ interface RegulatoryServicesSectionProps {
 export function RegulatoryServicesSection({
   data,
 }: RegulatoryServicesSectionProps) {
-  return <ServiceFeatureSection data={data} index={1} accent="orange" />;
+  return <ServiceFeatureSection data={data} index={0} accent="orange" />;
 }

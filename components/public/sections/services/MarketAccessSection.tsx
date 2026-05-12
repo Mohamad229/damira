@@ -6,5 +6,5 @@ interface MarketAccessSectionProps {
 }
 
 export function MarketAccessSection({ data }: MarketAccessSectionProps) {
-  return <ServiceFeatureSection data={data} index={5} accent="blue" />;
+  return <ServiceFeatureSection data={data} index={2} accent="blue" />;
 }

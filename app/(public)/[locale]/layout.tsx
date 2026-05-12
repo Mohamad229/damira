@@ -67,7 +67,9 @@ export default async function PublicLayout({ children, params }: Props) {
           }}
         />
         <SiteHeaderV2 />
-        <main className="flex-1">{children}</main>
+        <main className="flex-1" data-public-rtl={direction === "rtl" ? "true" : undefined}>
+          {children}
+        </main>
         <SiteFooterV2 locale={currentLocale} />
       </div>
     </NextIntlClientProvider>

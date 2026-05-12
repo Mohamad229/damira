@@ -2,197 +2,226 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import type { ProductCardData } from "@/components/public/sections/base";
-
-// import { HeroSectionV2 } from "@/components/public/sections/v2/hero-section-v2";
-// import { CtaSection } from "@/components/public/sections/v2/CtaSection-v2";
-// import {
-//   ProductInfoSection,
-//   RelatedProductsSection,
-//   SpecificationsSection,
-// } from "@/components/public/sections/product-detail";
-
-import {ProductDetailHeroSection} from "@/components/public/sections/product-detail/ProductDetailHeroSection";
-import {ProductInfoSection} from "@/components/public/sections/product-detail/ProductInfoSection";
-import {SpecificationsSection} from "@/components/public/sections/product-detail/SpecificationsSection";
-import {RelatedProductsSection} from "@/components/public/sections/product-detail/RelatedProductsSection";
-import {ProductDetailCtaSection} from "@/components/public/sections/product-detail/ProductDetailCtaSection";
+import {
+  ProductDetailCtaSection,
+  ProductInfoSection,
+  RelatedProductsSection,
+  SpecificationsSection,
+} from "@/components/public/sections/product-detail";
 
 import {
   getPublicProductBySlug,
-  getPublishedProductSlugs,
   type PublicProductDetail,
 } from "@/lib/actions/public-products";
 import { buildOgImageUrl, createPublicMetadata } from "@/lib/seo";
-import type { Locale } from "@/i18n/config";
 
 type ProductDetailPageProps = {
   params: Promise<{ locale: string; slug: string }>;
 };
 
+type PublicLocale = "en" | "ar";
+
+type ProductImageLike = {
+  src?: string | null;
+  url?: string | null;
+  alt?: string | null;
+};
+
+type ProductCardLike = {
+  id: string;
+  slug: string;
+  name: string;
+  shortDescription?: string | null;
+  fullDescription?: string | null;
+  status?: string | null;
+  category?: {
+    name?: string | null;
+  } | null;
+  therapeuticArea?: {
+    name?: string | null;
+  } | null;
+  manufacturer?: {
+    name?: string | null;
+  } | null;
+  advancedDetails?: {
+    storageConditions?: string | null;
+    regulatoryInfo?: string | null;
+  } | null;
+  image?: ProductImageLike | null;
+  featuredImage?: ProductImageLike | null;
+  media?: ProductImageLike[] | null;
+};
+
+type ProductDetailLike = PublicProductDetail &
+  ProductCardLike & {
+    relatedProducts?: ProductCardLike[] | null;
+    related?: ProductCardLike[] | null;
+    productType?: string | null;
+  };
+
 export const revalidate = 900;
 export const dynamicParams = true;
 
-function isProductDetailIncomplete(product: PublicProductDetail): boolean {
-  const hasNarrative = Boolean(
-    product.fullDescription?.trim() || product.shortDescription?.trim(),
-  );
-  const hasSpecs = Boolean(
-    product.advancedDetails?.storageConditions?.trim() ||
-      product.advancedDetails?.regulatoryInfo?.trim(),
-  );
-
-  return !hasNarrative && !hasSpecs;
+function resolveLocale(locale: string): PublicLocale {
+  return locale === "ar" ? "ar" : "en";
 }
 
-function getDefaultProductCta(locale: Locale) {
-  const isArabic = locale === "ar";
+function cleanString(value?: string | null): string | undefined {
+  const trimmed = value?.trim();
+
+  return trimmed ? trimmed : undefined;
+}
+
+function getProductImage(product: ProductCardLike) {
+  const image =
+    product.image ||
+    product.featuredImage ||
+    product.media?.find((item) => item?.src || item?.url);
+
+  const src = cleanString(image?.src) || cleanString(image?.url);
+
+  if (!src) return undefined;
 
   return {
-    eyebrow: isArabic
-      ? "هل تحتاج مزيدًا من التفاصيل؟"
-      : "Need More Information?",
-    title: isArabic
-      ? "تواصل مع فريق المنتجات لدى داميرا"
-      : "Connect with Damira's Product Team",
-    description: isArabic
-      ? "يساعدك فريقنا في المعلومات الفنية والتوفر وخطط الإطلاق."
-      : "Our team can support technical questions, availability, and launch planning.",
-    primaryAction: {
-      label: isArabic ? "تواصل معنا" : "Contact Us",
-      href: "/contact",
-    },
-    secondaryAction: {
-      label: isArabic ? "استكشف الشراكات" : "Explore Partnerships",
-      href: "/partnerships",
-    },
+    src,
+    alt: cleanString(image?.alt) || product.name || "Product image",
   };
 }
 
+function getProductStatus(product: ProductCardLike, locale: PublicLocale) {
+  const isArabic = locale === "ar";
+
+  return product.status === "AVAILABLE"
+    ? isArabic
+      ? "متاح"
+      : "Available"
+    : isArabic
+      ? "قيد التطوير"
+      : "Pipeline";
+}
+
+function buildProductCard(
+  product: ProductCardLike,
+  locale: PublicLocale,
+): ProductCardData {
+  const image = getProductImage(product);
+
+  return {
+    id: product.id,
+    name: product.name,
+    description:
+      cleanString(product.shortDescription) ||
+      cleanString(product.fullDescription) ||
+      "",
+    category:
+      cleanString(product.category?.name) ||
+      (locale === "ar" ? "غير محدد" : "Not specified"),
+    href: `/products/${product.slug}`,
+    image,
+    badge: getProductStatus(product, locale),
+    indication: cleanString(product.therapeuticArea?.name),
+    storage: cleanString(product.advancedDetails?.storageConditions),
+  };
+}
+
+function getRelatedProducts(product: ProductDetailLike, locale: PublicLocale) {
+  const relatedProducts = product.relatedProducts || product.related || [];
+
+  return relatedProducts.map((item) => buildProductCard(item, locale));
+}
+
 function buildProductDetailViewModel(
-  product: PublicProductDetail,
-  locale: Locale,
+  product: ProductDetailLike,
+  locale: PublicLocale,
 ) {
   const isArabic = locale === "ar";
-  const body = [product.fullDescription, product.shortDescription]
-    .filter((value): value is string => Boolean(value && value.trim().length > 0))
+  const image = getProductImage(product);
+
+  const shortDescription = cleanString(product.shortDescription);
+  const fullDescription = cleanString(product.fullDescription);
+
+  const body = [fullDescription, shortDescription]
+    .filter((value): value is string => Boolean(value))
     .flatMap((value) => value.split(/\n+/))
     .map((value) => value.trim())
     .filter((value) => value.length > 0);
 
+  const categoryName =
+    cleanString(product.category?.name) ||
+    (isArabic ? "غير محدد" : "Not specified");
+
+  const therapeuticAreaName =
+    cleanString(product.therapeuticArea?.name) ||
+    (isArabic ? "غير محدد" : "Not specified");
+
+  const manufacturerName =
+    cleanString(product.manufacturer?.name) ||
+    (isArabic ? "غير محدد" : "Not specified");
+
+  const productType =
+    cleanString(product.productType) ||
+    cleanString(product.category?.name) ||
+    (isArabic ? "غير محدد" : "Not specified");
+
+  const storageConditions =
+    cleanString(product.advancedDetails?.storageConditions) ||
+    (isArabic ? "غير محدد" : "Not specified");
+
+  const regulatoryInfo =
+    cleanString(product.advancedDetails?.regulatoryInfo) ||
+    (isArabic ? "غير محدد" : "Not specified");
+
   const productBullets = [
-    `${isArabic ? "الفئة" : "Category"}: ${product.category?.name || (isArabic ? "غير محدد" : "Not specified")}`,
-    `${isArabic ? "المجال العلاجي" : "Therapeutic Area"}: ${product.therapeuticArea?.name || (isArabic ? "غير محدد" : "Not specified")}`,
-    `${isArabic ? "الشركة المصنعة" : "Manufacturer"}: ${product.manufacturer?.name || (isArabic ? "غير محدد" : "Not specified")}`,
+    `${isArabic ? "الفئة" : "Category"}: ${categoryName}`,
+    `${isArabic ? "المجال العلاجي" : "Therapeutic Area"}: ${therapeuticAreaName}`,
+    `${isArabic ? "الشركة المصنعة" : "Manufacturer"}: ${manufacturerName}`,
   ];
 
   const specificationItems = [
     {
       label: isArabic ? "الحالة" : "Status",
-      value:
-        product.status === "AVAILABLE"
-          ? isArabic
-            ? "متاح"
-            : "Available"
-          : isArabic
-            ? "قيد التطوير"
-            : "Pipeline",
+      value: getProductStatus(product, locale),
     },
     {
       label: isArabic ? "نوع المنتج" : "Product Type",
-      value:
-        product.type === "ADVANCED"
-          ? isArabic
-            ? "متقدم"
-            : "Advanced"
-          : isArabic
-            ? "بسيط"
-            : "Simple",
+      value: productType,
     },
-    product.advancedDetails?.storageConditions
-      ? {
-          label: isArabic ? "ظروف التخزين" : "Storage Conditions",
-          value: product.advancedDetails.storageConditions,
-        }
-      : null,
-    product.advancedDetails?.regulatoryInfo
-      ? {
-          label: isArabic ? "معلومات تنظيمية" : "Regulatory Information",
-          value: product.advancedDetails.regulatoryInfo,
-        }
-      : null,
-    product.attachments.length > 0
-      ? {
-          label: isArabic ? "المرفقات" : "Attachments",
-          value: isArabic
-            ? `${product.attachments.length} ملف`
-            : `${product.attachments.length} file(s)`,
-        }
-      : null,
-  ].filter((item): item is { label: string; value: string } => Boolean(item));
-
-  const relatedProducts: ProductCardData[] = product.relatedProducts.map((item) => ({
-    id: item.id,
-    name: item.name,
-    category: item.category?.name || (isArabic ? "منتج" : "Product"),
-    description:
-      item.shortDescription ||
-      (isArabic
-        ? "لا يوجد وصف متاح حالياً لهذا المنتج."
-        : "No description is available for this product yet."),
-    indication: item.therapeuticArea?.name,
-    badge:
-      item.status === "AVAILABLE"
-        ? isArabic
-          ? "متاح"
-          : "Available"
-        : isArabic
-          ? "قيد التطوير"
-          : "Pipeline",
-    href: `/products/${item.slug}`,
-    image: item.coverImageUrl
-      ? {
-          src: item.coverImageUrl,
-          alt: item.name,
-        }
-      : undefined,
-  }));
+    {
+      label: isArabic ? "شروط التخزين" : "Storage Conditions",
+      value: storageConditions,
+    },
+    {
+      label: isArabic ? "المعلومات التنظيمية" : "Regulatory Information",
+      value: regulatoryInfo,
+    },
+  ];
 
   return {
     hero: {
       eyebrow: isArabic ? "تفاصيل المنتج" : "Product Detail",
       title: product.name,
-      subtitle: product.shortDescription || undefined,
+      subtitle: shortDescription || "",
+      backgroundImage: image,
       actions: [
         {
           label: isArabic ? "العودة إلى المنتجات" : "Back to Products",
           href: "/products",
-          variant: "ghost" as const,
         },
       ],
-      backgroundImage: product.coverImageUrl
-        ? {
-            src: product.coverImageUrl,
-            alt: product.name,
-          }
-        : undefined,
     },
     productInfo: {
       eyebrow: isArabic ? "معلومات المنتج" : "Product Information",
       title: product.name,
-      subtitle: product.shortDescription || undefined,
+      subtitle: shortDescription || "",
       body,
       bullets: productBullets,
-      image: product.coverImageUrl
-        ? {
-            src: product.coverImageUrl,
-            alt: product.name,
-          }
-        : undefined,
+      image,
+      images: image ? [image] : [],
     },
     specifications: {
       title: isArabic ? "المواصفات" : "Specifications",
       description: isArabic
-        ? "ملخص تقني سريع يدعم فرق الجودة والامتثال والتسجيل."
+        ? "ملخص فني سريع لفرق الجودة والامتثال والتسجيل."
         : "A quick technical summary for quality, compliance, and registration teams.",
       items: specificationItems,
     },
@@ -201,10 +230,26 @@ function buildProductDetailViewModel(
       description: isArabic
         ? "منتجات أخرى من نفس الفئة أو المجال العلاجي."
         : "Other products from the same category or therapeutic area.",
-      items: relatedProducts,
+      items: getRelatedProducts(product, locale),
       columns: 3 as const,
     },
-    cta: getDefaultProductCta(locale),
+    cta: {
+      eyebrow: isArabic ? "هل تحتاج مزيدًا من المعلومات؟" : "Need More Information?",
+      title: isArabic
+        ? "تواصل مع فريق المنتجات لدى داميرا"
+        : "Connect with Damira's Product Team",
+      description: isArabic
+        ? "يساعدك فريقنا في الأسئلة الفنية والتوفر وخطط الإطلاق."
+        : "Our team can support technical questions, availability, and launch planning.",
+      primaryAction: {
+        label: isArabic ? "تواصل معنا" : "Contact Us",
+        href: "/contact",
+      },
+      secondaryAction: {
+        label: isArabic ? "استكشف الشراكات" : "Explore Partnerships",
+        href: "/partnerships",
+      },
+    },
   };
 }
 
@@ -212,24 +257,34 @@ export async function generateMetadata({
   params,
 }: ProductDetailPageProps): Promise<Metadata> {
   const { locale, slug } = await params;
-  const currentLocale: Locale = locale === "ar" ? "ar" : "en";
+  const currentLocale = resolveLocale(locale);
+
   const product = await getPublicProductBySlug(currentLocale, slug);
 
   if (!product) {
+    const title =
+      currentLocale === "ar" ? "المنتج غير موجود" : "Product Not Found";
+
     return createPublicMetadata({
       locale: currentLocale,
       pathname: `/products/${slug}`,
-      title: "Product not found",
-      description: "The requested product could not be found.",
+      title,
+      description:
+        currentLocale === "ar"
+          ? "تعذر العثور على المنتج المطلوب."
+          : "The requested product could not be found.",
+      image: buildOgImageUrl(title, currentLocale),
     });
   }
 
-  const title = product.name;
+  const productData = product as ProductDetailLike;
+
+  const title = productData.name;
   const description =
-    product.shortDescription ||
-    product.fullDescription ||
+    cleanString(productData.shortDescription) ||
+    cleanString(productData.fullDescription) ||
     (currentLocale === "ar"
-      ? "تفاصيل المنتج من داميرا فارما."
+      ? "تفاصيل منتج من داميرا فارما."
       : "Product details from Damira Pharma.");
 
   return createPublicMetadata({
@@ -237,53 +292,44 @@ export async function generateMetadata({
     pathname: `/products/${slug}`,
     title,
     description,
-    image: product.coverImageUrl || buildOgImageUrl(title, currentLocale),
-    type: "article",
+    image: buildOgImageUrl(title, currentLocale),
   });
-}
-
-export async function generateStaticParams() {
-  const slugs = await getPublishedProductSlugs();
-  return slugs.map((item) => ({ slug: item.slug }));
 }
 
 export default async function ProductDetailPage({
   params,
 }: ProductDetailPageProps) {
   const { locale, slug } = await params;
-  const currentLocale: Locale = locale === "ar" ? "ar" : "en";
+  const currentLocale = resolveLocale(locale);
+
   const product = await getPublicProductBySlug(currentLocale, slug);
 
   if (!product) {
     notFound();
   }
 
-  const pageData = buildProductDetailViewModel(product, currentLocale);
-  const showIncompleteMessage = isProductDetailIncomplete(product);
+  const pageData = buildProductDetailViewModel(
+    product as ProductDetailLike,
+    currentLocale,
+  );
 
   return (
     <>
-      <ProductDetailHeroSection data={pageData.hero} />
-      {showIncompleteMessage && (
-        <section className="mx-auto w-full max-w-7xl px-4 pt-8 sm:px-6 lg:px-8">
-          <div className="rounded-2xl border border-[#f9d7bf] bg-[#fff5ee] px-5 py-4 text-sm text-[#8a4b1f] sm:px-6 sm:py-5">
-            <p className="font-semibold">
-              {currentLocale === "ar"
-                ? "تفاصيل هذا المنتج غير مكتملة حالياً"
-                : "This product detail is currently incomplete"}
-            </p>
-            <p className="mt-1 text-[#9a6237]">
-              {currentLocale === "ar"
-                ? "لم يقم المسؤول بإدخال جميع بيانات هذا المنتج بعد. يرجى المحاولة لاحقاً أو التواصل معنا للحصول على التفاصيل."
-                : "The admin has not added all required data for this product yet. Please check back later or contact us for full details."}
-            </p>
-          </div>
-        </section>
-      )}
-      <ProductInfoSection data={pageData.productInfo} />
-      <SpecificationsSection data={pageData.specifications} />
-      <RelatedProductsSection data={pageData.relatedProducts} />
-      <ProductDetailCtaSection data={pageData.cta} />
+      <section id="product-information" className="scroll-mt-32">
+        <ProductInfoSection data={pageData.productInfo} />
+      </section>
+
+      <section id="product-specifications" className="scroll-mt-32">
+        <SpecificationsSection data={pageData.specifications} />
+      </section>
+
+      <section id="related-products" className="scroll-mt-32">
+        <RelatedProductsSection data={pageData.relatedProducts} />
+      </section>
+
+      <section id="product-contact" className="scroll-mt-32">
+        <ProductDetailCtaSection data={pageData.cta} />
+      </section>
     </>
   );
 }

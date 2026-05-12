@@ -4,6 +4,8 @@ import { z } from "zod";
 import { auth } from "@/lib/auth";
 import storage from "@/lib/storage";
 
+export const runtime = "nodejs";
+
 // File validation constants
 const MAX_IMAGE_SIZE = 10 * 1024 * 1024; // 10MB
 const MAX_DOCUMENT_SIZE = 25 * 1024 * 1024; // 25MB
@@ -331,6 +333,13 @@ export async function POST(request: NextRequest) {
         },
         { status: 400 },
       );
+    }
+
+    if (
+      error instanceof Error &&
+      error.message === "Vercel Blob token is not configured."
+    ) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
     // Handle other errors

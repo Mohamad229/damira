@@ -1,4 +1,5 @@
 import { SectionReveal } from "@/components/public/sections/base/SectionReveal";
+import { cn } from "@/lib/utils";
 
 interface SpecificationItem {
   label: string;
@@ -14,33 +15,120 @@ interface SpecificationsSectionProps {
 }
 
 export function SpecificationsSection({ data }: SpecificationsSectionProps) {
+  const items = data.items || [];
+
   return (
     <SectionReveal>
-      <section className="bg-white py-16 sm:py-20 md:py-24">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-10 max-w-3xl">
-            <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#0097dc]">
-              Technical dossier
+      <section
+        className={cn(
+          "relative overflow-hidden bg-white",
+          "py-[72px] sm:py-[82px] lg:py-[90px] xl:py-[96px]",
+        )}
+      >
+        {/* Soft background depth */}
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(226,244,255,0.42),transparent_34%)]" />
+
+        <div
+          className={cn(
+            "relative z-10 w-full",
+            "px-4 sm:px-6 md:px-8",
+            "lg:px-[80px]",
+            "xl:px-[120px]",
+            "2xl:px-[210px]",
+          )}
+        >
+          {/* Header */}
+          <div
+            className={cn(
+              "mb-[34px] max-w-[760px]",
+              "sm:mb-[38px]",
+              "lg:mb-[42px]",
+              "xl:mb-[44px]",
+            )}
+          >
+            <p
+              className={cn(
+                "font-black uppercase leading-none tracking-[0.22em] text-[#009fe3]",
+                "text-[11px]",
+                "sm:text-[12px] sm:tracking-[0.24em]",
+              )}
+            >
+              Technical Dossier
             </p>
-            <h2 className="mt-3 text-3xl font-black text-slate-950 sm:text-4xl md:text-5xl">
+
+            <h2
+              className={cn(
+                "font-black leading-[1.04] tracking-[-0.055em] text-[#071329]",
+                "mt-[16px]",
+                "text-[34px]",
+                "sm:text-[40px]",
+                "md:text-[44px]",
+                "xl:mt-[18px] xl:text-[48px]",
+              )}
+            >
               {data.title}
             </h2>
+
             {data.description ? (
-              <p className="mt-4 text-base leading-7 text-slate-600">
+              <p
+                className={cn(
+                  "max-w-[760px]",
+                  "mt-[18px]",
+                  "text-[15px] font-medium leading-[1.65] tracking-[-0.01em] text-[#263b59]",
+                  "sm:text-[16px]",
+                  "md:text-[17px] md:leading-[1.55]",
+                  "xl:mt-[22px]",
+                )}
+              >
                 {data.description}
               </p>
             ) : null}
           </div>
-          <dl className="grid gap-4 md:grid-cols-2">
-            {data.items.map((item) => (
+
+          {/* Specification items */}
+          <dl
+            className={cn(
+              "grid",
+              "gap-[14px]",
+              "sm:gap-[16px]",
+              "md:grid-cols-2",
+              "xl:gap-[18px]",
+            )}
+          >
+            {items.map((item) => (
               <div
                 key={item.label}
-                className="rounded-[1.5rem] border border-[#dfeaf6] bg-[#f8fbff] p-5"
+                className={cn(
+                  "relative overflow-hidden",
+                  "rounded-[18px] sm:rounded-[20px] xl:rounded-[24px]",
+                  "border border-[#dce9f6] bg-[#f8fbff]",
+                  "px-[18px] py-[18px]",
+                  "sm:px-[20px] sm:py-[20px]",
+                  "xl:px-[22px] xl:py-[22px]",
+                  "transition-all duration-300",
+                  "hover:border-[#c5e1f5] hover:bg-white",
+                  "hover:shadow-[0_20px_44px_-38px_rgba(15,23,42,0.45)]",
+                )}
               >
-                <dt className="text-xs font-black uppercase tracking-[0.16em] text-[#f58238]">
+                <dt
+                  className={cn(
+                    "font-black uppercase leading-none tracking-[0.2em] text-[#f58238]",
+                    "text-[11px]",
+                    "sm:text-[12px] sm:tracking-[0.24em]",
+                  )}
+                >
                   {item.label}
                 </dt>
-                <dd className="mt-3 text-sm leading-7 text-slate-700 sm:text-base">
+
+                <dd
+                  className={cn(
+                    "break-words font-medium tracking-[-0.01em] text-[#071329]",
+                    "mt-[14px]",
+                    "text-[15px] leading-[1.6]",
+                    "sm:mt-[16px] sm:text-[16px] sm:leading-[1.55]",
+                    "xl:mt-[18px]",
+                  )}
+                >
                   {item.value}
                 </dd>
               </div>

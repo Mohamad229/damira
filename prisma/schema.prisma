@@ -124,7 +124,9 @@ model Manufacturer {
   products Product[]
 }
 
-// Pages & Content
+// Legacy arbitrary page builder models.
+// TODO: Remove these models in a dedicated migration after production data has
+// been audited and no migration/rollback path depends on the old Page tables.
 model Page {
   id          String  @id @default(cuid())
   slug        String  @unique
@@ -260,7 +262,7 @@ model PageContentSection {
   contentId String
   content   PageContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
 
-  sectionKey String // "hero", "trustMetrics", "capabilities", etc.
+  sectionKey String // Fixed section key, e.g. "hero", "atAGlance", "catalog"
   order      Int // Rendering order (1, 2, 3...)
 
   // Field storage

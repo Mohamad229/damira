@@ -11,6 +11,11 @@ import { revalidatePath } from "next/cache";
 import db from "@/lib/db";
 import { requireAuth, isAdmin } from "@/lib/auth-utils";
 import {
+  sanitizeTemplateValue,
+  sanitizeValueAgainstTemplate,
+  stringifySanitized,
+} from "@/lib/content/admin-template-sanitizer";
+import {
   updatePageContentFieldSchema,
   updatePageContentSchema,
   serializeFieldValue,
@@ -19,9 +24,37 @@ import {
   getPageDefinition,
   getSectionDefinition,
 } from "@/lib/content/page-definitions";
+import { getPublicUiData } from "@/lib/content/public-ui";
+import type { PublicUiData } from "@/lib/content/public-ui";
 import type { UpdatePageContent } from "@/lib/content/validators";
 import type { UpdatePageContentResponse } from "@/lib/content/types";
 import type { Locale } from "@/i18n/config";
+
+function sanitizeJsonFieldForSave(
+  pageKey: string,
+  locale: Locale,
+  sectionKey: string,
+  value: string | null,
+): string | null {
+  if (value === null) {
+    return null;
+  }
+
+  const cleanPageData = getPublicUiData(locale)[
+    pageKey as keyof PublicUiData
+  ] as unknown as Record<string, unknown> | undefined;
+  const template = sanitizeTemplateValue(cleanPageData?.[sectionKey], {
+    pageKey,
+    sectionKey,
+  }) ?? {};
+  const parsed = JSON.parse(value);
+  const sanitizedValue = sanitizeValueAgainstTemplate(parsed, template, {
+    pageKey,
+    sectionKey,
+  });
+
+  return stringifySanitized(sanitizedValue);
+}
 
 /**
  * Update a single field value
@@ -110,7 +143,11 @@ export async function updatePageContentField(
     const fieldType = fieldDef.type;
 
     // Serialize the value according to field type
-    const serializedValue = serializeFieldValue(value, fieldType);
+    const sanitizedValue =
+      fieldType === "json"
+        ? sanitizeJsonFieldForSave(pageKey, locale, sectionKey, value)
+        : value;
+    const serializedValue = serializeFieldValue(sanitizedValue, fieldType);
 
     // Update or create field
     await db.pageContentField.upsert({
@@ -236,7 +273,19 @@ export async function updatePageContent(
           continue;
         }
 
-        const serializedValue = serializeFieldValue(value, fieldDef.type);
+        const sanitizedValue =
+          fieldDef.type === "json"
+            ? sanitizeJsonFieldForSave(
+                validated.pageKey,
+                validated.locale,
+                sectionKey,
+                value,
+              )
+            : value;
+        const serializedValue = serializeFieldValue(
+          sanitizedValue,
+          fieldDef.type,
+        );
 
         await db.pageContentField.upsert({
           where: {
@@ -313,6 +362,10 @@ export async function initializePageContent(
       };
     }
 
+    const cleanPageData = getPublicUiData(locale)[
+      pageKey as keyof PublicUiData
+    ] as unknown as Record<string, unknown> | undefined;
+
     // Create page content
     await db.pageContent.create({
       data: {
@@ -324,13 +377,30 @@ export async function initializePageContent(
             sectionKey: section.sectionKey,
             order: index + 1,
             fields: {
-              create: Object.entries(section.fields).map(
-                ([fieldKey, fieldDef]) => ({
+              create: Object.entries(section.fields).map(([fieldKey, fieldDef]) => {
+                let value: string | null = null;
+
+                if (fieldDef.type === "json" && fieldKey === "data") {
+                  const template =
+                    sanitizeTemplateValue(cleanPageData?.[section.sectionKey], {
+                      pageKey,
+                      sectionKey: section.sectionKey,
+                    }) ?? {};
+
+                  value = stringifySanitized(
+                    sanitizeValueAgainstTemplate(template, template, {
+                      pageKey,
+                      sectionKey: section.sectionKey,
+                    }),
+                  );
+                }
+
+                return {
                   fieldKey,
                   fieldType: fieldDef.type,
-                  value: null,
-                }),
-              ),
+                  value,
+                };
+              }),
             },
           })),
         },

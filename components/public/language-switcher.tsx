@@ -105,7 +105,7 @@ export function LanguageSwitcher({
         <div
           role="menu"
           aria-label="Select language"
-          className="absolute right-0 mt-2 w-44 overflow-hidden rounded-2xl border border-border bg-background shadow-lg"
+          className="absolute right-0 mt-2 w-44 overflow-hidden rounded-2xl border border-border bg-background shadow-lg rtl:left-0 rtl:right-auto rtl:text-right"
         >
           {locales.map((nextLocale) => {
             const isActive = locale === nextLocale;

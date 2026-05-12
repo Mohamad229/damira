@@ -96,7 +96,12 @@ export function FormsTableClient({
   const [sorting, setSorting] = useState<SortingState>([
     { id: "createdAt", desc: true },
   ]);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(() => {
+    if (typeof window === "undefined") {
+      return "";
+    }
+    return new URLSearchParams(window.location.search).get("q") ?? "";
+  });
   const [typeFilter, setTypeFilter] = useState<FormTypeFilter>("ALL");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("ALL");
   const [fromDate, setFromDate] = useState("");
@@ -111,6 +116,16 @@ export function FormsTableClient({
 
   const { toast } = useToast();
   const debouncedSearch = useDebounce(search, 300);
+
+  useEffect(() => {
+    function handleAdminSearch(event: Event) {
+      const detail = (event as CustomEvent<{ query?: string }>).detail;
+      setSearch(detail?.query ?? "");
+    }
+
+    window.addEventListener("admin-search", handleAdminSearch);
+    return () => window.removeEventListener("admin-search", handleAdminSearch);
+  }, []);
 
   const loadSubmissions = useCallback(
     (

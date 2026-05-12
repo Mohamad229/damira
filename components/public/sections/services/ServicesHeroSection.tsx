@@ -1,58 +1,159 @@
-import Image from "next/image";
-import { Link } from "@/i18n/navigation";
 import { SectionReveal } from "@/components/public/sections/base";
 import type { HeroSectionData } from "@/components/public/sections/base/types";
+import { cn } from "@/lib/utils";
 
-export function ServicesHeroSection({ data }: { data: HeroSectionData }) {
+interface ServicesHeroSectionProps {
+  data: HeroSectionData;
+  className?: string;
+}
+
+function renderServicesTitle(title: string) {
+  const highlightText = "Distribution Services";
+  const index = title.toLowerCase().indexOf(highlightText.toLowerCase());
+
+  if (index === -1) {
+    return title;
+  }
+
+  const before = title.slice(0, index);
+  const highlighted = title.slice(index, index + highlightText.length);
+  const after = title.slice(index + highlightText.length);
+
+  return (
+    <>
+      {before}
+      <span className="text-[#009fe3]">{highlighted}</span>
+      {after}
+    </>
+  );
+}
+
+export function ServicesHeroSection({
+  data,
+  className,
+}: ServicesHeroSectionProps) {
+  const title =
+    data.title || "Comprehensive Healthcare Distribution Services";
+
+  const subtitle =
+    data.subtitle ||
+    "An end-to-end commercialization ecosystem designed to manage the complexities of specialized pharmaceutical supply chains.";
+
   return (
     <SectionReveal>
-      <section className="relative overflow-hidden bg-[#f8fbff] pt-24 pb-16 sm:pt-28 lg:pt-32">
-        <div className="absolute inset-0 bg-[linear-gradient(140deg,#f8fbff_0%,#ffffff_44%,#eef8fe_100%)]" />
-        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid gap-10 rounded-[2rem] border border-[#dcecf8] bg-white p-6 shadow-[0_28px_80px_-55px_rgba(15,23,42,0.7)] sm:p-8 lg:grid-cols-[1fr_0.85fr] lg:p-10">
-            <div className="flex flex-col justify-center">
-              <span className="w-fit rounded-full bg-[#daecd4] px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-[#2c8c2b]">
-                {data.eyebrow || "Operational services"}
-              </span>
-              <h1 className="mt-6 text-4xl font-black leading-tight text-slate-950 sm:text-5xl lg:text-6xl">
-                {data.title}
-              </h1>
-              {data.subtitle ? (
-                <p className="mt-5 max-w-2xl text-base leading-8 text-slate-600 sm:text-lg">
-                  {data.subtitle}
-                </p>
-              ) : null}
-              {data.actions?.length ? (
-                <div className="mt-8 flex flex-wrap gap-3">
-                  {data.actions.map((action, index) => (
-                    <Link
-                      key={action.href}
+      <section
+        className={cn(
+          "relative isolate overflow-hidden bg-[#f8fbff]",
+          "min-h-[390px] sm:min-h-[410px] lg:min-h-[430px]",
+          className,
+        )}
+      >
+        {/* Base soft background */}
+        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,#f8fbff_0%,#ffffff_100%)]" />
+
+        {/* Mobile/tablet soft decoration */}
+        <div className="pointer-events-none absolute -right-[90px] top-0 h-[230px] w-[230px] rounded-bl-[72px] rounded-tl-[72px] bg-[#eaf6fd] rtl:-left-[90px] rtl:right-auto rtl:rounded-br-[72px] rtl:rounded-tl-none rtl:rounded-tr-[72px] sm:-right-[70px] sm:h-[280px] sm:w-[280px] rtl:sm:-left-[70px] md:-right-[40px] md:h-[330px] md:w-[330px] rtl:md:-left-[40px] lg:hidden" />
+
+        {/* Desktop right rounded block */}
+        <div
+          className={cn(
+            "pointer-events-none absolute right-0 top-0 hidden h-full bg-[#eaf6fd] rtl:left-0 rtl:right-auto",
+            "lg:block lg:w-[30vw] lg:rounded-bl-[76px] rtl:lg:rounded-bl-none rtl:lg:rounded-br-[76px]",
+            "xl:w-[33.5vw] xl:rounded-bl-[96px] rtl:xl:rounded-bl-none rtl:xl:rounded-br-[96px]",
+          )}
+        />
+
+        {/* Subtle accent circle */}
+        <div className="pointer-events-none absolute bottom-[-90px] left-[-90px] h-[220px] w-[220px] rounded-full bg-[#daecd4]/45 blur-2xl" />
+
+        {/* Content */}
+        <div
+          className={cn(
+            "relative z-10 flex w-full items-center",
+            "min-h-[390px] sm:min-h-[410px] lg:min-h-[430px]",
+            "px-4 sm:px-6 md:px-8",
+            "lg:px-[80px]",
+            "xl:px-[120px]",
+            "2xl:px-[210px]",
+            "py-[70px] sm:py-[78px] lg:py-[82px]",
+          )}
+        >
+          <div className="max-w-[780px] rtl:ms-auto rtl:text-right">
+            {data.eyebrow ? (
+              <div
+                className={cn(
+                  "mb-[20px] inline-flex items-center rounded-full",
+                  "border border-[#9ed8f8] bg-[#eaf7ff]/90",
+                  "h-[28px] px-[12px]",
+                  "text-[12px] font-extrabold uppercase leading-none tracking-[0.12em] text-[#009fe3]",
+                  "sm:h-[30px] sm:px-[13px] sm:text-[13px]",
+                  "lg:mb-[22px]",
+                )}
+              >
+                {data.eyebrow}
+              </div>
+            ) : null}
+
+            <h1
+              className={cn(
+                "max-w-[780px]",
+                "font-black leading-[0.98] tracking-[-0.055em]",
+                "text-[#11182d]",
+                "text-[38px]",
+                "sm:text-[46px]",
+                "md:text-[52px]",
+                "lg:text-[56px]",
+                "xl:text-[62px]",
+              )}
+            >
+              {renderServicesTitle(title)}
+            </h1>
+
+            {subtitle ? (
+              <p
+                className={cn(
+                  "max-w-[700px]",
+                  "mt-[24px]",
+                  "text-[16px] font-medium leading-[1.6] tracking-[-0.015em]",
+                  "text-[#263b59]",
+                  "sm:text-[18px]",
+                  "md:text-[19px]",
+                  "lg:mt-[28px] lg:text-[20px] lg:leading-[1.55]",
+                  "xl:mt-[30px] xl:text-[21px]",
+                )}
+              >
+                {subtitle}
+              </p>
+            ) : null}
+
+            {data.actions?.length ? (
+              <div className="mt-[32px] flex flex-col gap-3 sm:mt-[36px] sm:flex-row sm:flex-wrap rtl:sm:flex-row-reverse rtl:sm:justify-end lg:mt-[38px]">
+                {data.actions.map((action, index) => {
+                  const isPrimary = index === 0;
+
+                  return (
+                    <a
+                      key={`${action.href}-${action.label}`}
                       href={action.href}
-                      className={
-                        index === 0
-                          ? "rounded-xl bg-[#0097dc] px-6 py-3 text-sm font-bold text-white"
-                          : "rounded-xl border border-[#91caee] px-6 py-3 text-sm font-bold text-[#0097dc]"
-                      }
+                      className={cn(
+                        "inline-flex items-center justify-center rounded-full",
+                        "h-[48px] px-7",
+                        "text-[14px] font-extrabold leading-none tracking-[-0.01em]",
+                        "transition-all duration-300",
+                        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#009fe3] focus-visible:ring-offset-2",
+                        "sm:h-[52px] sm:px-8 sm:text-[15px]",
+                        "lg:h-[54px] lg:text-[16px]",
+                        isPrimary
+                          ? "min-w-[190px] bg-[#009fe3] text-white shadow-[0_18px_35px_-20px_rgba(0,159,227,0.9)] hover:-translate-y-0.5 hover:bg-[#0092d3] sm:min-w-[210px] lg:min-w-[220px]"
+                          : "min-w-[170px] border border-[#d8e3ec] bg-white/85 text-[#31405a] hover:-translate-y-0.5 hover:border-[#009fe3]/45 hover:text-[#009fe3] sm:min-w-[180px] lg:min-w-[190px]",
+                      )}
                     >
                       {action.label}
-                    </Link>
-                  ))}
-                </div>
-              ) : null}
-            </div>
-            <div className="relative min-h-[340px] overflow-hidden rounded-[1.7rem] bg-[#eaf6fd]">
-              {data.backgroundImage ? (
-                <Image
-                  src={data.backgroundImage.src}
-                  alt={data.backgroundImage.alt || data.title}
-                  fill
-                  priority
-                  sizes="(max-width: 1024px) 100vw, 45vw"
-                  className="object-cover"
-                />
-              ) : null}
-              <div className="absolute inset-0 bg-gradient-to-tr from-[#0097dc]/24 via-transparent to-[#4cb748]/16" />
-            </div>
+                    </a>
+                  );
+                })}
+              </div>
+            ) : null}
           </div>
         </div>
       </section>

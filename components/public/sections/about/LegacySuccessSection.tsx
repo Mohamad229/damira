@@ -15,8 +15,8 @@ interface LegacySuccessSectionProps {
 export function LegacySuccessSection({ data }: LegacySuccessSectionProps) {
   return (
     <>
-      <AboutContentSection data={data.content} variant="legacy" />
       <AboutStatsSection data={data.stats} />
+      <AboutContentSection data={data.content} variant="legacy" />
     </>
   );
 }

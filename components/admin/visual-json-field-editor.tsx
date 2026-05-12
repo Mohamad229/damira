@@ -1,523 +1,526 @@
 "use client";
 
-import { useMemo } from "react";
-import { Plus, RefreshCcw, Trash2 } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import {
+  ArrowDown,
+  ArrowUp,
+  Code2,
+  GripVertical,
+  ImageIcon,
+  Plus,
+  Trash2,
+  X,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectOption } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  createItemFromTemplate,
+  parseJsonForSanitizer,
+  sanitizeTemplateValue,
+  sanitizeValueAgainstTemplate,
+  stringifySanitized,
+  type SanitizedJson,
+} from "@/lib/content/admin-template-sanitizer";
 import { cn } from "@/lib/utils";
 
-type JsonPrimitive = string | number | boolean | null;
-type JsonValue = JsonPrimitive | JsonObject | JsonArray;
-type JsonArray = JsonValue[];
+import { MediaPicker } from "./media-picker";
 
-interface JsonObject {
-  [key: string]: JsonValue;
-}
+import type { MediaWithUser } from "@/lib/actions/media";
+
+type JsonValue = SanitizedJson;
 
 interface VisualJsonFieldEditorProps {
-  id: string;
   value: string;
   onChange: (value: string) => void;
-  placeholder?: string;
-  templateValue?: unknown;
-}
-
-interface JsonNodeEditorProps {
   label?: string;
-  rawKey?: string;
-  value: JsonValue;
-  template?: JsonValue;
-  depth: number;
-  onChange: (next: JsonValue) => void;
-  onRemove?: () => void;
+  template?: unknown;
+  sanitizerContext?: {
+    pageKey: string;
+    sectionKey: string;
+  };
 }
 
-function isJsonObject(value: unknown): value is JsonObject {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
+interface EditorNodeProps {
+  value: JsonValue;
+  template: JsonValue;
+  path: string[];
+  onChange: (value: JsonValue) => void;
+}
+
+const LONG_TEXT_KEYS = new Set([
+  "description",
+  "subtitle",
+  "body",
+  "paragraph",
+  "caption",
+  "summary",
+  "emptyMetricsText",
+]);
+
+const URL_KEY_PATTERN = /(href|url|link|src)$/i;
+const MEDIA_KEY_PATTERN = /(image|icon|logo|photo|media|thumbnail|illustration)$/i;
+const INTERNAL_KEYS = new Set(["id"]);
+
+function isPlainObject(value: unknown): value is Record<string, JsonValue> {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
 
 function humanizeKey(key: string): string {
-  const withSpaces = key
+  return key
     .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
-    .replace(/[._-]/g, " ");
-
-  return withSpaces.charAt(0).toUpperCase() + withSpaces.slice(1);
+    .replace(/[_-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .replace(/^./, (letter) => letter.toUpperCase());
 }
 
-function toJsonValue(input: unknown): JsonValue {
-  if (
-    typeof input === "string" ||
-    typeof input === "number" ||
-    typeof input === "boolean" ||
-    input === null
-  ) {
-    return input;
+function itemLabel(key: string, index: number, value: JsonValue): string {
+  const valueTitle = isPlainObject(value) && typeof value.title === "string" ? value.title.trim() : "";
+  if (valueTitle) {
+    return valueTitle;
   }
 
-  if (Array.isArray(input)) {
-    return input.map((item) => toJsonValue(item));
-  }
+  const singular: Record<string, string> = {
+    actions: "Button",
+    bullets: "List item",
+    cards: "Card",
+    departments: "Contact card",
+    highlights: "Carousel item",
+    items: "Item",
+    metrics: "Metric",
+    paragraphs: "Paragraph",
+    slides: "Carousel item",
+    stats: "Stat",
+  };
 
-  if (typeof input === "object" && input !== null) {
-    const output: JsonObject = {};
-    for (const [key, value] of Object.entries(input)) {
-      output[key] = toJsonValue(value);
-    }
-    return output;
-  }
-
-  return "";
+  return `${singular[key] ?? "Item"} ${index + 1}`;
 }
 
-function normalizeByTemplate(
-  currentValue: JsonValue | undefined,
-  templateValue: JsonValue,
-): JsonValue {
-  if (Array.isArray(templateValue)) {
-    const currentArray = Array.isArray(currentValue) ? currentValue : [];
-    if (templateValue.length === 0) {
-      return currentArray;
-    }
-
-    const itemTemplate = templateValue[0];
-    return currentArray.map((item) => normalizeByTemplate(item, itemTemplate));
+function itemKey(path: string[], index: number, value: JsonValue): string {
+  if (isPlainObject(value) && typeof value.id === "string" && value.id.trim()) {
+    return value.id;
   }
 
-  if (isJsonObject(templateValue)) {
-    const currentObject = isJsonObject(currentValue) ? currentValue : {};
-    const output: JsonObject = {};
-    const keys = new Set<string>([
-      ...Object.keys(templateValue),
-      ...Object.keys(currentObject),
-    ]);
-
-    for (const key of keys) {
-      const hasTemplateKey = key in templateValue;
-      const templateChild = templateValue[key];
-
-      if (hasTemplateKey && templateChild !== undefined) {
-        output[key] = normalizeByTemplate(currentObject[key], templateChild);
-      } else {
-        output[key] = currentObject[key] ?? "";
-      }
-    }
-
-    return output;
-  }
-
-  if (templateValue === null) {
-    if (
-      currentValue === null ||
-      typeof currentValue === "string" ||
-      typeof currentValue === "number" ||
-      typeof currentValue === "boolean"
-    ) {
-      return currentValue;
-    }
-
-    return "";
-  }
-
-  if (typeof templateValue === "number") {
-    return typeof currentValue === "number" ? currentValue : 0;
-  }
-
-  if (typeof templateValue === "boolean") {
-    return typeof currentValue === "boolean" ? currentValue : false;
-  }
-
-  return typeof currentValue === "string" ? currentValue : "";
+  return `${path.join(".") || "root"}-${index}`;
 }
 
-function parseObjectFromString(raw: string): {
-  value: JsonObject | null;
-  error: string | null;
-} {
-  const trimmed = raw.trim();
-  if (trimmed.length === 0) {
-    return { value: {}, error: null };
-  }
-
-  try {
-    const parsed = JSON.parse(trimmed) as JsonValue;
-    if (!isJsonObject(parsed)) {
-      return {
-        value: null,
-        error: "Section data must be an object.",
-      };
-    }
-
-    return { value: parsed, error: null };
-  } catch {
-    return {
-      value: null,
-      error: "Stored section data is invalid and must be reset.",
-    };
-  }
-}
-
-function isLikelyImageField(key: string | undefined): boolean {
-  if (!key) {
-    return false;
-  }
-
-  return /(image|logo|icon|photo|cover|thumbnail|banner|background|src|url)/i.test(
-    key,
-  );
-}
-
-function isImagePath(value: string): boolean {
-  const normalized = value.trim().toLowerCase();
-  if (!normalized) {
+function isMediaObject(key: string, value: JsonValue, template: JsonValue): boolean {
+  const objectValue = isPlainObject(value) ? value : isPlainObject(template) ? template : null;
+  if (!objectValue) {
     return false;
   }
 
   return (
-    normalized.startsWith("http://") ||
-    normalized.startsWith("https://") ||
-    normalized.startsWith("/") ||
-    /\.(png|jpe?g|webp|gif|svg)$/.test(normalized)
+    MEDIA_KEY_PATTERN.test(key) ||
+    (Object.prototype.hasOwnProperty.call(objectValue, "src") &&
+      Object.prototype.hasOwnProperty.call(objectValue, "alt"))
   );
-}
-
-function toDisplayString(value: JsonPrimitive): string {
-  if (value === null) {
-    return "";
-  }
-
-  return String(value);
-}
-
-function emptyFromTemplate(value: JsonValue): JsonValue {
-  if (Array.isArray(value)) {
-    return [];
-  }
-
-  if (isJsonObject(value)) {
-    const output: JsonObject = {};
-    for (const [key, item] of Object.entries(value)) {
-      output[key] = emptyFromTemplate(item);
-    }
-    return output;
-  }
-
-  if (typeof value === "number") {
-    return 0;
-  }
-
-  if (typeof value === "boolean") {
-    return false;
-  }
-
-  return "";
-}
-
-function PrimitiveEditor({
-  label,
-  rawKey,
-  value,
-  template,
-  onChange,
-  onRemove,
-}: Omit<JsonNodeEditorProps, "value"> & { value: JsonPrimitive }) {
-  const isBoolean =
-    typeof template === "boolean" || typeof value === "boolean";
-  const isNumber = typeof template === "number" || typeof value === "number";
-  const isImageField = isLikelyImageField(rawKey);
-  const displayValue = toDisplayString(value as JsonPrimitive);
-
-  return (
-    <div className="space-y-2 rounded-lg border border-border/60 bg-background p-3">
-      <div className="flex items-center justify-between gap-2">
-        <Label className="text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">
-          {label || "Value"}
-        </Label>
-        {onRemove && (
-          <Button
-            type="button"
-            size="sm"
-            variant="ghost"
-            onClick={onRemove}
-            className="h-7 px-2 text-muted-foreground hover:text-destructive"
-          >
-            <Trash2 className="h-3.5 w-3.5" />
-          </Button>
-        )}
-      </div>
-
-      {isBoolean ? (
-        <Select
-          value={value ? "true" : "false"}
-          onChange={(event) => onChange(event.target.value === "true")}
-        >
-          <SelectOption value="true">True</SelectOption>
-          <SelectOption value="false">False</SelectOption>
-        </Select>
-      ) : (
-        <div className="space-y-2">
-          <Input
-            value={displayValue}
-            type={isNumber ? "number" : "text"}
-            onChange={(event) => {
-              if (isNumber) {
-                const parsed = Number(event.target.value);
-                onChange(Number.isFinite(parsed) ? parsed : 0);
-                return;
-              }
-
-              onChange(event.target.value);
-            }}
-            placeholder={isImageField ? "Image URL or /public path" : undefined}
-          />
-
-          {isImageField && typeof value === "string" && isImagePath(value) && (
-            <div className="overflow-hidden rounded-md border border-border/60 bg-muted/20">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={value}
-                alt={label || rawKey || "Preview"}
-                className="h-32 w-full object-cover"
-              />
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
-
-function ArrayEditor({
-  label,
-  rawKey,
-  value,
-  template,
-  depth,
-  onChange,
-  onRemove,
-}: Omit<JsonNodeEditorProps, "value"> & { value: JsonArray }) {
-  const itemTemplate = Array.isArray(template) ? template[0] : value[0];
-
-  const addItem = () => {
-    const nextItem = itemTemplate ? emptyFromTemplate(itemTemplate) : "";
-    onChange([...value, nextItem]);
-  };
-
-  const updateItem = (index: number, next: JsonValue) => {
-    const nextArray = value.map((item, itemIndex) =>
-      itemIndex === index ? next : item,
-    );
-    onChange(nextArray);
-  };
-
-  const removeItem = (index: number) => {
-    onChange(value.filter((_, itemIndex) => itemIndex !== index));
-  };
-
-  return (
-    <div className="space-y-3 rounded-lg border border-border/60 bg-muted/20 p-3">
-      <div className="flex items-center justify-between gap-2">
-        <Label className="text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">
-          {label || "Array"}
-        </Label>
-        <div className="flex items-center gap-1">
-          <Button
-            type="button"
-            size="sm"
-            variant="outline"
-            onClick={addItem}
-            className="h-7 gap-1 px-2"
-          >
-            <Plus className="h-3.5 w-3.5" />
-            Add item
-          </Button>
-          {onRemove && (
-            <Button
-              type="button"
-              size="sm"
-              variant="ghost"
-              onClick={onRemove}
-              className="h-7 px-2 text-muted-foreground hover:text-destructive"
-            >
-              <Trash2 className="h-3.5 w-3.5" />
-            </Button>
-          )}
-        </div>
-      </div>
-
-      {value.length === 0 ? (
-        <p className="text-xs text-muted-foreground">No items yet.</p>
-      ) : (
-        <div className="space-y-3">
-          {value.map((item, index) => (
-            <JsonNodeEditor
-              key={`${depth}-${index}`}
-              label={`Item ${index + 1}`}
-              rawKey={rawKey}
-              value={item}
-              template={itemTemplate}
-              depth={depth + 1}
-              onChange={(next) => updateItem(index, next)}
-              onRemove={() => removeItem(index)}
-            />
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-function ObjectEditor({
-  label,
-  value,
-  template,
-  depth,
-  onChange,
-  onRemove,
-}: Omit<JsonNodeEditorProps, "value"> & { value: JsonObject }) {
-  const updateField = (fieldKey: string, next: JsonValue) => {
-    onChange({
-      ...value,
-      [fieldKey]: next,
-    });
-  };
-
-  const removeField = (fieldKey: string) => {
-    const next = { ...value };
-    delete next[fieldKey];
-    onChange(next);
-  };
-
-  return (
-    <div className={cn("space-y-3 rounded-lg border border-border/60 bg-background p-3", depth > 0 && "bg-muted/10")}>
-      <div className="flex items-center justify-between gap-2">
-        <Label className="text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">
-          {label || "Object"}
-        </Label>
-        <div className="flex items-center gap-1">
-          {onRemove && (
-            <Button
-              type="button"
-              size="sm"
-              variant="ghost"
-              onClick={onRemove}
-              className="h-7 px-2 text-muted-foreground hover:text-destructive"
-            >
-              <Trash2 className="h-3.5 w-3.5" />
-            </Button>
-          )}
-        </div>
-      </div>
-
-      <div className="space-y-3">
-        {Object.entries(value).map(([fieldKey, itemValue]) => (
-          <JsonNodeEditor
-            key={fieldKey}
-            label={humanizeKey(fieldKey)}
-            rawKey={fieldKey}
-            value={itemValue}
-            template={isJsonObject(template) ? template[fieldKey] : undefined}
-            depth={depth + 1}
-            onChange={(next) => updateField(fieldKey, next)}
-            onRemove={onRemove ? () => removeField(fieldKey) : undefined}
-          />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function JsonNodeEditor(props: JsonNodeEditorProps) {
-  if (Array.isArray(props.value)) {
-    return <ArrayEditor {...props} value={props.value} />;
-  }
-
-  if (isJsonObject(props.value)) {
-    return <ObjectEditor {...props} value={props.value} />;
-  }
-
-  return <PrimitiveEditor {...props} value={props.value} />;
 }
 
 export function VisualJsonFieldEditor({
   value,
   onChange,
-  templateValue,
+  label = "Content fields",
+  template,
+  sanitizerContext,
 }: VisualJsonFieldEditorProps) {
-  const templateObject = useMemo(() => {
-    const normalized = toJsonValue(templateValue);
-    if (isJsonObject(normalized)) {
-      return normalized;
+  const parsedValue = useMemo(() => parseJsonForSanitizer(value), [value]);
+  const normalizedTemplate = useMemo(
+    () => sanitizeTemplateValue(template ?? parsedValue) ?? {},
+    [template, parsedValue],
+  );
+  const effectiveValue = useMemo(
+    () => sanitizeValueAgainstTemplate(parsedValue, normalizedTemplate, sanitizerContext),
+    [parsedValue, normalizedTemplate, sanitizerContext],
+  );
+
+  const [rawDraft, setRawDraft] = useState(() => stringifySanitized(effectiveValue));
+  const [rawError, setRawError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setRawDraft(stringifySanitized(effectiveValue));
+    setRawError(null);
+  }, [effectiveValue]);
+
+  function handleStructuredChange(nextValue: JsonValue) {
+    const sanitizedValue = sanitizeValueAgainstTemplate(
+      nextValue,
+      normalizedTemplate,
+      sanitizerContext,
+    );
+
+    setRawDraft(stringifySanitized(sanitizedValue));
+    setRawError(null);
+    onChange(JSON.stringify(sanitizedValue));
+  }
+
+  function handleRawChange(nextRawValue: string) {
+    setRawDraft(nextRawValue);
+
+    try {
+      const parsedRawValue = JSON.parse(nextRawValue);
+      const nextValue = sanitizeValueAgainstTemplate(
+        sanitizeTemplateValue(parsedRawValue) ?? {},
+        normalizedTemplate,
+        sanitizerContext,
+      );
+
+      setRawError(null);
+      onChange(JSON.stringify(nextValue));
+    } catch {
+      setRawError("Invalid JSON. The structured fields above remain unchanged until this is fixed.");
     }
-
-    return {} as JsonObject;
-  }, [templateValue]);
-
-  const parsed = useMemo(() => parseObjectFromString(value), [value]);
-
-  const effectiveValue = useMemo(() => {
-    if (!parsed.value) {
-      return templateObject;
-    }
-
-    if (Object.keys(templateObject).length === 0) {
-      return parsed.value;
-    }
-
-    const normalized = normalizeByTemplate(parsed.value, templateObject);
-    return isJsonObject(normalized) ? normalized : templateObject;
-  }, [parsed.value, templateObject]);
-
-  const resetToTemplate = () => {
-    onChange(JSON.stringify(templateObject, null, 2));
-  };
-
-  const addTopLevelItem = () => {
-    const nextTemplate = Object.keys(templateObject).length
-      ? templateObject
-      : { value: "" };
-    const nextValue = normalizeByTemplate(effectiveValue, nextTemplate);
-
-    if (isJsonObject(nextValue)) {
-      onChange(JSON.stringify(nextValue, null, 2));
-    }
-  };
+  }
 
   return (
-    <div className="space-y-3">
-      <div className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-border/60 bg-muted/30 px-3 py-2">
-        <p className="text-xs text-muted-foreground">
-          Edit section values directly with typed inputs (text, number, boolean, image URL, and structured lists).
-        </p>
-        <div className="flex items-center gap-1">
-          <Button type="button" size="sm" variant="outline" onClick={addTopLevelItem} className="h-7 gap-1 px-2">
-            <Plus className="h-3.5 w-3.5" />
-            Refresh Schema
-          </Button>
+    <div className="space-y-5 rounded-2xl border border-border/70 bg-card p-4 shadow-sm sm:p-5">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <h3 className="font-heading text-base font-bold text-foreground">{label}</h3>
+          <p className="mt-1 text-sm leading-6 text-muted-foreground">
+            Edit simple structured fields. Media fields can be picked from the admin library.
+          </p>
+        </div>
+        <span className="inline-flex w-fit items-center rounded-full border border-primary/15 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+          Visual mode
+        </span>
+      </div>
+
+      <EditorNode
+        value={effectiveValue}
+        template={normalizedTemplate}
+        path={[]}
+        onChange={handleStructuredChange}
+      />
+
+      <details className="group rounded-2xl border border-dashed border-border bg-muted/35 p-3 transition-colors open:bg-muted/50">
+        <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-semibold text-muted-foreground transition-colors group-open:text-foreground">
+          <Code2 className="h-4 w-4" />
+          Advanced developer JSON fallback
+          <span className="ml-auto text-xs font-normal">Open only when needed</span>
+        </summary>
+        <div className="mt-3 space-y-2">
+          <Textarea
+            value={rawDraft}
+            onChange={(event) => handleRawChange(event.target.value)}
+            className="min-h-[240px] rounded-xl font-mono text-xs leading-5"
+            spellCheck={false}
+          />
+          {rawError ? <p className="text-xs font-medium text-red-600">{rawError}</p> : null}
+        </div>
+      </details>
+    </div>
+  );
+}
+
+function EditorNode({ value, template, path, onChange }: EditorNodeProps) {
+  const key = path[path.length - 1] ?? "content";
+
+  if (Array.isArray(value) || Array.isArray(template)) {
+    const arrayValue = Array.isArray(value) ? value : [];
+    const itemTemplate = Array.isArray(template) && template.length > 0 ? template[0] : arrayValue[0] ?? "";
+
+    return (
+      <div className="space-y-3">
+        {arrayValue.map((item, index) => (
+          <div
+            key={itemKey(path, index, item)}
+            className="overflow-hidden rounded-2xl border border-border/70 bg-background shadow-sm transition-all duration-200 hover:border-primary/25 hover:shadow-md"
+          >
+            <div className="flex items-center justify-between gap-3 border-b border-border/60 bg-muted/35 px-3 py-3">
+              <div className="flex min-w-0 items-center gap-2">
+                <GripVertical className="h-4 w-4 shrink-0 text-muted-foreground/60" />
+                <span className="truncate text-sm font-semibold text-foreground">
+                  {itemLabel(key, index, item)}
+                </span>
+              </div>
+              <div className="flex items-center gap-1">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="h-8 w-8 rounded-full p-0"
+                  disabled={index === 0}
+                  onClick={() => {
+                    const next = [...arrayValue];
+                    [next[index - 1], next[index]] = [next[index], next[index - 1]];
+                    onChange(next);
+                  }}
+                  aria-label="Move item up"
+                >
+                  <ArrowUp className="h-4 w-4" />
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="h-8 w-8 rounded-full p-0"
+                  disabled={index === arrayValue.length - 1}
+                  onClick={() => {
+                    const next = [...arrayValue];
+                    [next[index], next[index + 1]] = [next[index + 1], next[index]];
+                    onChange(next);
+                  }}
+                  aria-label="Move item down"
+                >
+                  <ArrowDown className="h-4 w-4" />
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="h-8 w-8 rounded-full p-0 text-red-600 hover:bg-red-50 hover:text-red-700"
+                  onClick={() => onChange(arrayValue.filter((_, itemIndex) => itemIndex !== index))}
+                  aria-label="Remove item"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+
+            <div className="p-4">
+              <EditorNode
+                value={item}
+                template={itemTemplate}
+                path={[...path, String(index)]}
+                onChange={(nextItem) =>
+                  onChange(arrayValue.map((existingItem, itemIndex) => (itemIndex === index ? nextItem : existingItem)))
+                }
+              />
+            </div>
+          </div>
+        ))}
+
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="gap-2 rounded-full border-primary/20 bg-primary/5 text-primary hover:bg-primary/10"
+          onClick={() => onChange([...arrayValue, createItemFromTemplate(itemTemplate)])}
+        >
+          <Plus className="h-4 w-4" />
+          Add {humanizeKey(key).toLowerCase().replace(/s$/, "")}
+        </Button>
+      </div>
+    );
+  }
+
+  if (isPlainObject(value) || isPlainObject(template)) {
+    const objectValue = isPlainObject(value) ? value : {};
+    const objectTemplate = isPlainObject(template) ? template : objectValue;
+
+    if (isMediaObject(key, objectValue, objectTemplate)) {
+      return (
+        <MediaObjectEditor
+          value={sanitizeValueAgainstTemplate(objectValue, objectTemplate)}
+          onChange={onChange}
+          compact={/icon|logo/i.test(key)}
+        />
+      );
+    }
+
+    return (
+      <div className="grid gap-4 md:grid-cols-2">
+        {Object.entries(objectTemplate).filter(([nestedKey]) => !INTERNAL_KEYS.has(nestedKey)).map(([nestedKey, nestedTemplate]) => {
+          const nestedValue = sanitizeValueAgainstTemplate(objectValue[nestedKey], nestedTemplate);
+          const isWide =
+            Array.isArray(nestedValue) ||
+            isPlainObject(nestedValue) ||
+            LONG_TEXT_KEYS.has(nestedKey) ||
+            nestedKey.toLowerCase().includes("description");
+
+          return (
+            <div key={nestedKey} className={cn("space-y-2", isWide && "md:col-span-2")}>
+              <Label className="text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground">
+                {humanizeKey(nestedKey)}
+              </Label>
+              <EditorNode
+                value={nestedValue}
+                template={nestedTemplate}
+                path={[...path, nestedKey]}
+                onChange={(nextNestedValue) =>
+                  onChange({
+                    ...objectValue,
+                    [nestedKey]: nextNestedValue,
+                  })
+                }
+              />
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+
+  return (
+    <PrimitiveEditor
+      fieldKey={key}
+      value={value}
+      onChange={onChange}
+    />
+  );
+}
+
+function PrimitiveEditor({
+  fieldKey,
+  value,
+  onChange,
+}: {
+  fieldKey: string;
+  value: JsonValue;
+  onChange: (value: JsonValue) => void;
+}) {
+  if (typeof value === "boolean") {
+    return (
+      <label className="flex w-fit cursor-pointer items-center gap-3 rounded-xl border border-border bg-background px-3 py-2 shadow-sm transition-colors hover:border-primary/25">
+        <input
+          type="checkbox"
+          checked={value}
+          onChange={(event) => onChange(event.target.checked)}
+          className="h-4 w-4 rounded border-gray-300 accent-primary"
+        />
+        <span className="text-sm font-medium text-foreground">{value ? "Enabled" : "Disabled"}</span>
+      </label>
+    );
+  }
+
+  if (typeof value === "number") {
+    return (
+      <Input
+        type="number"
+        value={value}
+        onChange={(event) => onChange(Number(event.target.value))}
+        className="rounded-xl bg-background"
+      />
+    );
+  }
+
+  const stringValue = typeof value === "string" ? value : "";
+
+  if (LONG_TEXT_KEYS.has(fieldKey) || stringValue.length > 90) {
+    return (
+      <Textarea
+        value={stringValue}
+        onChange={(event) => onChange(event.target.value)}
+        rows={4}
+        className="rounded-xl bg-background leading-6"
+      />
+    );
+  }
+
+  return (
+    <Input
+      type={URL_KEY_PATTERN.test(fieldKey) ? "url" : "text"}
+      value={stringValue}
+      onChange={(event) => onChange(event.target.value)}
+      className="rounded-xl bg-background"
+    />
+  );
+}
+
+function MediaObjectEditor({
+  value,
+  onChange,
+  compact,
+}: {
+  value: JsonValue;
+  onChange: (value: JsonValue) => void;
+  compact?: boolean;
+}) {
+  const mediaValue = isPlainObject(value) ? value : {};
+  const src = typeof mediaValue.src === "string" ? mediaValue.src : "";
+  const alt = typeof mediaValue.alt === "string" ? mediaValue.alt : "";
+  const [pickerOpen, setPickerOpen] = useState(false);
+
+  function updateMedia(next: Record<string, JsonValue>) {
+    onChange({
+      ...mediaValue,
+      ...next,
+    });
+  }
+
+  function handleSelect(media: MediaWithUser) {
+    updateMedia({
+      src: media.url,
+      alt: alt || media.name,
+    });
+  }
+
+  return (
+    <div className="space-y-4 rounded-2xl border border-border/70 bg-background p-4 shadow-sm">
+      <div className="flex flex-wrap items-center gap-4">
+        <div
+          className={cn(
+            "flex shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-border bg-muted/45 shadow-inner",
+            compact ? "h-14 w-14" : "h-28 w-44",
+          )}
+        >
+          {src ? (
+            // eslint-disable-next-line @next/next/no-img-element -- Admin previews must render newly selected Blob URLs immediately.
+            <img
+              src={src}
+              alt={alt || ""}
+              className={cn(
+                "h-full w-full",
+                compact ? "object-contain p-2" : "object-cover",
+              )}
+            />
+          ) : (
+            <ImageIcon className="h-6 w-6 text-muted-foreground" />
+          )}
+        </div>
+
+        <div className="space-y-2">
+          <p className="text-sm font-semibold text-foreground">Media asset</p>
+          <p className="max-w-md text-xs leading-5 text-muted-foreground">
+            Pick from the media library or paste a direct URL. Keep alt text descriptive for accessibility.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <Button type="button" variant="outline" size="sm" className="rounded-full" onClick={() => setPickerOpen(true)}>
+              {src ? "Change media" : "Select media"}
+            </Button>
+            {src ? (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="gap-1 rounded-full text-red-600 hover:bg-red-50 hover:text-red-700"
+                onClick={() => updateMedia({ src: "" })}
+              >
+                <X className="h-4 w-4" />
+                Clear
+              </Button>
+            ) : null}
+          </div>
         </div>
       </div>
 
-      {!parsed.error ? (
-        <ObjectEditor
-          label="Section Data"
-          value={effectiveValue}
-          template={templateObject}
-          depth={0}
-          onChange={(next) => onChange(JSON.stringify(next, null, 2))}
-        />
-      ) : (
-        <div className="rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-3">
-          <p className="text-xs text-destructive">{parsed.error}</p>
-          <div className="mt-2">
-            <Button type="button" size="sm" variant="outline" onClick={resetToTemplate} className="h-7 gap-1 px-2">
-              <RefreshCcw className="h-3.5 w-3.5" />
-              Reset Section Data
-            </Button>
-          </div>
+      <div className="grid gap-3 md:grid-cols-2">
+        <div className="space-y-1.5">
+          <Label className="text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground">Media URL</Label>
+          <Input value={src} onChange={(event) => updateMedia({ src: event.target.value })} className="rounded-xl bg-card" />
         </div>
-      )}
+        <div className="space-y-1.5">
+          <Label className="text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground">Alt text</Label>
+          <Input value={alt} onChange={(event) => updateMedia({ alt: event.target.value })} className="rounded-xl bg-card" />
+        </div>
+      </div>
+
+      <MediaPicker
+        open={pickerOpen}
+        onOpenChange={setPickerOpen}
+        onSelect={(media) => {
+          if (Array.isArray(media)) {
+            return;
+          }
+
+          handleSelect(media);
+        }}
+        title="Select media"
+      />
     </div>
   );
 }

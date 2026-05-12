@@ -82,7 +82,12 @@ export function ProductsTableClient({ initialData }: ProductsTableClientProps) {
   const [sorting, setSorting] = useState<SortingState>([
     { id: "createdAt", desc: true },
   ]);
-  const [globalFilter, setGlobalFilter] = useState("");
+  const [globalFilter, setGlobalFilter] = useState(() => {
+    if (typeof window === "undefined") {
+      return "";
+    }
+    return new URLSearchParams(window.location.search).get("q") ?? "";
+  });
   const [columnVisibility, setColumnVisibility] = useState<
     Record<string, boolean>
   >({});
@@ -93,6 +98,16 @@ export function ProductsTableClient({ initialData }: ProductsTableClientProps) {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const debouncedGlobalFilter = useDebounce(globalFilter, 300);
+
+  useEffect(() => {
+    function handleAdminSearch(event: Event) {
+      const detail = (event as CustomEvent<{ query?: string }>).detail;
+      setGlobalFilter(detail?.query ?? "");
+    }
+
+    window.addEventListener("admin-search", handleAdminSearch);
+    return () => window.removeEventListener("admin-search", handleAdminSearch);
+  }, []);
 
   // Load initial data if not provided
   useEffect(() => {
@@ -458,7 +473,7 @@ export function ProductsTableClient({ initialData }: ProductsTableClientProps) {
         header: "Actions",
         cell: ({ row }) => (
           <div className="flex items-center gap-2">
-            <Link href={`/admin/products/${row.original.id}`}>
+            <Link href={`/admin/products/${row.original.id}/edit`}>
               <Button
                 variant="ghost"
                 size="sm"

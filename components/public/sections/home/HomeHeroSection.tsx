@@ -1,4 +1,6 @@
 import Image from "next/image";
+import { ArrowRight } from "lucide-react";
+
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import { SectionReveal } from "@/components/public/sections/base/SectionReveal";
@@ -9,88 +11,189 @@ interface HomeHeroSectionProps {
   className?: string;
 }
 
+function renderHeroTitle(title: string) {
+  const highlightText = "Healthcare Distribution";
+  const index = title.toLowerCase().indexOf(highlightText.toLowerCase());
+
+  if (index === -1) {
+    return title;
+  }
+
+  const before = title.slice(0, index);
+  const highlighted = title.slice(index, index + highlightText.length);
+  const after = title.slice(index + highlightText.length);
+
+  return (
+    <>
+      {before}
+      <span className="text-[#009fe3]">{highlighted}</span>
+      {after}
+    </>
+  );
+}
+
 export function HomeHeroSection({ data, className }: HomeHeroSectionProps) {
+  const title =
+    data.title || "Building Specialized Healthcare Distribution Ecosystem";
+
+  const subtitle =
+    data.subtitle ||
+    "Trusted partner for global life science, nutrition, and medical technology innovators seeking resilient and compliant growth in Syria.";
+
+  const eyebrow = data.eyebrow || "ISO & FDA Certified Distribution";
+
+  const actions = data.actions || [];
+
   return (
     <SectionReveal>
       <section
         className={cn(
-          "relative isolate overflow-hidden bg-[#f8fbff] pt-24 pb-16 sm:pt-28 md:pb-20 lg:min-h-[88vh] lg:pt-32",
+          "relative isolate overflow-hidden bg-[#f7fbff]",
+          "min-h-[754px]",
           className,
         )}
       >
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_20%,rgba(197,225,245,0.9),transparent_32%),radial-gradient(circle_at_82%_8%,rgba(254,226,205,0.85),transparent_28%),linear-gradient(135deg,#ffffff_0%,#f8fbff_48%,#edf9f0_100%)]" />
-        <div className="pointer-events-none absolute left-0 top-0 h-full w-1/3 bg-[linear-gradient(90deg,rgba(0,151,220,0.08),transparent)]" />
+        {/* Main soft background */}
+        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,#f2f9ff_0%,#ffffff_100%)]" />
 
-        <div className="relative z-10 mx-auto grid w-full max-w-7xl items-center gap-12 px-4 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:px-8">
-          <div className="max-w-2xl">
-            <div className="mb-6 inline-flex items-center gap-3 rounded-full border border-[#91caee] bg-white/75 px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] text-[#0097dc] shadow-sm backdrop-blur">
-              <span className="h-2.5 w-2.5 rounded-full bg-[#4cb748]" />
-              {data.eyebrow || "Excellence in Healthcare"}
+        {/* Right image area - visible on xl and larger screens */}
+        <div className="absolute inset-y-0 right-0 hidden w-1/2 overflow-hidden rtl:left-0 rtl:right-auto xl:block">
+          {data.backgroundImage?.src ? (
+            <Image
+              src={data.backgroundImage.src}
+              alt={data.backgroundImage.alt || title}
+              fill
+              priority
+              sizes="50vw"
+              className="object-cover"
+            />
+          ) : (
+            <div className="h-full w-full bg-[linear-gradient(135deg,#dceffb,#ffffff,#eef8f1)]" />
+          )}
+
+          {/* Same desktop filter */}
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,#f7fbff_0%,rgba(247,251,255,0.9)_12%,rgba(255,255,255,0.72)_45%,rgba(255,255,255,0.72)_100%)] rtl:bg-[linear-gradient(270deg,#f7fbff_0%,rgba(247,251,255,0.9)_12%,rgba(255,255,255,0.72)_45%,rgba(255,255,255,0.72)_100%)]" />
+          <div className="absolute inset-x-0 bottom-0 h-[175px] bg-[linear-gradient(0deg,#ffffff_0%,rgba(255,255,255,0)_100%)]" />
+        </div>
+
+        {/* Mobile / tablet / smaller than xl background image */}
+        <div className="absolute inset-0 overflow-hidden xl:hidden">
+          {data.backgroundImage?.src ? (
+            <Image
+              src={data.backgroundImage.src}
+              alt={data.backgroundImage.alt || title}
+              fill
+              priority
+              sizes="100vw"
+              className="object-cover"
+            />
+          ) : (
+            <div className="h-full w-full bg-[linear-gradient(135deg,#dceffb,#ffffff,#eef8f1)]" />
+          )}
+
+          {/* Same filter applied on smaller screens */}
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,#f7fbff_0%,rgba(247,251,255,0.9)_12%,rgba(255,255,255,0.72)_45%,rgba(255,255,255,0.72)_100%)] rtl:bg-[linear-gradient(270deg,#f7fbff_0%,rgba(247,251,255,0.9)_12%,rgba(255,255,255,0.72)_45%,rgba(255,255,255,0.72)_100%)]" />
+          <div className="absolute inset-x-0 bottom-0 h-[175px] bg-[linear-gradient(0deg,#ffffff_0%,rgba(255,255,255,0)_100%)]" />
+        </div>
+
+        {/* Content */}
+        <div
+          className={cn(
+            "relative z-10 w-full",
+            "px-4 sm:px-6 md:px-8 lg:px-[210px]",
+            "pt-[190px] md:pt-[190px] lg:pt-[190px] xl:pt-[190px]",
+          )}
+        >
+          <div
+            className={cn(
+              "w-full",
+              "max-w-[670px]",
+              "mx-auto lg:mx-0",
+              "rtl:text-right rtl:lg:ms-auto rtl:lg:me-0",
+            )}
+          >
+            {/* Eyebrow */}
+            <div
+              className={cn(
+                "mb-[34px] inline-flex h-[31px] items-center gap-2 rounded-full",
+                "border border-[#9ed8f8] bg-[#eaf7ff]/95",
+                "px-[13px]",
+                "text-[14px] font-semibold leading-none text-[#009fe3]",
+                "shadow-sm",
+              )}
+            >
+              <span className="h-2 w-2 rounded-full bg-[#009fe3]" />
+              <span>{eyebrow}</span>
             </div>
 
-            <h1 className="text-balance text-4xl font-black text-slate-950 sm:text-5xl md:text-6xl lg:text-7xl">
-              {data.title || "The Future of Pharma"}
+            {/* Title */}
+            <h1
+              className={cn(
+                "max-w-[670px]",
+                "text-[#11182d]",
+                "text-[44px] font-black leading-[1.16]",
+                "sm:text-[54px]",
+                "md:text-[60px]",
+                "lg:text-[62px]",
+              )}
+            >
+              {renderHeroTitle(title)}
             </h1>
 
-            {data.subtitle ? (
-              <p className="mt-7 max-w-xl rounded-r-2xl border-l-4 border-[#f58238] bg-white/70 py-3 pl-5 text-base leading-relaxed text-slate-650 shadow-sm sm:text-lg md:text-xl">
-                {data.subtitle}
+            {/* Subtitle */}
+            {subtitle ? (
+              <p
+                className={cn(
+                  "mt-[28px]",
+                  "max-w-[665px]",
+                  "text-[20px] font-medium leading-[1.62]",
+                  "text-[#475672]",
+                  "sm:text-[21px]",
+                )}
+              >
+                {subtitle}
               </p>
             ) : null}
 
-            {data.actions?.length ? (
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-                {data.actions.map((action, index) => (
-                  <Link
-                    key={`${action.href}-${action.label}`}
-                    href={action.href}
-                    className={cn(
-                      "inline-flex min-h-12 items-center justify-center rounded-full px-6 text-sm font-bold transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
-                      index === 0
-                        ? "bg-[#0097dc] text-white shadow-[0_18px_40px_-22px_rgba(0,151,220,0.85)] hover:-translate-y-0.5 hover:bg-[#00a5e1] focus-visible:ring-[#0097dc]"
-                        : "border border-[#0097dc]/25 bg-white text-[#0097dc] hover:-translate-y-0.5 hover:border-[#0097dc] hover:bg-[#c5e1f5]/30 focus-visible:ring-[#0097dc]",
-                    )}
-                  >
-                    {action.label}
-                  </Link>
-                ))}
+            {/* Buttons */}
+            {actions.length ? (
+              <div className="mt-[40px] flex flex-col gap-4 sm:flex-row sm:items-center rtl:sm:flex-row-reverse rtl:sm:justify-end">
+                {actions.map((action, index) => {
+                  const isPrimary = index === 0;
+
+                  return (
+                    <Link
+                      key={`${action.href}-${action.label}`}
+                      href={action.href}
+                      className={cn(
+                        "inline-flex h-[56px] items-center justify-center rounded-full",
+                        "text-[16px] font-bold transition-all duration-300",
+                        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#009fe3] focus-visible:ring-offset-2",
+                        isPrimary
+                          ? cn(
+                              "min-w-[228px] gap-[32px] px-8",
+                              "bg-[#009fe3] text-white",
+                              "shadow-[0_18px_35px_-18px_rgba(0,159,227,0.9)]",
+                              "hover:-translate-y-0.5 hover:bg-[#0092d3]",
+                            )
+                          : cn(
+                              "min-w-[203px] px-8",
+                              "border border-[#d8e3ec] bg-white/85 text-[#31405a]",
+                              "shadow-[0_8px_22px_-18px_rgba(15,23,42,0.35)]",
+                              "hover:-translate-y-0.5 hover:border-[#009fe3]/45 hover:text-[#009fe3]",
+                            ),
+                      )}
+                    >
+                      <span>{action.label}</span>
+
+                      {isPrimary ? (
+                        <ArrowRight className="h-4 w-4 stroke-[2.5]" />
+                      ) : null}
+                    </Link>
+                  );
+                })}
               </div>
             ) : null}
-          </div>
-
-          <div className="relative min-h-[360px] lg:min-h-[560px]">
-            <div className="absolute right-0 top-4 h-[72%] w-[72%] rounded-[3rem] bg-[#0097dc] shadow-[0_40px_90px_-55px_rgba(0,151,220,0.95)]" />
-            <div className="absolute left-0 bottom-2 h-[58%] w-[58%] rounded-[2.5rem] border border-[#91caee]/60 bg-white/70 backdrop-blur" />
-            <div className="absolute left-8 top-0 h-24 w-24 rounded-full bg-[#f58238]/18" />
-            <div className="absolute bottom-10 right-8 h-20 w-20 rounded-full bg-[#4cb748]/18" />
-
-            <div className="absolute inset-x-6 top-10 overflow-hidden rounded-[2.75rem] border border-white bg-white shadow-[0_35px_85px_-50px_rgba(15,23,42,0.65)] lg:inset-x-10 lg:top-12">
-              <div className="relative aspect-[4/3] sm:aspect-[16/10] lg:aspect-[4/3]">
-                {data.backgroundImage ? (
-                  <Image
-                    src={data.backgroundImage.src}
-                    alt={data.backgroundImage.alt || data.title}
-                    fill
-                    priority
-                    sizes="(max-width: 1024px) 100vw, 50vw"
-                    className="object-cover"
-                  />
-                ) : (
-                  <div className="h-full w-full bg-[linear-gradient(135deg,#c5e1f5,#ffffff,#daecd4)]" />
-                )}
-                <div className="absolute inset-0 bg-gradient-to-tr from-slate-950/20 via-transparent to-white/20" />
-              </div>
-            </div>
-
-            <div className="absolute bottom-0 left-6 max-w-[260px] rounded-3xl border border-[#dcecf7] bg-white/92 p-5 shadow-[0_24px_55px_-35px_rgba(15,23,42,0.6)] backdrop-blur">
-              <div className="text-xs font-bold uppercase tracking-[0.18em] text-[#f58238]">
-                Damira Pharma
-              </div>
-              <div className="mt-2 text-sm leading-relaxed text-slate-600">
-                Integrated healthcare growth across products, services, quality,
-                and partnerships.
-              </div>
-            </div>
           </div>
         </div>
       </section>

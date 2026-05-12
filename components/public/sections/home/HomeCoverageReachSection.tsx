@@ -1,50 +1,139 @@
 import { SectionReveal } from "@/components/public/sections/base/SectionReveal";
 import type { StatsSectionData } from "@/components/public/sections/base/types";
+import { cn } from "@/lib/utils";
 
 interface HomeCoverageReachSectionProps {
   data: StatsSectionData;
 }
 
+function getSectionLabel(title?: string) {
+  const normalized = title?.trim();
+
+  if (!normalized) {
+    return "Coverage & Reach";
+  }
+
+  return normalized;
+}
+
 export function HomeCoverageReachSection({
   data,
 }: HomeCoverageReachSectionProps) {
+  const items = data.items || [];
+
   return (
     <SectionReveal>
-      <section className="relative overflow-hidden bg-slate-950 py-16 text-white sm:py-20 md:py-24">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_20%,rgba(0,151,220,0.35),transparent_34%),radial-gradient(circle_at_85%_80%,rgba(76,183,72,0.25),transparent_30%)]" />
-        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-10 max-w-3xl">
-            <span className="inline-flex rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-bold uppercase text-[#91caee]">
-              Coverage
-            </span>
-            <h2 className="mt-4 text-3xl font-black sm:text-4xl md:text-5xl">
-              {data.title}
+      <section
+        className={cn(
+          "relative overflow-hidden bg-[#10182b] text-white",
+          "py-[72px] sm:py-[82px] lg:py-[88px] xl:py-[94px]",
+        )}
+      >
+        {/* Clean dark background */}
+        <div className="pointer-events-none absolute inset-0 bg-[#10182b]" />
+
+        {/* Very subtle depth */}
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.045),transparent_38%)]" />
+
+        {/* Responsive page padding */}
+        <div
+          className={cn(
+            "relative z-10 w-full",
+            "px-4 sm:px-6 md:px-8",
+            "lg:px-[80px]",
+            "xl:px-[120px]",
+            "2xl:px-[210px]",
+          )}
+        >
+          {/* Header */}
+          <div className="mx-auto max-w-[790px] text-center">
+            <div className="mb-[18px] flex items-center justify-center gap-[14px] sm:gap-[17px] xl:mb-[20px]">
+              <span className="text-[13px] font-extrabold leading-none tracking-[0.03em] text-[#009fe3] sm:text-[14px]">
+                03
+              </span>
+
+              <span className="h-px w-[42px] bg-[#1f9ed4] sm:w-[48px]" />
+
+              <span className="text-[12px] font-extrabold uppercase leading-none tracking-[0.12em] text-[#8b9ab1] sm:text-[14px]">
+                Market Access
+              </span>
+            </div>
+
+            <h2
+              className={cn(
+                "font-black leading-[1.12] tracking-[-0.04em] text-white",
+                "text-[32px] sm:text-[36px] lg:text-[37px] xl:text-[38px]",
+              )}
+            >
+              {getSectionLabel(data.title)}
             </h2>
+
             {data.description ? (
-              <p className="mt-4 text-base leading-7 text-white/70">
+              <p
+                className={cn(
+                  "mx-auto mt-[20px] max-w-[780px]",
+                  "text-[16px] font-semibold leading-[1.5] tracking-[-0.01em] text-[#94a3b8]",
+                  "sm:text-[17px]",
+                  "lg:text-[18px]",
+                  "xl:mt-[24px] xl:text-[19px] xl:leading-[1.45]",
+                )}
+              >
                 {data.description}
               </p>
             ) : null}
           </div>
-          <div className="grid gap-px overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/10 sm:grid-cols-2">
-            {data.items.map((item) => {
-              const Icon = item.icon;
+
+          {/* Stats */}
+          <div
+            className={cn(
+              "mt-[52px] grid grid-cols-1",
+              "gap-y-12",
+              "sm:mt-[58px] sm:grid-cols-2 sm:gap-x-8 sm:gap-y-14",
+              "lg:mt-[64px] lg:grid-cols-4 lg:gap-x-6 lg:gap-y-0",
+              "xl:mt-[70px] xl:gap-x-8",
+            )}
+          >
+            {items.map((item, index) => {
               return (
                 <article
-                  key={item.id}
-                  className="bg-slate-950/70 p-6 backdrop-blur transition-colors duration-300 hover:bg-white/[0.08] sm:p-8"
+                  key={item.id || `${item.label}-${index}`}
+                  className={cn(
+                    "relative flex flex-col items-center text-center",
+                    "px-3",
+                  )}
                 >
-                  <div className="mb-5 flex items-center justify-between gap-4">
-                    <span className="text-5xl font-black text-[#91caee] md:text-6xl">
-                      {item.value}
-                    </span>
-                    {Icon ? <Icon className="h-7 w-7 text-[#4cb748]" /> : null}
-                  </div>
-                  <h3 className="text-sm font-bold uppercase tracking-[0.16em] text-[#f58238]">
+                  {/* Optional divider on larger desktop only */}
+                  {index > 0 ? (
+                    <div className="absolute left-0 top-[6px] hidden h-[86px] w-px bg-white/7 rtl:left-auto rtl:right-0 xl:block" />
+                  ) : null}
+
+                  <p
+                    className={cn(
+                      "font-black leading-none tracking-[-0.055em] text-white",
+                      "text-[42px]",
+                      "sm:text-[46px]",
+                      "lg:text-[46px]",
+                      "xl:text-[50px]",
+                    )}
+                  >
+                    {item.value}
+                  </p>
+
+                  <span className="mt-[14px] block h-[4px] w-[44px] rounded-full bg-[#009fe3] sm:w-[48px]" />
+
+                  <h3
+                    className={cn(
+                      "mt-[19px] font-extrabold leading-[1.2] tracking-[-0.015em] text-[#8b9ab1]",
+                      "text-[15px]",
+                      "sm:text-[16px]",
+                      "xl:mt-[21px]",
+                    )}
+                  >
                     {item.label}
                   </h3>
+
                   {item.description ? (
-                    <p className="mt-3 text-sm leading-6 text-white/70">
+                    <p className="mt-3 max-w-[250px] text-[14px] font-medium leading-6 tracking-[-0.01em] text-[#94a3b8]">
                       {item.description}
                     </p>
                   ) : null}

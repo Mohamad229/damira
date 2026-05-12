@@ -1,64 +1,92 @@
-import Image from "next/image";
-import { Link } from "@/i18n/navigation";
+import { ShieldCheck } from "lucide-react";
+
 import { SectionReveal } from "@/components/public/sections/base/SectionReveal";
 import type { HeroSectionData } from "@/components/public/sections/base/types";
 import { cn } from "@/lib/utils";
 
 interface QualityHeroSectionProps {
-  data: HeroSectionData;
+  data?: HeroSectionData;
+  className?: string;
 }
 
-export function QualityHeroSection({ data }: QualityHeroSectionProps) {
+export function QualityHeroSection({
+  data,
+  className,
+}: QualityHeroSectionProps) {
+  const title =
+    data?.title ||
+    "Commitment to Quality, Safety, and Regulatory Excellence";
+
+  const subtitle =
+    data?.subtitle ||
+    "Damira's quality architecture supports resilient healthcare delivery through compliance-by-design.";
+
   return (
     <SectionReveal>
-      <section className="relative overflow-hidden bg-white pt-24 pb-16 sm:pt-28 sm:pb-20 lg:pt-32">
-        <div className="absolute inset-0 bg-[linear-gradient(135deg,#ffffff,#f8fbff),radial-gradient(circle_at_15%_20%,rgba(197,225,245,0.7),transparent_32%)]" />
-        <div className="relative mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[1fr_0.9fr] lg:items-center lg:px-8">
-          <div>
-            <span className="inline-flex rounded-full border border-[#4cb748]/30 bg-[#daecd4]/50 px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] text-[#4cb748]">
-              {(data as { eyebrow?: string }).eyebrow || "Quality system"}
-            </span>
-            <h1 className="mt-6 max-w-4xl text-balance text-4xl font-black leading-[1.03] text-slate-950 sm:text-5xl md:text-6xl">
-              {data.title}
+      <section
+        className={cn(
+          "relative isolate overflow-hidden bg-[#10182b] text-white",
+          "min-h-[360px] sm:min-h-[410px] lg:min-h-[480px]",
+          className,
+        )}
+      >
+        {/* Background */}
+        <div className="pointer-events-none absolute inset-0 bg-[#10182b]" />
+
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(0,159,227,0.14),transparent_38%)]" />
+
+        <div className="pointer-events-none absolute left-1/2 top-[-180px] h-[360px] w-[360px] -translate-x-1/2 rounded-full bg-[#009fe3]/10 blur-3xl sm:h-[460px] sm:w-[460px]" />
+
+        <div className="pointer-events-none absolute bottom-[-220px] right-[-160px] h-[360px] w-[360px] rounded-full bg-[#4cb748]/10 blur-3xl sm:h-[460px] sm:w-[460px]" />
+
+        {/* Content */}
+        <div
+          className={cn(
+            "relative z-10 mx-auto flex w-full max-w-[1440px] items-center justify-center",
+            "min-h-[360px] px-4 py-[72px]",
+            "sm:min-h-[410px] sm:px-6 sm:py-[86px]",
+            "md:px-8",
+            "lg:min-h-[480px] lg:px-[72px] lg:py-[104px]",
+            "xl:px-[120px]",
+            "2xl:px-[210px]",
+          )}
+        >
+          <div className="mx-auto w-full max-w-[980px] text-center">
+            {/* Icon */}
+            <div className="mb-[22px] flex justify-center sm:mb-[26px] lg:mb-[30px]">
+              <div className="flex h-[58px] w-[58px] items-center justify-center rounded-full bg-[#009fe3]/10 ring-1 ring-[#009fe3]/20 sm:h-[66px] sm:w-[66px]">
+                <ShieldCheck className="h-[38px] w-[38px] text-[#009fe3] stroke-[2.35] sm:h-[44px] sm:w-[44px] lg:h-[48px] lg:w-[48px]" />
+              </div>
+            </div>
+
+            {/* Title */}
+            <h1
+              className={cn(
+                "mx-auto max-w-[1050px] text-balance font-black text-white",
+                "text-[34px] leading-[1.08] tracking-[-0.045em]",
+                "sm:text-[44px] sm:leading-[1.06]",
+                "md:text-[52px]",
+                "lg:text-[60px]",
+                "xl:text-[64px]",
+              )}
+            >
+              {title}
             </h1>
-            {data.subtitle ? (
-              <p className="mt-6 max-w-2xl border-s-4 border-[#0097dc] ps-5 text-lg leading-8 text-slate-600">
-                {data.subtitle}
+
+            {/* Subtitle */}
+            {subtitle ? (
+              <p
+                className={cn(
+                  "mx-auto mt-[20px] max-w-[760px] text-balance",
+                  "text-[16px] font-semibold leading-[1.55] tracking-[-0.012em]",
+                  "text-white/88",
+                  "sm:mt-[24px] sm:text-[19px] sm:leading-[1.5]",
+                  "lg:text-[21px]",
+                )}
+              >
+                {subtitle}
               </p>
             ) : null}
-            {data.actions?.length ? (
-              <div className="mt-8 flex flex-wrap gap-3">
-                {data.actions.map((action, index) => (
-                  <Link
-                    key={action.href}
-                    href={action.href}
-                    className={cn(
-                      "inline-flex min-h-12 items-center justify-center rounded-2xl px-6 text-sm font-black transition",
-                      index === 0
-                        ? "bg-[#4cb748] text-white hover:bg-[#3da33b]"
-                        : "border border-[#91caee] text-[#0097dc] hover:bg-[#c5e1f5]/35",
-                    )}
-                  >
-                    {action.label}
-                  </Link>
-                ))}
-              </div>
-            ) : null}
-          </div>
-          <div className="relative rounded-[2rem] border border-[#dfeaf6] bg-[#f8fbff] p-3 shadow-[0_30px_70px_-48px_rgba(15,23,42,0.5)]">
-            <div className="relative aspect-[4/3] overflow-hidden rounded-[1.5rem] bg-white">
-              {data.backgroundImage ? (
-                <Image
-                  src={data.backgroundImage.src}
-                  alt={data.backgroundImage.alt || data.title}
-                  fill
-                  priority
-                  sizes="(max-width: 1024px) 100vw, 44vw"
-                  className="object-cover"
-                />
-              ) : null}
-              <div className="absolute inset-0 bg-gradient-to-tr from-[#4cb748]/25 via-transparent to-[#0097dc]/15" />
-            </div>
           </div>
         </div>
       </section>

@@ -1,4 +1,5 @@
 import { SectionReveal } from "./SectionReveal";
+import { isSectionMediaIcon, SectionIconImage } from "./SectionIconImage";
 import type { StatsSectionData } from "./types";
 
 import { cn } from "@/lib/utils";
@@ -31,7 +32,7 @@ export function StatsSection({ data, className, delay }: StatsSectionProps) {
 
         <div className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {data.items.map((item) => {
-            const Icon = item.icon;
+            const Icon = typeof item.icon === "function" ? item.icon : null;
 
             return (
               <article
@@ -42,7 +43,16 @@ export function StatsSection({ data, className, delay }: StatsSectionProps) {
                   <p className="text-3xl font-semibold text-foreground">
                     {item.value}
                   </p>
-                  {Icon ? (
+                  {isSectionMediaIcon(item.icon) ? (
+                    <span className="rounded-xl bg-primary/10 p-2 text-primary">
+                      <SectionIconImage
+                        icon={item.icon}
+                        width={18}
+                        height={18}
+                        className="h-4 w-4 object-contain"
+                      />
+                    </span>
+                  ) : Icon ? (
                     <span className="rounded-xl bg-primary/10 p-2 text-primary">
                       <Icon className="h-4 w-4" />
                     </span>

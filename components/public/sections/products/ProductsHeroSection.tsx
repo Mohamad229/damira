@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Link } from "@/i18n/navigation";
+
 import { cn } from "@/lib/utils";
 import { SectionReveal } from "@/components/public/sections/base/SectionReveal";
 import type { HeroSectionData } from "@/components/public/sections/base/types";
@@ -13,73 +13,152 @@ export function ProductsHeroSection({
   data,
   className,
 }: ProductsHeroSectionProps) {
+  const title =
+    data.title || "Strategic Portfolio of Specialized Healthcare Products";
+
+  const subtitle =
+    data.subtitle ||
+    "A carefully curated selection of pharmaceuticals, biologics, and medical devices addressing critical unmet needs in the Syrian healthcare system.";
+
+  const eyebrow = data.eyebrow || "Product Catalog";
+
+  const backgroundImageSrc = data.backgroundImage?.src;
+
   return (
     <SectionReveal>
       <section
         className={cn(
-          "relative isolate overflow-hidden bg-[#f8fbff] pt-24 pb-16 sm:pt-28 md:pb-20 lg:pt-32",
+          "relative isolate overflow-hidden bg-white",
+          "min-h-[500px] sm:min-h-[540px] lg:min-h-[570px] xl:min-h-[600px]",
           className,
         )}
       >
-        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,#ffffff_0%,#f8fbff_45%,#effaf1_100%)]" />
-        <div className="pointer-events-none absolute right-0 top-0 h-full w-1/2 bg-[radial-gradient(circle_at_70%_25%,rgba(197,225,245,0.9),transparent_34%)]" />
-        <div className="relative z-10 mx-auto grid max-w-7xl gap-12 px-4 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-center lg:px-8">
-          <div>
-            <span className="mb-6 inline-flex rounded-full border border-[#d7efd2] bg-[#daecd4]/70 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-[#2a8d33]">
-              {data.eyebrow || "Products"}
-            </span>
-            <h1 className="text-balance text-4xl font-black leading-[1.02]  text-slate-950 sm:text-5xl md:text-6xl">
-              {data.title}
+        {/* Background image from admin dashboard */}
+        {backgroundImageSrc ? (
+          <Image
+            src={backgroundImageSrc}
+            alt={data.backgroundImage?.alt || title}
+            fill
+            priority
+            sizes="100vw"
+            className="z-0 object-cover"
+          />
+        ) : (
+          <div className="absolute inset-0 z-0 bg-[linear-gradient(180deg,#f8fbff_0%,#ffffff_100%)]" />
+        )}
+
+        {/* Softer overlays so the image stays visible */}
+        <div className="absolute inset-0 z-[1] bg-white/55 sm:bg-white/50 lg:bg-white/46" />
+
+        <div
+          className={cn(
+            "absolute inset-0 z-[2]",
+            "bg-[linear-gradient(90deg,#ffffff_0%,rgba(255,255,255,0.68)_24%,rgba(255,255,255,0.42)_50%,rgba(255,255,255,0.68)_76%,#ffffff_100%)]",
+          )}
+        />
+
+        <div
+          className={cn(
+            "absolute inset-0 z-[3]",
+            "bg-[linear-gradient(180deg,#ffffff_0%,rgba(255,255,255,0.22)_34%,rgba(255,255,255,0.76)_100%)]",
+          )}
+        />
+
+        {/* Soft decoration for small screens */}
+        <div className="pointer-events-none absolute -right-[90px] top-[80px] z-[4] h-[220px] w-[220px] rounded-full bg-[#e2f4ff]/55 blur-2xl sm:h-[280px] sm:w-[280px] lg:hidden" />
+        <div className="pointer-events-none absolute -left-[100px] bottom-[-80px] z-[4] h-[240px] w-[240px] rounded-full bg-[#daecd4]/40 blur-2xl sm:h-[300px] sm:w-[300px]" />
+
+        {/* Content */}
+        <div
+          className={cn(
+            "relative z-10 flex w-full items-center justify-center",
+            "min-h-[500px] sm:min-h-[540px] lg:min-h-[570px] xl:min-h-[600px]",
+            "px-4 sm:px-6 md:px-8",
+            "lg:px-[80px]",
+            "xl:px-[120px]",
+            "2xl:px-[210px]",
+            "py-[72px] sm:py-[82px] lg:py-[92px] xl:py-[96px]",
+          )}
+        >
+          <div className="mx-auto max-w-[760px] text-center">
+            {/* Eyebrow */}
+            <div
+              className={cn(
+                "mb-[22px] inline-flex items-center justify-center rounded-full",
+                "border border-[#9ed8f8] bg-[#eaf7ff]/95",
+                "h-[29px] px-[12px]",
+                "text-[13px] font-semibold leading-none tracking-[-0.01em] text-[#009fe3]",
+                "shadow-sm",
+                "sm:mb-[24px] sm:h-[30px] sm:px-[13px]",
+                "xl:mb-[27px] xl:h-[31px] xl:text-[14px]",
+              )}
+            >
+              {eyebrow}
+            </div>
+
+            {/* Title */}
+            <h1
+              className={cn(
+                "mx-auto max-w-[760px]",
+                "font-black leading-[1.02] tracking-[-0.055em]",
+                "text-[#11182d]",
+                "text-[38px]",
+                "sm:text-[46px]",
+                "md:text-[52px]",
+                "lg:text-[56px]",
+                "xl:text-[62px] xl:leading-[0.99]",
+              )}
+            >
+              {title}
             </h1>
-            {data.subtitle ? (
-              <p className="mt-7 max-w-xl border-l-4 border-[#0097dc] pl-5 text-base leading-relaxed text-slate-650 sm:text-lg md:text-xl">
-                {data.subtitle}
+
+            {/* Subtitle */}
+            {subtitle ? (
+              <p
+                className={cn(
+                  "mx-auto max-w-[640px]",
+                  "mt-[24px]",
+                  "text-[16px] font-medium leading-[1.55] tracking-[-0.01em]",
+                  "text-[#263b59]",
+                  "sm:text-[18px]",
+                  "md:text-[19px]",
+                  "lg:mt-[28px] lg:text-[20px] lg:leading-[1.48]",
+                  "xl:mt-[30px]",
+                )}
+              >
+                {subtitle}
               </p>
             ) : null}
+
+            {/* Optional actions from dashboard */}
             {data.actions?.length ? (
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-                {data.actions.map((action, index) => (
-                  <Link
-                    key={`${action.href}-${action.label}`}
-                    href={action.href}
-                    className={cn(
-                      "inline-flex min-h-12 items-center justify-center rounded-full px-6 text-sm font-black transition-all",
-                      index === 0
-                        ? "bg-[#4cb748] text-white hover:bg-[#43a83f]"
-                        : "border border-[#0097dc]/25 bg-white text-[#0097dc] hover:bg-[#c5e1f5]/30",
-                    )}
-                  >
-                    {action.label}
-                  </Link>
-                ))}
+              <div className="mt-[34px] flex flex-col items-center justify-center gap-3 sm:mt-[38px] sm:flex-row sm:flex-wrap rtl:sm:flex-row-reverse">
+                {data.actions.map((action, index) => {
+                  const isPrimary = index === 0;
+
+                  return (
+                    <a
+                      key={`${action.href}-${action.label}`}
+                      href={action.href}
+                      className={cn(
+                        "inline-flex items-center justify-center rounded-full",
+                        "h-[48px] px-7",
+                        "text-[14px] font-extrabold leading-none tracking-[-0.01em]",
+                        "transition-all duration-300",
+                        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#009fe3] focus-visible:ring-offset-2",
+                        "sm:h-[52px] sm:px-8 sm:text-[15px]",
+                        "lg:h-[54px] lg:text-[16px]",
+                        isPrimary
+                          ? "min-w-[190px] bg-[#009fe3] text-white shadow-[0_18px_35px_-20px_rgba(0,159,227,0.9)] hover:-translate-y-0.5 hover:bg-[#0092d3] sm:min-w-[210px]"
+                          : "min-w-[170px] border border-[#d8e3ec] bg-white/85 text-[#31405a] hover:-translate-y-0.5 hover:border-[#009fe3]/45 hover:text-[#009fe3] sm:min-w-[180px]",
+                      )}
+                    >
+                      {action.label}
+                    </a>
+                  );
+                })}
               </div>
             ) : null}
-          </div>
-          <div className="relative min-h-[420px]">
-            <div className="absolute inset-y-8 left-8 right-0 rounded-[3rem] bg-[#0097dc]/10" />
-            <div className="absolute inset-y-0 left-0 right-12 overflow-hidden rounded-[2.75rem] border border-white bg-white shadow-[0_35px_90px_-58px_rgba(15,23,42,0.75)]">
-              {data.backgroundImage ? (
-                <Image
-                  src={data.backgroundImage.src}
-                  alt={data.backgroundImage.alt || data.title}
-                  fill
-                  priority
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                  className="object-cover"
-                />
-              ) : (
-                <div className="h-full w-full bg-[linear-gradient(135deg,#daecd4,#ffffff,#c5e1f5)]" />
-              )}
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/20 via-transparent to-white/15" />
-            </div>
-            <div className="absolute bottom-6 right-0 rounded-3xl border border-[#deebf7] bg-white/92 p-5 shadow-[0_22px_50px_-35px_rgba(15,23,42,0.55)] backdrop-blur">
-              <div className="text-xs font-black uppercase tracking-[0.18em] text-[#f58238]">
-                Catalog ready
-              </div>
-              <div className="mt-1 text-sm text-slate-600">
-                Browse categories, pipeline, and available products.
-              </div>
-            </div>
           </div>
         </div>
       </section>

@@ -11,6 +11,8 @@ export interface SectionMedia {
   alt: string;
 }
 
+export type SectionIcon = LucideIcon | SectionMedia;
+
 export interface HeroMetric {
   value: string;
   label: string;
@@ -31,7 +33,7 @@ export interface StatItem {
   label: string;
   value: string;
   description?: string;
-  icon?: LucideIcon;
+  icon?: SectionIcon;
 }
 
 export interface StatsSectionData {
@@ -42,10 +44,27 @@ export interface StatsSectionData {
 
 export interface ContentSectionData {
   eyebrow?: string;
-  title: string;
+  title?: string;
+  description?: string;
+  items?: {
+    id?: string;
+    title: string;
+    description: string;
+    icon?: SectionIcon;
+  }[];
+  slides?: {
+    id?: string;
+    eyebrow?: string;
+    title: string;
+    subtitle?: string;
+    body?: string[];
+    bullets?: string[];
+    actions?: SectionAction[];
+  }[];
   subtitle?: string;
   body?: string[];
   bullets?: string[];
+  icon?: SectionIcon;
   image?: SectionMedia;
   images?: SectionMedia[];
   carousel?: boolean;
@@ -78,7 +97,7 @@ export interface ServiceCardData {
   id: string;
   title: string;
   description: string;
-  icon?: LucideIcon;
+  icon?: SectionIcon;
   features?: string[];
 }
 

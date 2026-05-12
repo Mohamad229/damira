@@ -2,17 +2,21 @@ import type { MetadataRoute } from "next";
 
 import { getPublishedProductSlugs } from "@/lib/actions/public-products";
 import { defaultLocale, locales } from "@/i18n/config";
-import { getPublishedPageSlugs } from "@/lib/public-pages";
 import { getSiteUrl } from "@/lib/seo";
 
-const STATIC_PUBLIC_PATHS = ["/contact", "/partnerships"];
+const PUBLIC_ROUTES = [
+  "",
+  "/about",
+  "/services",
+  "/products",
+  "/quality",
+  "/partnerships",
+  "/contact",
+];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = getSiteUrl().toString().replace(/\/$/, "");
-  const [pages, products] = await Promise.all([
-    getPublishedPageSlugs(),
-    getPublishedProductSlugs(),
-  ]);
+  const products = await getPublishedProductSlugs();
 
   const now = new Date();
   const urls: MetadataRoute.Sitemap = [];
@@ -30,33 +34,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   for (const locale of locales) {
     const localePrefix = locale === defaultLocale ? "" : `/${locale}`;
 
-    addUrl({
-      url: `${baseUrl}${localePrefix || "/"}`,
-      lastModified: now,
-      changeFrequency: "daily",
-      priority: 1,
-    });
-
-    for (const path of STATIC_PUBLIC_PATHS) {
-      addUrl({
-        url: `${baseUrl}${localePrefix}${path}`,
-        lastModified: now,
-        changeFrequency: "weekly",
-        priority: 0.8,
-      });
-    }
-
-    for (const page of pages) {
-      if (page.slug === "home") {
-        continue;
-      }
-
-      const path = page.slug === "home" ? "" : `/${page.slug}`;
+    for (const path of PUBLIC_ROUTES) {
       addUrl({
         url: `${baseUrl}${localePrefix}${path || "/"}`,
-        lastModified: page.updatedAt,
-        changeFrequency: "weekly",
-        priority: page.slug === "home" ? 1 : 0.85,
+        lastModified: now,
+        changeFrequency: path === "" ? "daily" : "weekly",
+        priority: path === "" ? 1 : 0.85,
       });
     }
 

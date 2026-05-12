@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -75,11 +74,11 @@ export function MediaField({
             className="relative rounded-lg overflow-hidden bg-muted border border-border"
             style={{ aspectRatio }}
           >
-            <Image
+            {/* eslint-disable-next-line @next/next/no-img-element -- Admin previews must render newly selected Blob URLs immediately. */}
+            <img
               src={value.url}
               alt={value.name}
-              fill
-              className="object-cover"
+              className="h-full w-full object-cover"
             />
           </div>
 

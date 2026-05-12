@@ -4,6 +4,7 @@ export * from "./CtaSection";
 export * from "./HeroSection";
 export * from "./ProductCard";
 export * from "./SectionReveal";
+export * from "./SectionIconImage";
 export * from "./ServiceCard";
 export * from "./StatsSection";
 export * from "./types";

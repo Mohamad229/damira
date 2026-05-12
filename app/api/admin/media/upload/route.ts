@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import sharp from "sharp";
 
 import { auth } from "@/lib/auth";
 import { storage } from "@/lib/storage";
+
+export const runtime = "nodejs";
 
 // File validation constants
 const MAX_IMAGE_SIZE = 10 * 1024 * 1024; // 10MB
@@ -19,7 +20,11 @@ const ALLOWED_IMAGE_TYPES = [
   "image/svg+xml",
 ];
 
-const ALLOWED_DOCUMENT_TYPES = ["application/pdf"];
+const ALLOWED_DOCUMENT_TYPES = [
+  "application/pdf",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+];
 
 const ALLOWED_VIDEO_TYPES = ["video/mp4", "video/webm"];
 
@@ -42,7 +47,7 @@ function validateFile(file: File): { valid: boolean; error?: string } {
   if (!isImage && !isDocument && !isVideo) {
     return {
       valid: false,
-      error: `Invalid file type: ${type}. Allowed types are: images (jpg, jpeg, png, gif, webp, svg), documents (pdf), videos (mp4, webm)`,
+      error: `Invalid file type: ${type}. Allowed types are: images (jpg, jpeg, png, gif, webp, svg), documents (pdf, doc, docx), videos (mp4, webm)`,
     };
   }
 
@@ -94,7 +99,8 @@ async function getImageDimensions(
   buffer: Buffer,
 ): Promise<{ width: number; height: number } | null> {
   try {
-    const metadata = await sharp(buffer).metadata();
+    const sharp = await import("sharp");
+    const metadata = await sharp.default(buffer).metadata();
     if (metadata.width && metadata.height) {
       return {
         width: metadata.width,
@@ -102,8 +108,7 @@ async function getImageDimensions(
       };
     }
     return null;
-  } catch (error) {
-    console.error("Failed to extract image dimensions:", error);
+  } catch {
     return null;
   }
 }
@@ -120,6 +125,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: "Unauthorized. Please log in." },
         { status: 401 },
+      );
+    }
+
+    if (session.user.role !== "ADMIN") {
+      return NextResponse.json(
+        { error: "Forbidden. Admin access required." },
+        { status: 403 },
       );
     }
 
@@ -224,12 +236,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (
+      error instanceof Error &&
+      error.message === "Vercel Blob token is not configured."
+    ) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
     // Handle other errors
     return NextResponse.json(
       {
         error: "Failed to upload file. Please try again.",
         details:
-          error instanceof Error ? error.message : "Unknown error occurred",
+          process.env.NODE_ENV === "development" && error instanceof Error
+            ? error.message
+            : undefined,
       },
       { status: 500 },
     );

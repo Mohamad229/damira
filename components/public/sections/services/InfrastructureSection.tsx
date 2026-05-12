@@ -6,5 +6,5 @@ interface InfrastructureSectionProps {
 }
 
 export function InfrastructureSection({ data }: InfrastructureSectionProps) {
-  return <ServiceFeatureSection data={data} index={0} accent="green" />;
+  return <ServiceFeatureSection data={data} index={1} accent="green" />;
 }

@@ -2,16 +2,7 @@ import type { Metadata } from "next";
 
 import type { ProductCardData } from "@/components/public/sections/base";
 
-// import { HeroSectionV2 } from "@/components/public/sections/v2/hero-section-v2";
-
-// import { ProductCatalogFilterSectionV2 } from "@/components/public/products/product-catalog-filter-section-v2";
-// import {
-//   CategoriesSection,
-//   PipelineSegmentsSection,
-// } from "@/components/public/sections/products";
-
 import { ProductsHeroSection } from "@/components/public/sections/products/ProductsHeroSection";
-import { CategoriesSection } from "@/components/public/sections/products/CategoriesSection";
 import { PipelineSegmentsSection } from "@/components/public/sections/products/PipelineSegmentsSection";
 import { ProductCatalogFilterSection } from "@/components/public/sections/products/ProductCatalogFilterSection";
 
@@ -101,10 +92,6 @@ export default async function ProductsPage({ params }: ProductsPageProps) {
       <section id="products-overview" className="scroll-mt-32">
         <ProductsHeroSection data={pageData.hero} />
       </section>
-      <section id="products-categories" className="scroll-mt-32">
-        <CategoriesSection data={pageData.categories} />
-      </section>
-      {/* <CurrentPortfolioSection data={pageData.currentPortfolio} /> */}
       <section id="products-pipeline" className="scroll-mt-32">
         <PipelineSegmentsSection data={pageData.pipelineSegments} />
       </section>

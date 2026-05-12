@@ -4,11 +4,11 @@
 
 `POST /api/admin/media/upload`
 
-Upload media files (images, documents, videos) to the Damira Pharma admin system.
+Upload media files (images, documents, videos) to Vercel Blob and create a Media database record.
 
 ## Authentication
 
-Requires a valid Auth.js session. User must be logged in as ADMIN or INTERNAL_USER.
+Requires a valid Auth.js session. User must be logged in as ADMIN.
 
 ## Request Format
 
@@ -19,9 +19,7 @@ Requires a valid Auth.js session. User must be logged in as ADMIN or INTERNAL_US
 | Field     | Type   | Required | Description                         |
 | --------- | ------ | -------- | ----------------------------------- |
 | `file`    | File   | Yes      | The file to upload                  |
-| `alt`     | String | No       | Alt text for images (accessibility) |
-| `title`   | String | No       | Title/name for the media            |
-| `caption` | String | No       | Additional caption or description   |
+| `name`    | String | No       | Display name for the media          |
 
 ## File Requirements
 
@@ -38,6 +36,8 @@ Requires a valid Auth.js session. User must be logged in as ADMIN or INTERNAL_US
 **Documents:**
 
 - PDF (`application/pdf`)
+- DOC (`application/msword`)
+- DOCX (`application/vnd.openxmlformats-officedocument.wordprocessingml.document`)
 
 **Videos:**
 
@@ -59,16 +59,14 @@ Requires a valid Auth.js session. User must be logged in as ADMIN or INTERNAL_US
   "success": true,
   "media": {
     "id": "clxyz123456789",
-    "filename": "company-logo.png",
-    "url": "/uploads/company-logo-1234567890-abc123.png",
+    "name": "Company Logo",
+    "url": "https://store-id.public.blob.vercel-storage.com/media/2026/05/1715000000000-id-company-logo.png",
     "type": "image",
     "mimeType": "image/png",
     "size": 524288,
     "width": 1920,
     "height": 1080,
-    "alt": "Damira Pharma Company Logo",
-    "title": "Company Logo",
-    "caption": "Official company branding",
+    "uploadedById": "user-id",
     "createdAt": "2026-04-08T10:30:00.000Z"
   }
 }
@@ -118,7 +116,7 @@ Requires a valid Auth.js session. User must be logged in as ADMIN or INTERNAL_US
       "code": "invalid_type",
       "expected": "string",
       "received": "number",
-      "path": ["alt"],
+      "path": ["name"],
       "message": "Expected string, received number"
     }
   ]
@@ -129,8 +127,7 @@ Requires a valid Auth.js session. User must be logged in as ADMIN or INTERNAL_US
 
 ```json
 {
-  "error": "Failed to upload file. Please try again.",
-  "details": "Storage error: Unable to write file"
+  "error": "Vercel Blob token is not configured."
 }
 ```
 
@@ -143,10 +140,7 @@ const uploadMedia = async (file, metadata = {}) => {
   const formData = new FormData();
   formData.append("file", file);
 
-  // Add optional metadata
-  if (metadata.alt) formData.append("alt", metadata.alt);
-  if (metadata.title) formData.append("title", metadata.title);
-  if (metadata.caption) formData.append("caption", metadata.caption);
+  if (metadata.name) formData.append("name", metadata.name);
 
   const response = await fetch("/api/admin/media/upload", {
     method: "POST",
@@ -167,9 +161,7 @@ const file = fileInput.files[0];
 
 try {
   const result = await uploadMedia(file, {
-    alt: "Product image",
-    title: "New Product Launch",
-    caption: "Q2 2026 product release",
+    name: "New Product Launch",
   });
 
   console.log("Upload successful:", result.media);
@@ -228,23 +220,13 @@ export function MediaUploadForm() {
           id="file"
           name="file"
           required
-          accept="image/*,video/*,.pdf"
+          accept="image/*,video/mp4,video/webm,.pdf,.doc,.docx"
         />
       </div>
 
       <div>
-        <label htmlFor="title">Title:</label>
-        <input type="text" id="title" name="title" />
-      </div>
-
-      <div>
-        <label htmlFor="alt">Alt Text:</label>
-        <input type="text" id="alt" name="alt" />
-      </div>
-
-      <div>
-        <label htmlFor="caption">Caption:</label>
-        <textarea id="caption" name="caption" />
+        <label htmlFor="name">Display name:</label>
+        <input type="text" id="name" name="name" />
       </div>
 
       {error && <div className="error">{error}</div>}
@@ -260,25 +242,23 @@ export function MediaUploadForm() {
 ### cURL Example
 
 ```bash
-# Upload an image with metadata
+# Upload an image with a display name
 curl -X POST http://localhost:3000/api/admin/media/upload \
   -H "Cookie: authjs.session-token=YOUR_SESSION_TOKEN" \
   -F "file=@/path/to/image.jpg" \
-  -F "alt=Product showcase image" \
-  -F "title=Product Hero Image" \
-  -F "caption=Featured on homepage"
+  -F "name=Product Hero Image"
 
 # Upload a PDF document
 curl -X POST http://localhost:3000/api/admin/media/upload \
   -H "Cookie: authjs.session-token=YOUR_SESSION_TOKEN" \
   -F "file=@/path/to/document.pdf" \
-  -F "title=Product Catalog 2026"
+  -F "name=Product Catalog 2026"
 
 # Upload a video
 curl -X POST http://localhost:3000/api/admin/media/upload \
   -H "Cookie: authjs.session-token=YOUR_SESSION_TOKEN" \
   -F "file=@/path/to/video.mp4" \
-  -F "title=Company Introduction Video"
+  -F "name=Company Introduction Video"
 ```
 
 ## Implementation Details
@@ -287,51 +267,37 @@ curl -X POST http://localhost:3000/api/admin/media/upload \
 
 The API uses the storage abstraction layer in `lib/storage.ts`:
 
-- **Local storage** (default): Files saved to `public/uploads/`
-- **S3 storage**: Configured via environment variables
+- **Vercel Blob** (default/production): Files uploaded with the server-side `BLOB_READ_WRITE_TOKEN`
+- **Local storage**: Development-only fallback when `MEDIA_STORAGE_DRIVER=local` and `NODE_ENV=development`
 
-Filenames are automatically generated with timestamp and random string to prevent collisions.
+Blob pathnames are automatically generated under `media/yyyy/mm/` with a timestamp and random id to prevent collisions.
 
 ### Image Processing
 
-Images (except SVG) are processed using Sharp to extract dimensions (width/height). This data is stored in the database for responsive image optimization.
+Images (except SVG) use optional Sharp metadata extraction when Sharp is available. Uploads still succeed if metadata extraction is unavailable.
 
 ### Database Schema
 
 Created media records include:
 
 - `id`: Unique identifier (CUID)
-- `filename`: Original filename
-- `path`: Storage path/key
 - `url`: Public URL
 - `type`: Media category (image, document, video)
 - `mimeType`: Full MIME type
 - `size`: File size in bytes
 - `width`/`height`: Dimensions (images only)
-- `alt`: Alt text (optional)
-- `title`: Title (optional)
-- `caption`: Caption (optional)
 - `uploadedById`: User ID who uploaded
 - `createdAt`: Upload timestamp
 
 ## Environment Variables
 
-Configure storage in your `.env` file:
+Configure Blob storage in your `.env` file:
 
 ```env
-# Storage Provider (local or s3)
-STORAGE_PROVIDER=local
+BLOB_READ_WRITE_TOKEN=...
 
-# Local Storage (default)
-LOCAL_UPLOAD_DIR=public/uploads
-LOCAL_BASE_URL=/uploads
-
-# S3 Storage (optional)
-# S3_BUCKET=your-bucket-name
-# S3_REGION=us-east-1
-# S3_ACCESS_KEY=your-access-key
-# S3_SECRET_KEY=your-secret-key
-# S3_ENDPOINT=https://s3.amazonaws.com  # For R2/MinIO
+# Development fallback only
+# MEDIA_STORAGE_DRIVER=local
 ```
 
 ## Security Notes

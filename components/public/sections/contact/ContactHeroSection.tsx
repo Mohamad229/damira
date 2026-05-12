@@ -1,37 +1,77 @@
-import Image from "next/image";
 import type { HeroSectionData } from "@/components/public/sections/base/types";
-import { SectionReveal } from "@/components/public/sections/base";
+import { SectionReveal } from "@/components/public/sections/base/SectionReveal";
+import { cn } from "@/lib/utils";
 
-export function ContactHeroSection({ data }: { data: HeroSectionData }) {
+interface ContactHeroSectionProps {
+  data?: HeroSectionData;
+  className?: string;
+}
+
+export function ContactHeroSection({
+  data,
+  className,
+}: ContactHeroSectionProps) {
+  const eyebrow = data?.eyebrow || "Contact Us";
+
+  const title = data?.title || "Get in Touch";
+
+  const subtitle =
+    data?.subtitle ||
+    "Connect with our team to discuss partnerships, services, or product availability.";
+
   return (
     <SectionReveal>
-      <section className="relative overflow-hidden bg-white pt-24 pb-16 sm:pt-28 lg:pt-32">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_25%,rgba(254,226,205,0.75),transparent_32%),radial-gradient(circle_at_84%_10%,rgba(197,225,245,0.85),transparent_30%)]" />
-        <div className="relative mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:px-8">
-          <div>
-            <span className="rounded-full bg-[#fee2cd] px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-[#f58238]">
-              {data.eyebrow || "Contact"}
-            </span>
-            <h1 className="mt-6 text-4xl font-black text-slate-950 sm:text-5xl lg:text-6xl">
-              {data.title}
+      <section
+        className={cn(
+          "relative isolate overflow-hidden bg-white",
+          "border-b border-[#eef3f8]",
+          "py-[72px] sm:py-[84px] lg:py-[96px] xl:py-[108px]",
+          className,
+        )}
+      >
+        {/* Background accents */}
+        <div className="pointer-events-none absolute left-[-180px] top-[-180px] h-[360px] w-[360px] rounded-full bg-[#e2f4ff] blur-3xl" />
+        <div className="pointer-events-none absolute bottom-[-210px] right-[-170px] h-[430px] w-[430px] rounded-full bg-[#edfbee] blur-3xl" />
+
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(0,159,227,0.08),transparent_42%)]" />
+
+        {/* Content */}
+        <div className="relative z-10 mx-auto flex w-full max-w-[1440px] items-center justify-center px-4 sm:px-6 md:px-8 lg:px-[72px] xl:px-[120px] 2xl:px-[210px]">
+          <div className="mx-auto w-full max-w-[920px] text-center">
+            {eyebrow ? (
+              <span className="inline-flex rounded-full bg-[#e2f4ff] px-[16px] py-[7px] text-[11px] font-black uppercase leading-none tracking-[0.18em] text-[#009fe3] sm:text-[12px]">
+                {eyebrow}
+              </span>
+            ) : null}
+
+            <h1
+              className={cn(
+                "mx-auto mt-[18px] max-w-[980px] text-balance font-black text-[#071329]",
+                "text-[34px] leading-[1.08] tracking-[-0.05em]",
+                "sm:text-[44px] sm:leading-[1.06]",
+                "md:text-[52px]",
+                "lg:text-[60px]",
+                "xl:text-[64px]",
+              )}
+            >
+              {title}
             </h1>
-            {data.subtitle ? (
-              <p className="mt-5 max-w-2xl text-base leading-8 text-slate-600 sm:text-lg">
-                {data.subtitle}
+
+            {subtitle ? (
+              <p
+                className={cn(
+                  "mx-auto mt-[20px] max-w-[760px] text-balance",
+                  "text-[16px] font-medium leading-[1.65] tracking-[-0.012em]",
+                  "text-[#263b59]",
+                  "sm:mt-[24px] sm:text-[18px]",
+                  "lg:text-[20px]",
+                )}
+              >
+                {subtitle}
               </p>
             ) : null}
-          </div>
-          <div className="relative min-h-[340px] overflow-hidden rounded-[2rem] border border-[#e5eef8] bg-[#f8fbff]">
-            {data.backgroundImage ? (
-              <Image
-                src={data.backgroundImage.src}
-                alt={data.backgroundImage.alt || data.title}
-                fill
-                priority
-                sizes="(max-width: 1024px) 100vw, 50vw"
-                className="object-cover"
-              />
-            ) : null}
+
+            <div className="mx-auto mt-[30px] h-[4px] w-[70px] rounded-full bg-[#4cb748] sm:mt-[36px]" />
           </div>
         </div>
       </section>

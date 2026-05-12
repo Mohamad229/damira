@@ -1,11 +1,13 @@
-import type {
-  CardGridData,
-  ServiceCardData,
-} from "@/components/public/sections/base/types";
+import type { CardGridData, SectionIcon } from "@/components/public/sections/base/types";
 import { SectionReveal } from "@/components/public/sections/base/SectionReveal";
+import { cn } from "@/lib/utils";
 
 interface PipelineSegmentsSectionData extends CardGridData {
-  items: ServiceCardData[];
+  items: Array<{
+    id: string;
+    title: string;
+    icon?: SectionIcon;
+  }>;
 }
 
 interface PipelineSegmentsSectionProps {
@@ -15,58 +17,92 @@ interface PipelineSegmentsSectionProps {
 export function PipelineSegmentsSection({
   data,
 }: PipelineSegmentsSectionProps) {
+  const items = data.items || [];
+
   return (
     <SectionReveal>
-      <section className="relative overflow-hidden bg-[#f8fbff] py-16 sm:py-20 md:py-24">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,rgba(197,225,245,0.75),transparent_32%)]" />
-        <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-12 max-w-3xl">
-            <span className="mb-4 block h-1.5 w-16 rounded-full bg-[#f58238]" />
-            <h2 className="text-3xl font-black text-slate-950 sm:text-4xl md:text-5xl">
-              {data.title}
+      <section
+        className={cn(
+          "relative overflow-hidden bg-white",
+          "py-[72px] sm:py-[82px] lg:py-[90px] xl:py-[96px]",
+        )}
+      >
+        {/* Soft background depth */}
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(226,244,255,0.45),transparent_34%)]" />
+
+        <div
+          className={cn(
+            "relative z-10 w-full",
+            "px-4 sm:px-6 md:px-8",
+            "lg:px-[80px]",
+            "xl:px-[120px]",
+            "2xl:px-[210px]",
+          )}
+        >
+          {/* Header */}
+          <div className="mx-auto max-w-[820px] text-center">
+            <h2
+              className={cn(
+                "font-black leading-[1.12] tracking-[-0.04em] text-[#071329]",
+                "text-[28px]",
+                "sm:text-[30px]",
+                "md:text-[32px]",
+              )}
+            >
+              {data.title || "Pipeline Segments"}
             </h2>
+
             {data.description ? (
-              <p className="mt-4 text-sm leading-relaxed text-slate-600 sm:text-base">
+              <p
+                className={cn(
+                  "mx-auto mt-[17px] max-w-[760px]",
+                  "text-[15px] font-medium leading-[1.6] tracking-[-0.01em] text-[#263b59]",
+                  "sm:mt-[19px] sm:text-[16px]",
+                  "md:text-[17px] md:leading-[1.55]",
+                )}
+              >
                 {data.description}
               </p>
             ) : null}
           </div>
-          <div className="space-y-4">
-            {data.items.map((item, index) => {
-              const Icon = item.icon;
-              return (
-                <article
-                  key={item.id}
-                  className="grid gap-5 rounded-[2rem] border border-[#e5eef8] bg-white p-6 transition-all duration-300 hover:-translate-y-1 hover:border-[#91caee] sm:p-7 lg:grid-cols-[96px_1fr_auto] lg:items-center"
-                >
-                  <div className="flex items-center gap-4">
-                    <span className="text-3xl font-black text-[#c5e1f5]">
-                      {String(index + 1).padStart(2, "0")}
-                    </span>
-                    <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-[#c5e1f5]/55 text-[#0097dc]">
-                      {Icon ? (
-                        <Icon className="h-6 w-6" />
-                      ) : (
-                        <span className="h-2.5 w-2.5 rounded-full bg-current" />
-                      )}
-                    </span>
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold tracking-tight text-slate-950">
-                      {item.title}
-                    </h3>
-                    <p className="mt-2 text-sm leading-relaxed text-slate-600">
-                      {item.description}
-                    </p>
-                  </div>
-                  {item.features?.length ? (
-                    <div className="rounded-full bg-[#daecd4]/70 px-4 py-2 text-xs font-black uppercase tracking-[0.14em] text-[#2a8d33]">
-                      {item.features[0]}
-                    </div>
-                  ) : null}
-                </article>
-              );
-            })}
+
+          {/* Pills */}
+          <div
+            className={cn(
+              "mx-auto flex flex-wrap items-center justify-center",
+              "max-w-[980px]",
+              "mt-[42px] gap-x-[10px] gap-y-[10px]",
+              "sm:mt-[50px] sm:gap-x-[12px] sm:gap-y-[12px]",
+              "md:mt-[56px] md:gap-x-[14px] md:gap-y-[13px]",
+              "xl:mt-[64px] xl:max-w-[1200px] xl:gap-x-[16px] xl:gap-y-[14px]",
+            )}
+          >
+            {items.map((item, index) => (
+              <div
+                key={item.id || `${item.title}-${index}`}
+                className={cn(
+                  "inline-flex items-center justify-center rounded-full",
+                  "border border-[#d9e4ef] bg-[#f8fbff]",
+                  "shadow-none transition-all duration-300",
+                  "hover:-translate-y-0.5 hover:border-[#9ed8f8] hover:bg-white hover:text-[#009fe3]",
+
+                  // Mobile pill
+                  "min-h-[42px] px-[17px]",
+                  "text-[13px] font-semibold leading-none tracking-[-0.012em] text-[#071329]",
+
+                  // Small / tablet
+                  "sm:min-h-[44px] sm:px-[19px] sm:text-[14px]",
+                  "md:min-h-[46px] md:px-[21px] md:text-[15px]",
+
+                  // Desktop
+                  "xl:min-h-[50px] xl:px-[24px] xl:text-[16px]",
+                )}
+              >
+                <span className="max-w-[220px] truncate sm:max-w-[260px] md:max-w-none">
+                  {item.title}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
       </section>

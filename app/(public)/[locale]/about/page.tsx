@@ -1,18 +1,10 @@
 import type { Metadata } from "next";
 
-// import { HeroSectionV2 } from "@/components/public/sections/v2/hero-section-v2";
-// import { VisionMissionSectionV2 } from "@/components/public/sections/v2/vision-mission-section-v2";
-// import {
-//   CompanyOverviewSection,
-//   CoreValuesSection,
-//   LegacySuccessSection,
-// } from "@/components/public/sections/about";
-
-import {AboutHeroSection} from "@/components/public/sections/about/AboutHeroSection";
-import {CompanyOverviewSection} from "@/components/public/sections/about/CompanyOverviewSection";
-import {AboutVisionMissionSection} from "@/components/public/sections/about/AboutVisionMissionSection";
-import {CoreValuesSection} from "@/components/public/sections/about/CoreValuesSection";
-import {LegacySuccessSection} from "@/components/public/sections/about/LegacySuccessSection";
+import { AboutHeroSection } from "@/components/public/sections/about/AboutHeroSection";
+import { CompanyOverviewSection } from "@/components/public/sections/about/CompanyOverviewSection";
+import { AboutVisionMissionSection } from "@/components/public/sections/about/AboutVisionMissionSection";
+import { CoreValuesSection } from "@/components/public/sections/about/CoreValuesSection";
+import { LegacySuccessSection } from "@/components/public/sections/about/LegacySuccessSection";
 
 import { getManagedPublicPageData } from "@/lib/content/public-ui";
 import { buildOgImageUrl, createPublicMetadata } from "@/lib/seo";
@@ -62,9 +54,6 @@ export default async function AboutPage({ params }: AboutPageProps) {
       <section id="about-values" className="scroll-mt-32">
         <CoreValuesSection data={pageData.coreValues} />
       </section>
-      {/* <section id="about-focus-verticals" className="scroll-mt-32">
-        <FocusVerticalsSection data={pageData.focusVerticals} />
-      </section> */}
       <section id="about-legacy-success" className="scroll-mt-32">
         <LegacySuccessSection data={pageData.legacySuccess} />
       </section>

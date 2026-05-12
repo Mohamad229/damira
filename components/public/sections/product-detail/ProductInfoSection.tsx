@@ -1,75 +1,312 @@
+"use client";
+
 import Image from "next/image";
+import { useMemo, useState } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+
 import { Link } from "@/i18n/navigation";
 import type { ContentSectionData } from "@/components/public/sections/base/types";
 import { SectionReveal } from "@/components/public/sections/base/SectionReveal";
+import { cn } from "@/lib/utils";
 
 interface ProductInfoSectionProps {
   data: ContentSectionData;
 }
 
+type ProductImage = {
+  src: string;
+  alt?: string;
+};
+
+function getProductImages(data: ContentSectionData): ProductImage[] {
+  const possibleImages = [
+    ...(data.images || []),
+    data.image,
+  ].filter(Boolean) as ProductImage[];
+
+  const uniqueImages = new Map<string, ProductImage>();
+
+  possibleImages.forEach((image) => {
+    if (image?.src && !uniqueImages.has(image.src)) {
+      uniqueImages.set(image.src, {
+        src: image.src,
+        alt: image.alt || data.title || "Product image",
+      });
+    }
+  });
+
+  return Array.from(uniqueImages.values());
+}
+
 export function ProductInfoSection({ data }: ProductInfoSectionProps) {
-  const image = data.images?.[0] || data.image;
+  const images = useMemo(() => getProductImages(data), [data]);
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+
+  const activeImage = images[activeImageIndex];
+  const hasMultipleImages = images.length > 1;
+
+  function goToPreviousImage() {
+    setActiveImageIndex((currentIndex) =>
+      currentIndex === 0 ? images.length - 1 : currentIndex - 1,
+    );
+  }
+
+  function goToNextImage() {
+    setActiveImageIndex((currentIndex) =>
+      currentIndex === images.length - 1 ? 0 : currentIndex + 1,
+    );
+  }
 
   return (
     <SectionReveal>
-      <section className="relative overflow-hidden bg-[#f8fbff] py-16 sm:py-20 md:py-24">
-        <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-center lg:px-8">
-          <div className="relative min-h-[420px] overflow-hidden rounded-[2.75rem] border border-[#e5eef8] bg-white shadow-[0_30px_80px_-58px_rgba(15,23,42,0.7)]">
-            {image ? (
-              <Image
-                src={image.src}
-                alt={image.alt}
-                fill
-                sizes="(max-width: 1024px) 100vw, 45vw"
-                className="object-cover"
-              />
-            ) : (
-              <div className="h-full w-full bg-[linear-gradient(135deg,#daecd4,#ffffff,#c5e1f5)]" />
-            )}
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/20 via-transparent to-transparent" />
-          </div>
+      <section
+        className={cn(
+          "relative overflow-hidden bg-[#f8fbff]",
+          "py-[72px] sm:py-[82px] lg:py-[90px] xl:py-[96px]",
+        )}
+      >
+        <div
+          className={cn(
+            "relative z-10 grid w-full items-center pt-16",
+            "gap-[42px] md:gap-[50px]",
+            "px-4 sm:px-6 md:px-8",
+            "lg:grid-cols-[minmax(0,0.88fr)_minmax(420px,1.12fr)] lg:gap-[56px]",
+            "lg:px-[80px]",
+            "xl:gap-[64px] xl:px-[120px]",
+            "2xl:px-[210px]",
+          )}
+        >
+          {/* Product image carousel */}
+          <div className="order-2 space-y-[14px] sm:space-y-[16px] xl:space-y-[18px]">
+            <div
+              className={cn(
+                "relative overflow-hidden",
+                "rounded-[18px] sm:rounded-[22px] xl:rounded-[30px]",
+                "border border-[#dce9f6] bg-white",
+                "h-[300px]",
+                "sm:h-[410px]",
+                "md:h-[500px]",
+                "lg:h-[520px]",
+                "xl:h-[560px]",
+                "shadow-[0_30px_70px_-52px_rgba(15,23,42,0.65)]",
+              )}
+            >
+              {activeImage?.src ? (
+                <Image
+                  key={activeImage.src}
+                  src={activeImage.src}
+                  alt={activeImage.alt || data.title || "Product image"}
+                  fill
+                  priority={activeImageIndex === 0}
+                  sizes="(min-width: 1536px) 38vw, (min-width: 1024px) 42vw, 100vw"
+                  className="object-cover"
+                />
+              ) : (
+                <div className="h-full w-full bg-[linear-gradient(135deg,#daecd4,#ffffff,#c5e1f5)]" />
+              )}
 
-          <div className="rounded-[2.5rem] border border-[#e5eef8] bg-white p-7 shadow-[0_24px_60px_-48px_rgba(15,23,42,0.55)] sm:p-9 md:p-10">
-            {data.eyebrow ? (
-              <span className="mb-4 inline-flex rounded-full bg-[#daecd4]/70 px-3 py-1 text-xs font-black uppercase tracking-[0.18em] text-[#2a8d33]">
-                {data.eyebrow}
-              </span>
-            ) : null}
-            <h2 className="text-3xl font-black text-slate-950 sm:text-4xl md:text-5xl">
-              {data.title}
-            </h2>
-            {data.subtitle ? (
-              <p className="mt-5 border-l-4 border-[#0097dc] pl-5 text-base leading-relaxed text-slate-650 sm:text-lg">
-                {data.subtitle}
-              </p>
-            ) : null}
-            {data.body?.length ? (
-              <div className="mt-6 space-y-4 text-sm leading-relaxed text-slate-600 sm:text-base">
-                {data.body.map((paragraph, index) => (
-                  <p key={index}>{paragraph}</p>
+              {hasMultipleImages ? (
+                <>
+                  <button
+                    type="button"
+                    onClick={goToPreviousImage}
+                    aria-label="Previous product image"
+                    className={cn(
+                    "absolute left-[12px] top-1/2 flex -translate-y-1/2 items-center justify-center rounded-full rtl:left-auto rtl:right-[12px]",
+                      "h-[38px] w-[38px] sm:h-[40px] sm:w-[40px] xl:h-[42px] xl:w-[42px]",
+                      "border border-[#dce9f6] bg-white/90 text-[#071329]",
+                      "shadow-[0_14px_28px_-22px_rgba(15,23,42,0.7)] backdrop-blur",
+                      "transition-all duration-300 hover:-translate-y-[calc(50%+2px)] hover:bg-white hover:text-[#009fe3]",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#009fe3] focus-visible:ring-offset-2",
+                      "sm:left-[16px] xl:left-[18px] rtl:sm:left-auto rtl:sm:right-[16px] rtl:xl:left-auto rtl:xl:right-[18px]",
+                    )}
+                  >
+                    <ChevronLeft className="h-[19px] w-[19px] stroke-[2.5] xl:h-[21px] xl:w-[21px]" />
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={goToNextImage}
+                    aria-label="Next product image"
+                    className={cn(
+                      "absolute right-[12px] top-1/2 flex -translate-y-1/2 items-center justify-center rounded-full rtl:left-[12px] rtl:right-auto",
+                      "h-[38px] w-[38px] sm:h-[40px] sm:w-[40px] xl:h-[42px] xl:w-[42px]",
+                      "border border-[#dce9f6] bg-white/90 text-[#071329]",
+                      "shadow-[0_14px_28px_-22px_rgba(15,23,42,0.7)] backdrop-blur",
+                      "transition-all duration-300 hover:-translate-y-[calc(50%+2px)] hover:bg-white hover:text-[#009fe3]",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#009fe3] focus-visible:ring-offset-2",
+                      "sm:right-[16px] xl:right-[18px] rtl:sm:left-[16px] rtl:sm:right-auto rtl:xl:left-[18px] rtl:xl:right-auto",
+                    )}
+                  >
+                    <ChevronRight className="h-[19px] w-[19px] stroke-[2.5] xl:h-[21px] xl:w-[21px]" />
+                  </button>
+
+                  <div
+                    className={cn(
+                      "absolute bottom-[14px] left-1/2 flex -translate-x-1/2 items-center gap-[8px] rounded-full",
+                      "bg-white/85 px-[11px] py-[7px]",
+                      "shadow-[0_14px_28px_-22px_rgba(15,23,42,0.7)] backdrop-blur",
+                      "xl:bottom-[18px] xl:px-[12px] xl:py-[8px]",
+                    )}
+                  >
+                    {images.map((image, index) => (
+                      <button
+                        key={image.src}
+                        type="button"
+                        onClick={() => setActiveImageIndex(index)}
+                        aria-label={`Show product image ${index + 1}`}
+                        className={cn(
+                          "h-[8px] rounded-full transition-all duration-300",
+                          index === activeImageIndex
+                            ? "w-[26px] bg-[#009fe3]"
+                            : "w-[8px] bg-[#c8d9e8] hover:bg-[#91caee]",
+                        )}
+                      />
+                    ))}
+                  </div>
+                </>
+              ) : null}
+            </div>
+
+            {/* Thumbnail row */}
+            {hasMultipleImages ? (
+              <div
+                className={cn(
+                  "flex gap-[10px] overflow-x-auto pb-[4px]",
+                  "[-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
+                  "sm:gap-[12px]",
+                )}
+              >
+                {images.map((image, index) => (
+                  <button
+                    key={image.src}
+                    type="button"
+                    onClick={() => setActiveImageIndex(index)}
+                    className={cn(
+                      "relative shrink-0 overflow-hidden",
+                      "h-[62px] w-[78px] rounded-[12px]",
+                      "sm:h-[70px] sm:w-[88px] sm:rounded-[14px]",
+                      "xl:h-[74px] xl:w-[92px] xl:rounded-[16px]",
+                      "border bg-white transition-all duration-300",
+                      index === activeImageIndex
+                        ? "border-[#009fe3] ring-2 ring-[#009fe3]/20"
+                        : "border-[#dce9f6] hover:border-[#91caee]",
+                    )}
+                  >
+                    <Image
+                      src={image.src}
+                      alt={image.alt || data.title || "Product thumbnail"}
+                      fill
+                      sizes="92px"
+                      className="object-cover"
+                    />
+                  </button>
                 ))}
               </div>
             ) : null}
+          </div>
+
+          {/* Product information - no box/card */}
+          <div className="order-1 rtl:text-right">
+            {data.eyebrow ? (
+              <span
+                className={cn(
+                  "mb-[20px] inline-flex items-center rounded-full bg-[#daecd4]/75",
+                  "h-[24px] px-[12px]",
+                  "text-[11px] font-black uppercase leading-none tracking-[0.2em] text-[#2a8d33]",
+                  "sm:mb-[22px] sm:px-[14px] sm:text-[12px] sm:tracking-[0.24em]",
+                  "xl:mb-[24px]",
+                )}
+              >
+                {data.eyebrow}
+              </span>
+            ) : null}
+
+            <h2
+              className={cn(
+                "max-w-[760px]",
+                "font-black leading-[1.04] tracking-[-0.055em] text-[#071329]",
+                "text-[34px]",
+                "sm:text-[40px]",
+                "md:text-[44px]",
+                "xl:text-[48px]",
+              )}
+            >
+              {data.title}
+            </h2>
+
+            {data.subtitle ? (
+              <p
+                className={cn(
+                  "mt-[22px] max-w-[720px] border-l-[4px] border-[#009fe3] pl-[18px] rtl:border-l-0 rtl:border-r-[4px] rtl:pl-0 rtl:pr-[18px]",
+                  "text-[16px] font-semibold leading-[1.6] tracking-[-0.012em] text-[#071329]",
+                  "sm:text-[17px]",
+                  "md:text-[18px] md:leading-[1.55]",
+                  "xl:mt-[24px] xl:pl-[20px] rtl:xl:pl-0 rtl:xl:pr-[20px]",
+                )}
+              >
+                {data.subtitle}
+              </p>
+            ) : null}
+
+            {data.body?.length ? (
+              <div
+                className={cn(
+                  "mt-[24px] max-w-[720px] space-y-[18px]",
+                  "text-[15px] font-medium leading-[1.68] tracking-[-0.01em] text-[#263b59]",
+                  "sm:text-[16px]",
+                  "md:mt-[26px] md:space-y-[20px] md:leading-[1.6]",
+                )}
+              >
+                {data.body.map((paragraph, index) => (
+                  <p key={`${paragraph}-${index}`}>{paragraph}</p>
+                ))}
+              </div>
+            ) : null}
+
             {data.bullets?.length ? (
-              <div className="mt-7 grid gap-3">
+              <div
+                className={cn(
+                  "mt-[28px] grid gap-[12px]",
+                  "sm:mt-[30px] sm:grid-cols-2 sm:gap-[12px]",
+                  "lg:grid-cols-1",
+                  "xl:mt-[32px] xl:gap-[14px]",
+                )}
+              >
                 {data.bullets.map((bullet) => (
                   <div
                     key={bullet}
-                    className="rounded-2xl border border-[#e5eef8] bg-[#f8fbff] px-4 py-3 text-sm font-semibold text-slate-700"
+                    className={cn(
+                      "flex min-h-[42px] items-center rounded-full",
+                      "border border-[#dce9f6] bg-white px-[16px]",
+                      "text-[13px] font-black leading-[1.2] tracking-[-0.012em] text-[#071329]",
+                      "sm:min-h-[44px] sm:px-[17px] sm:text-[14px]",
+                      "xl:min-h-[46px] xl:px-[18px]",
+                    )}
                   >
-                    <span className="mr-2 inline-block h-2 w-2 rounded-full bg-[#4cb748]" />
-                    {bullet}
+                    <span className="mr-[10px] inline-block h-[8px] w-[8px] shrink-0 rounded-full bg-[#4cb748] rtl:ml-[10px] rtl:mr-0" />
+                    <span>{bullet}</span>
                   </div>
                 ))}
               </div>
             ) : null}
+
             {data.actions?.length ? (
-              <div className="mt-8 flex flex-wrap gap-3">
-                {data.actions.map((action) => (
+              <div className="mt-[32px] flex flex-col gap-3 sm:flex-row sm:flex-wrap rtl:sm:flex-row-reverse rtl:sm:justify-end xl:mt-[36px]">
+                {data.actions.map((action, index) => (
                   <Link
-                    key={action.href}
+                    key={`${action.href}-${action.label}`}
                     href={action.href}
-                    className="rounded-full bg-[#0097dc] px-5 py-3 text-sm font-bold text-white hover:bg-[#00a5e1]"
+                    className={cn(
+                      "inline-flex items-center justify-center rounded-full",
+                      "h-[48px] px-6",
+                      "text-[14px] font-black leading-none tracking-[-0.01em]",
+                      "transition-all duration-300 hover:-translate-y-0.5",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#009fe3] focus-visible:ring-offset-2",
+                      index === 0
+                        ? "bg-[#009fe3] text-white hover:bg-[#0092d3]"
+                        : "border border-[#91caee] bg-white text-[#009fe3] hover:bg-[#f7fbff]",
+                    )}
                   >
                     {action.label}
                   </Link>

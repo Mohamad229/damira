@@ -8,5 +8,5 @@ interface LogisticsDistributionSectionProps {
 export function LogisticsDistributionSection({
   data,
 }: LogisticsDistributionSectionProps) {
-  return <ServiceFeatureSection data={data} index={4} accent="orange" />;
+  return <ServiceFeatureSection data={data} index={3} accent="orange" />;
 }

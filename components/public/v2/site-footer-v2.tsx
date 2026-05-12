@@ -1,12 +1,5 @@
-import { getTranslations } from "next-intl/server";
-import {
-  Building2,
-  Mail,
-  MapPin,
-  ShieldCheck,
-  ArrowUpRight,
-} from "lucide-react";
 import Image from "next/image";
+import { Mail, MapPin, Phone } from "lucide-react";
 
 import { localeDirection, type Locale } from "@/i18n/config";
 import { Link } from "@/i18n/navigation";
@@ -16,134 +9,159 @@ interface SiteFooterV2Props {
   locale: Locale;
 }
 
+type FooterLink = {
+  href: string;
+  label: string;
+};
+
+function FooterLinksColumn({
+  title,
+  links,
+}: {
+  title: string;
+  links: FooterLink[];
+}) {
+  return (
+    <section>
+      <h3 className="mb-4 text-[13px] font-extrabold uppercase tracking-[0.08em] text-white sm:mb-5 sm:text-[14px]">
+        {title}
+      </h3>
+
+      <ul className="space-y-3 sm:space-y-3.5">
+        {links.map((item) => (
+          <li key={item.href}>
+            <Link
+              href={item.href}
+              className="text-[14px] font-medium leading-[1.45] text-[#94a3b8] transition-colors hover:text-[#00a9e8] sm:text-[15px]"
+            >
+              {item.label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
 export async function SiteFooterV2({ locale }: SiteFooterV2Props) {
-  const [tCommon, tFooter, siteSettings] = await Promise.all([
-    getTranslations("common"),
-    getTranslations("footer"),
-    getPublicSiteSettings(),
-  ]);
+  const siteSettings = await getPublicSiteSettings();
+
   const currentYear = new Date().getFullYear();
   const direction = localeDirection[locale];
-  const siteName = siteSettings.siteName || "DAMIRA PHARMA";
-  const siteDescription = siteSettings.siteTagline || tFooter("description");
-  const contactEmail = siteSettings.contactEmail || tFooter("email");
-  const contactAddress = siteSettings.contactAddress || tFooter("location");
 
-  const footerLinks = [
-    { href: "/", label: tCommon("home") },
-    { href: "/about", label: tCommon("about") },
-    { href: "/services", label: tCommon("services") },
-    { href: "/products", label: tCommon("products") },
-    { href: "/partnerships", label: tCommon("partnerships") },
-    { href: "/contact", label: tCommon("contact") },
+  const siteName = siteSettings.siteName || "Damira Pharma";
+  const contactEmail = siteSettings.contactEmail || "info@damirapharma.sy";
+  const contactAddress =
+    siteSettings.contactAddress || "Erbin, Damascus Countryside, Syria";
+
+  const companyLinks: FooterLink[] = [
+    { href: "/about", label: "About Us" },
+    { href: "/quality", label: "Quality & Compliance" },
+    { href: "/partnerships", label: "Partnerships" },
+    { href: "/contact", label: "Contact Us" },
   ];
 
-  const focusAreas = [
-    tFooter("focusOncology"),
-    tFooter("focusCriticalCare"),
-    tFooter("focusNutrition"),
-    tFooter("focusDiagnostics"),
+  const solutionLinks: FooterLink[] = [
+    { href: "/services#services-logistics", label: "Distribution Services" },
+    { href: "/services#services-regulatory", label: "Regulatory Affairs" },
+    { href: "/products", label: "Product Portfolio" },
+    { href: "/services#services-market-access", label: "Market Access" },
   ];
 
   return (
-    <footer className="relative overflow-hidden border-t border-[#dce9f6] bg-gradient-to-b from-[#f8fbff] via-white to-white pt-16 sm:pt-20 lg:pt-24">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_8%_15%,#c5e1f5_0%,transparent_30%),radial-gradient(circle_at_92%_8%,#fee2cd_0%,transparent_28%),radial-gradient(circle_at_85%_90%,#daecd4_0%,transparent_28%)]" />
-
-      <div className="relative z-10 mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid gap-10 border-b border-[#e6eef8] pb-10 sm:gap-12 sm:pb-12 lg:grid-cols-12">
-          {/* Brand / about */}
-          <section className="lg:col-span-5">
-            <Link href="/" className="group inline-flex items-center">
+    <footer dir={direction} className="bg-[#10182b] text-[#94a3b8]">
+      <div className="mx-auto w-full max-w-7xl px-4 py-9 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
+        <div
+          className="
+            grid grid-cols-1 gap-x-10 gap-y-9 border-b border-white/10 pb-9
+            md:grid-cols-2 md:gap-y-10 md:pb-10
+            lg:grid-cols-[1.15fr_0.75fr_0.85fr_1fr] lg:gap-x-12 lg:pb-12
+          "
+        >
+          {/* Brand */}
+          <section className="md:max-w-[420px] lg:max-w-none">
+            <Link href="/" className="inline-flex items-center">
               <Image
                 src="/Damira_Logo_SVG.svg"
                 alt="Damira Pharma"
-                width={220}
-                height={95}
-                className="h-12 w-auto transition-transform duration-300 group-hover:scale-[1.02]"
+                width={170}
+                height={74}
+                priority={false}
+                className="h-7 w-auto object-contain sm:h-8 lg:h-9"
               />
             </Link>
 
-            <p className="mt-5 max-w-md text-sm leading-relaxed text-slate-600 sm:text-base">
-              {siteDescription}
+            <p className="mt-4 max-w-[340px] text-[14px] font-medium leading-[1.7] text-[#9aa8bc] sm:mt-5 sm:text-[15px]">
+              The trusted bridge between global life science innovators and
+              Syrian healthcare infrastructure. Part of Al Ahlam Group,
+              established 1974.
             </p>
-
-            {/* <div className="mt-6 grid gap-3">
-              <a
-                href={`mailto:${contactEmail}`}
-                className="group inline-flex w-fit items-center gap-3 rounded-xl border border-[#dfeaf6] bg-white px-4 py-2.5 text-sm text-slate-700 transition-all hover:border-[#91caee] hover:bg-[#f7fbff]"
-              >
-                <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#c5e1f5]/60 text-[#0097dc]">
-                  <Mail className="h-4 w-4" />
-                </span>
-                <span className="font-medium">{contactEmail}</span>
-              </a>
-
-              <div className="inline-flex w-fit items-center gap-3 rounded-xl border border-[#dfeaf6] bg-white px-4 py-2.5 text-sm text-slate-700">
-                <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#fee2cd]/70 text-[#f58238]">
-                  <MapPin className="h-4 w-4" />
-                </span>
-                <span className="font-medium">{contactAddress}</span>
-              </div>
-            </div> */}
           </section>
 
-          {/* Links */}
-          <div className="grid gap-10 sm:grid-cols-2 lg:col-span-7 lg:gap-12">
-            <section>
-              <h3 className="mb-4 text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
-                {tFooter("quickLinks")}
-              </h3>
-              <ul className="grid gap-2.5">
-                {footerLinks.map((item) => (
-                  <li key={item.href}>
-                    <Link
-                      href={item.href}
-                      className="group inline-flex items-center gap-2 text-sm font-medium text-slate-700 transition-colors hover:text-[#0097dc]"
-                    >
-                      <ArrowUpRight className="h-3.5 w-3.5 text-[#0097dc] opacity-0 transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:opacity-100" />
-                      <span>{item.label}</span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </section>
+          {/* Company */}
+          <FooterLinksColumn title="Company" links={companyLinks} />
 
-            {/* <section>
-              <h3 className="mb-4 text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
-                {tFooter("focusAreas")}
-              </h3>
-              <ul className="grid gap-3">
-                {focusAreas.map((area, i) => (
-                  <li key={area} className="flex items-start gap-3">
-                    <span className="mt-[2px] text-[10px] font-bold tracking-[0.14em] text-[#0097dc]">
-                      {(i + 1).toString().padStart(2, "0")}
-                    </span>
-                    <span className="text-sm text-slate-700">{area}</span>
-                  </li>
-                ))}
-              </ul>
-            </section> */}
-          </div>
+          {/* Solutions */}
+          <FooterLinksColumn title="Solutions" links={solutionLinks} />
+
+          {/* Contact Info */}
+          <section>
+            <h3 className="mb-4 text-[13px] font-extrabold uppercase tracking-[0.08em] text-white sm:mb-5 sm:text-[14px]">
+              Contact Info
+            </h3>
+
+            <div className="space-y-4">
+              <div className="flex items-start gap-3">
+                <MapPin className="mt-0.5 h-[17px] w-[17px] shrink-0 text-[#00a9e8]" />
+
+                <span className="text-[14px] font-medium leading-[1.6] text-[#94a3b8] sm:text-[15px]">
+                  {contactAddress}
+                </span>
+              </div>
+
+              <a
+                href="tel:+963935222202"
+                className="flex items-center gap-3 text-[14px] font-medium text-[#94a3b8] transition-colors hover:text-[#00a9e8] sm:text-[15px]"
+              >
+                <Phone className="h-[17px] w-[17px] shrink-0 text-[#00a9e8]" />
+
+                <span dir="ltr">+963 935 222 202</span>
+              </a>
+
+              <a
+                href={`mailto:${contactEmail}`}
+                className="flex items-center gap-3 text-[14px] font-medium text-[#94a3b8] transition-colors hover:text-[#00a9e8] sm:text-[15px]"
+              >
+                <Mail className="h-[17px] w-[17px] shrink-0 text-[#00a9e8]" />
+
+                <span className="break-all">{contactEmail}</span>
+              </a>
+            </div>
+          </section>
         </div>
 
-        {/* Bottom row */}
-        <div className="flex flex-col gap-4 py-6 text-xs text-slate-500 sm:py-7 lg:flex-row lg:items-center lg:justify-between">
-          <p className="font-medium">
-            &copy; <span dir={direction}>{currentYear}</span>{" "}
-            {siteName.toUpperCase()}.{" "}
-            {tFooter("rights")?.toUpperCase() || "ALL RIGHTS RESERVED"}.
+        {/* Bottom */}
+        <div className="flex flex-col gap-4 pt-6 text-[13px] font-medium leading-[1.6] text-[#63718a] sm:pt-7 md:flex-row md:items-center md:justify-between md:gap-8">
+          <p>
+            © <span dir="ltr">{currentYear}</span> {siteName}. All rights
+            reserved. ISO & FDA Certified Facility.
           </p>
 
-          {/* <div className="flex flex-wrap items-center gap-4 sm:gap-5">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-[#dce9f6] bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-600">
-              <ShieldCheck className="h-3.5 w-3.5 text-[#4cb748]" />
-              {tFooter("complianceValue")}
-            </span>
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-[#dce9f6] bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-600">
-              <Building2 className="h-3.5 w-3.5 text-[#f58238]" />
-              {tFooter("coverageValue")}
-            </span>
-          </div> */}
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+            <Link
+              href="/privacy-policy"
+              className="transition-colors hover:text-[#00a9e8]"
+            >
+              Privacy Policy
+            </Link>
+
+            <Link
+              href="/terms-of-service"
+              className="transition-colors hover:text-[#00a9e8]"
+            >
+              Terms of Service
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

@@ -1,9 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo, useState } from "react";
-import { Filter, Search } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { ChevronDown, Search } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
 
 import { Link } from "@/i18n/navigation";
 import type { ProductCardData } from "@/components/public/sections/base";
@@ -29,33 +29,57 @@ const LABELS: Record<
   Locale,
   {
     searchPlaceholder: string;
-    categoryLabel: string;
     allCategories: string;
-    results: string;
+    more: string;
     noResultsTitle: string;
     noResultsDescription: string;
   }
 > = {
   en: {
-    searchPlaceholder: "Search products...",
-    categoryLabel: "Category",
-    allCategories: "All categories",
-    results: "results",
+    searchPlaceholder: "Search products, types...",
+    allCategories: "All",
+    more: "More",
     noResultsTitle: "No matching products",
     noResultsDescription: "Try another keyword or choose a different category.",
   },
   ar: {
-    searchPlaceholder: "ابحث في المنتجات...",
-    categoryLabel: "الفئة",
-    allCategories: "كل الفئات",
-    results: "نتيجة",
+    searchPlaceholder: "ابحث في المنتجات أو الأنواع...",
+    allCategories: "الكل",
+    more: "المزيد",
     noResultsTitle: "لا توجد منتجات مطابقة",
     noResultsDescription: "جرّب كلمة بحث أخرى أو اختر فئة مختلفة.",
   },
 };
 
-function normalize(value: string): string {
-  return value.trim().toLowerCase();
+function normalize(value?: string | null): string {
+  return value?.trim().toLowerCase() || "";
+}
+
+function getVisibleFilterCount() {
+  if (typeof window === "undefined") return 3;
+
+  const width = window.innerWidth;
+
+  /**
+   * Count includes the "All" button.
+   *
+   * < 420px:
+   * All + More
+   *
+   * 420px - 639px:
+   * All + 1 category + More
+   *
+   * 640px - 1023px:
+   * All + 2 categories + More
+   *
+   * 1024px+:
+   * All + 3 categories + More
+   */
+  if (width < 420) return 2;
+  if (width < 640) return 3;
+  if (width < 1024) return 4;
+
+  return 4;
 }
 
 function ProductCatalogCard({ data }: { data: ProductCardData }) {
@@ -64,32 +88,75 @@ function ProductCatalogCard({ data }: { data: ProductCardData }) {
   return (
     <Link
       href={href}
-      className="group relative flex h-full flex-col overflow-hidden rounded-[2rem] border border-[#e5eef8] bg-white shadow-[0_24px_60px_-48px_rgba(15,23,42,0.62)] transition-all duration-300 hover:-translate-y-1 hover:border-[#91caee]"
+      className={cn(
+        "group relative flex h-full flex-col overflow-hidden",
+        "rounded-[22px] border border-[#e5eef8] bg-white",
+        "shadow-[0_22px_52px_-46px_rgba(15,23,42,0.58)]",
+        "transition-all duration-300",
+        "hover:-translate-y-1 hover:border-[#91caee]",
+        "sm:rounded-[24px]",
+        "xl:rounded-[28px]",
+      )}
     >
-      <div className="relative aspect-[4/3] overflow-hidden bg-[#f8fbff]">
+      <div className="relative aspect-[16/11] overflow-hidden bg-[#f8fbff] sm:aspect-[4/3] xl:aspect-[16/11]">
         {data.image ? (
-          <Image src={data.image.src} alt={data.image.alt || data.name} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover transition-transform duration-700 group-hover:scale-105" />
+          <Image
+            src={data.image.src}
+            alt={data.image.alt || data.name}
+            fill
+            sizes="(min-width: 1536px) 22vw, (min-width: 1280px) 25vw, (min-width: 768px) 45vw, 100vw"
+            className="object-cover transition-transform duration-700 group-hover:scale-105"
+          />
         ) : (
           <div className="h-full w-full bg-[linear-gradient(135deg,#daecd4,#ffffff,#c5e1f5)]" />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/28 via-transparent to-transparent" />
+
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/26 via-transparent to-transparent" />
+
         {data.badge ? (
-          <span className="absolute left-4 top-4 rounded-full bg-white/92 px-3 py-1 text-xs font-black uppercase tracking-[0.14em] text-[#0097dc] shadow-sm backdrop-blur">
+          <span
+            className={cn(
+              "absolute left-[14px] top-[14px] rounded-full bg-white/92 rtl:left-auto rtl:right-[14px]",
+              "px-[11px] py-[5px]",
+              "text-[11px] font-black uppercase leading-none tracking-[0.16em] text-[#0097dc]",
+              "shadow-sm backdrop-blur",
+              "xl:left-4 xl:top-4 xl:px-3 xl:py-1.5 xl:text-xs rtl:xl:left-auto rtl:xl:right-4",
+            )}
+          >
             {data.badge}
           </span>
         ) : null}
       </div>
 
-      <div className="flex flex-1 flex-col p-6">
-        <div className="mb-4 flex items-center justify-between gap-3">
-          <span className="rounded-full bg-[#daecd4]/70 px-3 py-1 text-xs font-bold text-[#2a8d33]">{data.category}</span>
-          <span className="h-2 w-2 rounded-full bg-[#f58238]" />
+      <div className="flex flex-1 flex-col p-[20px] sm:p-[22px] xl:p-6">
+        <div className="mb-[14px] flex items-center justify-between gap-3 xl:mb-4">
+          <span className="max-w-[78%] truncate rounded-full bg-[#daecd4]/70 px-3 py-1 text-[11px] font-bold leading-none text-[#2a8d33] xl:text-xs">
+            {data.category}
+          </span>
+
+          <span className="h-2 w-2 shrink-0 rounded-full bg-[#f58238]" />
         </div>
-        <h3 className="text-xl font-black tracking-tight text-slate-950">{data.name}</h3>
-        <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-slate-600">{data.description}</p>
-        <div className="mt-auto pt-6">
-          {data.indication ? <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#0097dc]">{data.indication}</p> : null}
-          {data.storage ? <p className="mt-2 text-xs text-slate-500">{data.storage}</p> : null}
+
+        <h3 className="text-[19px] font-black leading-[1.15] tracking-[-0.035em] text-slate-950 xl:text-xl">
+          {data.name}
+        </h3>
+
+        <p className="mt-[10px] line-clamp-3 text-[14px] font-medium leading-[1.55] tracking-[-0.01em] text-slate-600 xl:mt-3 xl:text-sm xl:leading-relaxed">
+          {data.description}
+        </p>
+
+        <div className="mt-auto pt-[22px] xl:pt-6">
+          {data.indication ? (
+            <p className="text-[11px] font-black uppercase leading-none tracking-[0.14em] text-[#0097dc] xl:text-xs">
+              {data.indication}
+            </p>
+          ) : null}
+
+          {data.storage ? (
+            <p className="mt-2 text-[12px] font-medium leading-5 text-slate-500">
+              {data.storage}
+            </p>
+          ) : null}
         </div>
       </div>
     </Link>
@@ -101,22 +168,41 @@ export function ProductCatalogFilterSection({
   title,
   description,
   items,
-  columns = 3,
+  columns = 4,
   categoryOptions,
 }: ProductCatalogFilterSectionProps) {
   const labels = LABELS[locale];
+  const moreMenuRef = useRef<HTMLDivElement | null>(null);
+
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [isMoreOpen, setIsMoreOpen] = useState(false);
+  const [visibleFilterCount, setVisibleFilterCount] = useState(3);
+
+  useEffect(() => {
+    function handleResize() {
+      setVisibleFilterCount(getVisibleFilterCount());
+    }
+
+    handleResize();
+
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const resolvedCategories = useMemo(() => {
     if (categoryOptions?.length) return categoryOptions;
 
     const seen = new Set<string>();
+
     return items
       .map((item) => item.category)
       .filter((category) => {
         const key = normalize(category);
-        if (seen.has(key)) return false;
+
+        if (!key || seen.has(key)) return false;
+
         seen.add(key);
         return true;
       })
@@ -126,6 +212,37 @@ export function ProductCatalogFilterSection({
         value: category,
       }));
   }, [categoryOptions, items]);
+
+  const filterOptions = [
+    {
+      id: "all",
+      label: labels.allCategories,
+      value: "all",
+    },
+    ...resolvedCategories,
+  ];
+
+  const visibleFilterOptions = filterOptions.slice(0, visibleFilterCount);
+  const shouldShowMoreButton = filterOptions.length > visibleFilterCount;
+
+  const isSelectedCategoryInMore =
+    shouldShowMoreButton &&
+    !visibleFilterOptions.some((option) => option.value === selectedCategory);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        moreMenuRef.current &&
+        !moreMenuRef.current.contains(event.target as Node)
+      ) {
+        setIsMoreOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const filteredItems = useMemo(() => {
     const query = normalize(searchQuery);
@@ -142,6 +259,7 @@ export function ProductCatalogFilterSection({
         item.category,
         item.description,
         item.indication || "",
+        item.storage || "",
       ]
         .join(" ")
         .toLowerCase();
@@ -153,104 +271,209 @@ export function ProductCatalogFilterSection({
   const columnsClass =
     columns === 2
       ? "xl:grid-cols-2"
-      : columns === 4
-        ? "xl:grid-cols-4"
-        : "xl:grid-cols-3";
+      : columns === 3
+        ? "xl:grid-cols-3"
+        : "xl:grid-cols-4";
+
+  function selectCategory(value: string) {
+    setSelectedCategory(value);
+    setIsMoreOpen(false);
+  }
 
   return (
-    <section className="relative overflow-hidden border-y border-[#e5eef8] bg-white py-16 sm:py-20 md:py-24">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_18%,rgba(218,236,212,0.65),transparent_28%),radial-gradient(circle_at_88%_14%,rgba(197,225,245,0.75),transparent_30%)]" />
+    <section
+      className={cn(
+        "relative overflow-hidden bg-[#f8fbff]",
+        "py-[60px] sm:py-[68px] lg:py-[76px] xl:py-[84px]",
+      )}
+    >
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(226,244,255,0.55),transparent_34%)]" />
 
-      <div className="relative z-10 mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mb-10 grid gap-6 rounded-[2.25rem] border border-[#e5eef8] bg-[#f8fbff]/80 p-6 md:mb-12 md:grid-cols-[1fr_auto] md:items-end md:p-8">
-          <div className="max-w-2xl">
-            <motion.h2
-              initial={{ opacity: 0, y: 12 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="text-3xl font-black text-slate-950 sm:text-4xl md:text-5xl"
-            >
-              {title}
-            </motion.h2>
-            {description ? (
-              <motion.p
-                initial={{ opacity: 0, y: 12 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.06 }}
-                className="mt-3 text-sm leading-relaxed text-slate-600 sm:text-base"
-              >
-                {description}
-              </motion.p>
-            ) : null}
+      <div
+        className={cn(
+          "relative z-10 w-full",
+          "px-4 sm:px-6 md:px-8",
+          "lg:px-[80px]",
+          "xl:px-[120px]",
+          "2xl:px-[210px]",
+        )}
+      >
+        {title || description ? (
+          <div className="sr-only">
+            {title ? <h2>{title}</h2> : null}
+            {description ? <p>{description}</p> : null}
           </div>
+        ) : null}
 
-          <motion.div
-            initial={{ opacity: 0, scale: 0.98 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.12 }}
-            className="inline-flex items-center gap-2 rounded-full bg-[#0097dc] px-4 py-2 text-xs font-black uppercase tracking-[0.12em] text-white"
-          >
-            <Filter className="h-3.5 w-3.5" />
-            <span>
-              {filteredItems.length} {labels.results}
-            </span>
-          </motion.div>
-        </div>
-
+        {/* Filter/search row */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ delay: 0.15 }}
-          className="mb-10 grid gap-4 rounded-[1.5rem] border border-[#e5eef8] bg-white p-3 shadow-[0_18px_42px_-36px_rgba(15,23,42,0.35)] sm:grid-cols-[1fr_260px] md:mb-12"
+          className={cn(
+            "mb-[34px] flex flex-col gap-5",
+            "sm:mb-[38px]",
+            "lg:mb-[42px]",
+            "xl:flex-row xl:items-center xl:justify-between",
+          )}
         >
-          <div className="relative">
-            <span className="pointer-events-none absolute start-4 top-1/2 -translate-y-1/2 text-slate-400">
-              <Search className="h-4 w-4" />
-            </span>
+          {/* Categories */}
+          <div className="relative flex min-w-0 flex-nowrap items-center gap-2">
+            {visibleFilterOptions.map((category) => {
+              const isActive = selectedCategory === category.value;
+
+              return (
+                <button
+                  key={category.id}
+                  type="button"
+                  onClick={() => selectCategory(category.value)}
+                  className={cn(
+                    "inline-flex shrink-0 items-center justify-center rounded-full",
+                    "h-[40px] px-[16px]",
+                    "border text-[13px] font-bold leading-none tracking-[-0.012em]",
+                    "transition-all duration-300",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#009fe3] focus-visible:ring-offset-2",
+                    "sm:h-[42px] sm:px-[20px] sm:text-[14px]",
+                    "xl:h-[44px] xl:px-[24px]",
+                    isActive
+                      ? "border-[#009fe3] bg-[#009fe3] text-white shadow-[0_12px_26px_-20px_rgba(0,159,227,0.9)]"
+                      : "border-[#d9e4ef] bg-white text-[#33445f] hover:border-[#9ed8f8] hover:text-[#009fe3]",
+                  )}
+                >
+                  <span className="max-w-[120px] truncate whitespace-nowrap sm:max-w-[160px] md:max-w-[190px] xl:max-w-[220px]">
+                    {category.label}
+                  </span>
+                </button>
+              );
+            })}
+
+            {shouldShowMoreButton ? (
+              <div ref={moreMenuRef} className="relative shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setIsMoreOpen((current) => !current)}
+                  className={cn(
+                    "inline-flex shrink-0 items-center justify-center gap-2 rounded-full",
+                    "h-[40px] px-[16px]",
+                    "border text-[13px] font-bold leading-none tracking-[-0.012em]",
+                    "transition-all duration-300",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#009fe3] focus-visible:ring-offset-2",
+                    "sm:h-[42px] sm:px-[20px] sm:text-[14px]",
+                    "xl:h-[44px] xl:px-[24px]",
+                    isMoreOpen || isSelectedCategoryInMore
+                      ? "border-[#009fe3] bg-[#009fe3] text-white shadow-[0_12px_26px_-20px_rgba(0,159,227,0.9)]"
+                      : "border-[#d9e4ef] bg-white text-[#33445f] hover:border-[#9ed8f8] hover:text-[#009fe3]",
+                  )}
+                >
+                  <span>{labels.more}</span>
+
+                  <ChevronDown
+                    className={cn(
+                      "h-[15px] w-[15px] stroke-[2.5] transition-transform duration-300",
+                      isMoreOpen && "rotate-180",
+                    )}
+                  />
+                </button>
+
+                <AnimatePresence>
+                  {isMoreOpen ? (
+                    <motion.div
+                      initial={{ opacity: 0, y: 8, scale: 0.98 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 8, scale: 0.98 }}
+                      transition={{ duration: 0.18 }}
+                      className={cn(
+                        "absolute left-0 top-[calc(100%+10px)] z-30 rtl:left-auto rtl:right-0 rtl:text-right",
+                        "w-[260px] overflow-hidden rounded-[18px]",
+                        "border border-[#d9e4ef] bg-white",
+                        "shadow-[0_22px_48px_-32px_rgba(15,23,42,0.45)]",
+                        "sm:w-[300px]",
+                      )}
+                    >
+                      <div className="max-h-[315px] overflow-y-auto p-2">
+                        {filterOptions.map((category) => {
+                          const isActive = selectedCategory === category.value;
+
+                          return (
+                            <button
+                              key={`${category.id}-menu`}
+                              type="button"
+                              onClick={() => selectCategory(category.value)}
+                              className={cn(
+                                "flex w-full items-center justify-between gap-3 rounded-[12px]",
+                                "px-4 py-3 text-start",
+                                "text-[14px] font-bold leading-[1.25] tracking-[-0.012em]",
+                                "transition-colors duration-200",
+                                isActive
+                                  ? "bg-[#eaf7ff] text-[#009fe3]"
+                                  : "text-[#33445f] hover:bg-[#f8fbff] hover:text-[#009fe3]",
+                              )}
+                            >
+                              <span>{category.label}</span>
+
+                              {isActive ? (
+                                <span className="h-2 w-2 shrink-0 rounded-full bg-[#009fe3]" />
+                              ) : null}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </motion.div>
+                  ) : null}
+                </AnimatePresence>
+              </div>
+            ) : null}
+          </div>
+
+          {/* Search */}
+          <div className="relative w-full shrink-0 xl:w-[320px]">
+            <Search className="pointer-events-none absolute left-[16px] top-1/2 h-[17px] w-[17px] -translate-y-1/2 text-[#8da0bd] rtl:left-auto rtl:right-[16px]" />
+
             <input
               value={searchQuery}
               onChange={(event) => setSearchQuery(event.target.value)}
               placeholder={labels.searchPlaceholder}
-              className="h-12 w-full rounded-[1rem] border border-transparent bg-[#f8fbff] ps-11 pe-4 text-sm text-slate-700 outline-none transition-all placeholder:text-slate-400 focus:border-[#0097dc] focus:bg-white focus:ring-2 focus:ring-[#c5e1f5]"
+              className={cn(
+                "h-[40px] w-full rounded-full",
+                "border border-[#d9e4ef] bg-white",
+                "pl-[43px] pr-[18px] rtl:pl-[18px] rtl:pr-[43px]",
+                "text-[13px] font-medium leading-none tracking-[-0.01em] text-[#33445f]",
+                "shadow-[0_12px_28px_-24px_rgba(15,23,42,0.45)]",
+                "outline-none transition-all duration-300",
+                "placeholder:text-[#64748b]",
+                "focus:border-[#9ed8f8] focus:ring-2 focus:ring-[#c5e1f5]",
+                "sm:h-[42px] sm:text-[14px]",
+                "xl:h-[44px] xl:w-[320px]",
+              )}
             />
-          </div>
-
-          <div className="relative">
-            <select
-              value={selectedCategory}
-              onChange={(event) => setSelectedCategory(event.target.value)}
-              aria-label={labels.categoryLabel}
-              className="h-12 w-full appearance-none rounded-[1rem] border border-transparent bg-[#f8fbff] px-4 pe-10 text-sm text-slate-700 outline-none transition-all focus:border-[#0097dc] focus:bg-white focus:ring-2 focus:ring-[#c5e1f5]"
-            >
-              <option value="all">{labels.allCategories}</option>
-              {resolvedCategories.map((category) => (
-                <option key={category.id} value={category.value}>
-                  {category.label}
-                </option>
-              ))}
-            </select>
-            <div className="pointer-events-none absolute end-4 top-1/2 -translate-y-1/2 text-slate-400">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-                <path d="M6 9l6 6 6-6" />
-              </svg>
-            </div>
           </div>
         </motion.div>
 
+        {/* Product cards */}
         <AnimatePresence mode="popLayout">
           {filteredItems.length > 0 ? (
-            <motion.div layout className={cn("grid gap-6 sm:grid-cols-2", columnsClass)}>
-              {filteredItems.map((item, i) => (
+            <motion.div
+              layout
+              className={cn(
+                "grid",
+                "gap-[18px]",
+                "sm:grid-cols-2 sm:gap-[20px]",
+                "lg:gap-[22px]",
+                "xl:gap-[24px]",
+                columnsClass,
+              )}
+            >
+              {filteredItems.map((item, index) => (
                 <motion.div
                   key={item.id}
                   layout
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 10 }}
-                  transition={{ duration: 0.28, delay: Math.min(i * 0.04, 0.3) }}
+                  transition={{
+                    duration: 0.28,
+                    delay: Math.min(index * 0.04, 0.3),
+                  }}
                 >
                   <ProductCatalogCard data={item} />
                 </motion.div>
@@ -261,12 +484,15 @@ export function ProductCatalogFilterSection({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="rounded-[2rem] border border-[#e2ebf7] bg-white px-6 py-14 text-center shadow-[0_16px_40px_-34px_rgba(15,23,42,0.35)]"
+              className="rounded-[24px] border border-[#e2ebf7] bg-white px-6 py-14 text-center shadow-[0_16px_40px_-34px_rgba(15,23,42,0.35)]"
             >
-              <p className="text-lg font-bold tracking-tight text-slate-900">
+              <p className="text-[18px] font-black tracking-[-0.02em] text-slate-900">
                 {labels.noResultsTitle}
               </p>
-              <p className="mt-2 text-sm text-slate-600">{labels.noResultsDescription}</p>
+
+              <p className="mt-2 text-[14px] font-medium leading-6 text-slate-600">
+                {labels.noResultsDescription}
+              </p>
             </motion.div>
           )}
         </AnimatePresence>

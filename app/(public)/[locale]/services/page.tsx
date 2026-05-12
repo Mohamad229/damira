@@ -1,25 +1,9 @@
 import type { Metadata } from "next";
 
-// import { CardGridV2 } from "@/components/public/sections/v2/CardGrid-v2";
-// import { HeroSectionV2 } from "@/components/public/sections/v2/hero-section-v2";
-
-// import { CtaSection } from "@/components/public/sections/v2/CtaSection-v2";
-// import {
-//   ColdChainSection,
-//   InfrastructureSection,
-//   LogisticsDistributionSection,
-//   MarketAccessSection,
-//   MedicalSupportSection,
-//   RegulatoryServicesSection,
-//   SafetyVigilanceSection,
-// } from "@/components/public/sections/services";
-
 import { ServicesHeroSection } from "@/components/public/sections/services/ServicesHeroSection";
 import { InfrastructureSection } from "@/components/public/sections/services/InfrastructureSection";
-import { ColdChainSection } from "@/components/public/sections/services/ColdChainSection";
 import { RegulatoryServicesSection } from "@/components/public/sections/services/RegulatoryServicesSection";
 import { SafetyVigilanceSection } from "@/components/public/sections/services/SafetyVigilanceSection";
-import { MedicalSupportSection } from "@/components/public/sections/services/MedicalSupportSection";
 import { LogisticsDistributionSection } from "@/components/public/sections/services/LogisticsDistributionSection";
 import { MarketAccessSection } from "@/components/public/sections/services/MarketAccessSection";
 
@@ -62,26 +46,20 @@ export default async function ServicesPage({ params }: ServicesPageProps) {
       <section id="services-overview" className="scroll-mt-32">
         <ServicesHeroSection data={pageData.hero} />
       </section>
-      <section id="services-infrastructure" className="scroll-mt-32">
-        <InfrastructureSection data={pageData.infrastructure} />
-      </section>
-      {/* <section id="services-cold-chain" className="scroll-mt-32">
-        <ColdChainSection data={pageData.coldChain} />
-      </section> */}
       <section id="services-regulatory" className="scroll-mt-32">
         <RegulatoryServicesSection data={pageData.regulatory} />
       </section>
-      <section id="services-safety" className="scroll-mt-32">
-        <SafetyVigilanceSection data={pageData.safetyVigilance} />
+      <section id="services-infrastructure" className="scroll-mt-32">
+        <InfrastructureSection data={pageData.infrastructure} />
       </section>
-      <section id="services-medical" className="scroll-mt-32">
-        <MedicalSupportSection data={pageData.medicalSupport} />
+      <section id="services-market-access" className="scroll-mt-32">
+        <MarketAccessSection data={pageData.marketAccess} />
       </section>
       <section id="services-logistics" className="scroll-mt-32">
         <LogisticsDistributionSection data={pageData.logisticsDistribution} />
       </section>
-      <section id="services-market-access" className="scroll-mt-32">
-        <MarketAccessSection data={pageData.marketAccess} />
+      <section id="services-safety" className="scroll-mt-32">
+        <SafetyVigilanceSection data={pageData.safetyVigilance} />
       </section>
     </>
   );

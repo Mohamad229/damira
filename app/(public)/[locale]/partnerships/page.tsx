@@ -1,15 +1,9 @@
 import type { Metadata } from "next";
 
-// import { ContentSection as ContentSectionV2 } from "@/components/public/sections/v2/ContentSection-v2";
-// import { CtaSection as CtaSectionV2 } from "@/components/public/sections/v2/CtaSection-v2";
-// import { HeroSectionV2 } from "@/components/public/sections/v2/hero-section-v2";
-// import { StatsSectionV2 } from "@/components/public/sections/v2/stats-section-v2";
-// import { PartnershipInquirySectionV2 } from "@/components/public/sections/v2/partnership-inquiry-section-v2";
-// import { WhyPartnerSectionV2 } from "@/components/public/sections/v2/why-partner-section-v2";
-
 import { PartnershipsHeroSection } from "@/components/public/sections/partnerships/PartnershipsHeroSection";
 import { WhyPartnerSection } from "@/components/public/sections/partnerships/WhyPartnerSection";
-import { PartnershipInquirySection } from "@/components/public/sections/partnerships//PartnershipInquirySection";
+import { PartnershipAdvantageSection } from "@/components/public/sections/partnerships/PartnershipAdvantageSection";
+import { PartnershipInquirySection } from "@/components/public/sections/partnerships/PartnershipInquirySection";
 
 import type { Locale } from "@/i18n/config";
 import { getManagedPublicPageData } from "@/lib/content/public-ui";
@@ -26,6 +20,7 @@ export async function generateMetadata({
 }: PartnershipsPageProps): Promise<Metadata> {
   const { locale } = await params;
   const currentLocale: Locale = locale === "ar" ? "ar" : "en";
+
   const pageData = await getManagedPublicPageData(
     "partnerships",
     currentLocale,
@@ -48,6 +43,7 @@ export default async function PartnershipsPage({
 }: PartnershipsPageProps) {
   const { locale } = await params;
   const currentLocale: Locale = locale === "ar" ? "ar" : "en";
+
   const pageData = await getManagedPublicPageData(
     "partnerships",
     currentLocale,
@@ -58,30 +54,21 @@ export default async function PartnershipsPage({
       <section id="partners-overview" className="scroll-mt-32">
         <PartnershipsHeroSection data={pageData.hero} />
       </section>
+
       <section id="partners-why" className="scroll-mt-32">
         <WhyPartnerSection data={pageData.whyPartner} />
       </section>
+
+      <section id="partners-advantage" className="scroll-mt-32">
+        <PartnershipAdvantageSection data={pageData.advantage} />
+      </section>
+
       <section id="partners-inquiry" className="scroll-mt-32">
         <PartnershipInquirySection
           data={pageData.partnershipForm}
           locale={currentLocale}
         />
       </section>
-      {/* <section id="partners-market-access" className="scroll-mt-32">
-        <ContentSectionV2 data={pageData.marketAccess} />
-      </section> */}
-      {/* <section id="partners-infrastructure" className="scroll-mt-32">
-        <ContentSectionV2 data={pageData.infrastructureStrength} />
-      </section> */}
-      {/* <section id="partners-reach" className="scroll-mt-32">
-        <StatsSectionV2 data={pageData.commercialReach} />
-      </section> */}
-      {/* <section id="partners-proven-success" className="scroll-mt-32">
-        <ContentSectionV2 data={pageData.provenSuccess} />
-      </section> */}
-      {/* <section id="partners-cta" className="scroll-mt-32">
-        <CtaSectionV2 data={pageData.cta} />
-      </section> */}
     </>
   );
 }

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useCallback, useTransition } from "react";
-import Image from "next/image";
 import {
   Search,
   Upload,
@@ -202,8 +201,42 @@ export function MediaPicker({
     onOpenChange(false);
   };
 
-  const handleUploadComplete = () => {
-    loadMedia();
+  const handleUploadComplete = (uploadedMedia: MediaWithUser[]) => {
+    if (uploadedMedia.length > 0) {
+      setData((previous) => {
+        if (!previous) {
+          return {
+            media: uploadedMedia,
+            total: uploadedMedia.length,
+            page: 1,
+            totalPages: 1,
+          };
+        }
+
+        const existingIds = new Set(previous.media.map((item) => item.id));
+        const newItems = uploadedMedia.filter((item) => !existingIds.has(item.id));
+        const nextMedia = [...newItems, ...previous.media];
+
+        return {
+          ...previous,
+          media: nextMedia.slice(0, pageSize),
+          total: previous.total + newItems.length,
+          page: 1,
+          totalPages: Math.max(
+            1,
+            Math.ceil((previous.total + newItems.length) / pageSize),
+          ),
+        };
+      });
+
+      setSelectedItems((previous) => {
+        const next = multiple ? new Map(previous) : new Map<string, MediaWithUser>();
+        uploadedMedia.forEach((item) => next.set(item.id, item));
+        return next;
+      });
+    }
+
+    setCurrentPage(1);
     setShowUploadZone(false);
   };
 
@@ -249,7 +282,7 @@ export function MediaPicker({
               <div className="flex items-center gap-2">
                 <Filter className="size-4 text-muted-foreground" />
                 <div className="flex rounded-lg border border-border bg-background p-1">
-                  {(["all", "image", "document"] as const).map((type) => (
+                  {(["all", "image", "document", "video"] as const).map((type) => (
                     <button
                       key={type}
                       onClick={() => setTypeFilter(type)}
@@ -288,6 +321,7 @@ export function MediaPicker({
             <PickerUploadZone
               onClose={() => setShowUploadZone(false)}
               onUploadComplete={handleUploadComplete}
+              accept={accept}
             />
           </div>
         )}
@@ -443,12 +477,11 @@ function PickerMediaCard({
       {/* Thumbnail */}
       <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-muted/50 to-muted">
         {isImage && !imageError ? (
-          <Image
+          // eslint-disable-next-line @next/next/no-img-element -- Admin previews must show newly uploaded local files immediately.
+          <img
             src={media.url}
             alt={media.name}
-            fill
-            sizes="(max-width: 640px) 50vw, 25vw"
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
             onError={() => setImageError(true)}
           />
         ) : (
@@ -486,9 +519,11 @@ function PickerMediaCard({
 function PickerUploadZone({
   onClose,
   onUploadComplete,
+  accept,
 }: {
   onClose: () => void;
-  onUploadComplete: () => void;
+  onUploadComplete: (uploadedMedia: MediaWithUser[]) => void;
+  accept: MediaPickerProps["accept"];
 }) {
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -504,7 +539,7 @@ function PickerUploadZone({
       setIsUploading(true);
       setUploadProgress(files.map((f) => ({ name: f.name, progress: 0 })));
 
-      let successCount = 0;
+      const uploadedMedia: MediaWithUser[] = [];
 
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
@@ -521,26 +556,41 @@ function PickerUploadZone({
             body: formData,
           });
 
-          if (response.ok) {
-            successCount++;
+          const result = (await response.json().catch(() => null)) as
+            | { success?: boolean; media?: MediaWithUser; error?: string }
+            | null;
+
+          if (response.ok && result?.success && result.media) {
+            uploadedMedia.push(result.media);
             setUploadProgress((prev) =>
               prev.map((p, idx) => (idx === i ? { ...p, progress: 100 } : p)),
             );
+          } else {
+            toast({
+              title: "Upload failed",
+              description: result?.error || `Unable to upload ${file.name}`,
+              variant: "error",
+            });
           }
         } catch (error) {
           console.error("Upload failed:", error);
+          toast({
+            title: "Upload failed",
+            description: `Unable to upload ${file.name}`,
+            variant: "error",
+          });
         }
       }
 
       setIsUploading(false);
 
-      if (successCount > 0) {
+      if (uploadedMedia.length > 0) {
         toast({
           title: "Upload Complete",
-          description: `${successCount} file${successCount > 1 ? "s" : ""} uploaded`,
+          description: `${uploadedMedia.length} file${uploadedMedia.length > 1 ? "s" : ""} uploaded`,
           variant: "success",
         });
-        onUploadComplete();
+        onUploadComplete(uploadedMedia);
       }
     },
     [toast, onUploadComplete],
@@ -592,7 +642,11 @@ function PickerUploadZone({
         type="file"
         multiple
         onChange={handleFileSelect}
-        accept="image/*,.pdf,.doc,.docx"
+        accept={
+          accept === "image"
+            ? "image/*"
+            : "image/*,video/mp4,video/webm,.pdf,.doc,.docx"
+        }
         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
         disabled={isUploading}
       />

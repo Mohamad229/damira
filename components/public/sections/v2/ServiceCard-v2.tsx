@@ -1,4 +1,8 @@
 import { CheckCircle2, ArrowUpRight } from "lucide-react";
+import {
+  isSectionMediaIcon,
+  SectionIconImage,
+} from "@/components/public/sections/base/SectionIconImage";
 import type { ServiceCardData } from "@/components/public/sections/base/types";
 
 interface ServiceCardProps {
@@ -6,13 +10,24 @@ interface ServiceCardProps {
 }
 
 export function ServiceCardV2({ data }: ServiceCardProps) {
-  const Icon = data.icon;
+  const Icon = typeof data.icon === "function" ? data.icon : null;
 
   return (
     <article className="group relative flex h-full flex-col rounded-2xl border border-[#e8f0f8] bg-white p-6 shadow-[0_20px_45px_-35px_rgba(15,23,42,0.45)] transition-all duration-300 hover:-translate-y-1.5 hover:border-[#91caee] hover:bg-[#f8fbff] sm:p-7 lg:p-8">
       <div className="mb-10 flex items-start justify-between">
         <div className="inline-flex rounded-xl bg-[#c5e1f5]/45 p-2.5 text-[#0097dc] transition-colors duration-300 group-hover:bg-[#0097dc] group-hover:text-white">
-          {Icon ? <Icon className="h-6 w-6 stroke-[1.75]" /> : <CheckCircle2 className="h-6 w-6 stroke-[1.75]" />}
+          {isSectionMediaIcon(data.icon) ? (
+            <SectionIconImage
+              icon={data.icon}
+              width={26}
+              height={26}
+              className="h-6 w-6 object-contain"
+            />
+          ) : Icon ? (
+            <Icon className="h-6 w-6 stroke-[1.75]" />
+          ) : (
+            <CheckCircle2 className="h-6 w-6 stroke-[1.75]" />
+          )}
         </div>
         <ArrowUpRight className="h-5 w-5 text-slate-400 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:translate-y-0 group-hover:opacity-100 group-hover:text-[#f58238]" />
       </div>

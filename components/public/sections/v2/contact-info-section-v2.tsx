@@ -41,6 +41,7 @@ export function ContactInfoSectionV2({ data }: ContactInfoSectionProps) {
               const wrapperProps = item.href ? { href: item.href, className: "group relative flex flex-col items-center text-center rounded-2xl bg-gray-50 p-8 shadow-sm transition-all hover:-translate-y-1 hover:shadow-md border border-gray-100" } : { className: "group relative flex flex-col items-center text-center rounded-2xl bg-gray-50 p-8 shadow-sm border border-gray-100" };
 
               return (
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 <Wrapper key={idx} {...wrapperProps as any}>
                   <div className="mb-6 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-[#0097dc]/10 text-[#0097dc] transition-colors group-hover:bg-[#0097dc] group-hover:text-white">
                     <Icon className="h-7 w-7" strokeWidth={1.5} />

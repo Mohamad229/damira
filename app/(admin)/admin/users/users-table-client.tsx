@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 import {
   ChevronLeft,
@@ -45,10 +45,40 @@ export function UsersTableClient({
   const [totalPages, setTotalPages] = useState(initialData.totalPages);
   const [limit, setLimit] = useState(initialData.limit);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [adminSearchQuery, setAdminSearchQuery] = useState(() => {
+    if (typeof window === "undefined") {
+      return "";
+    }
+    return new URLSearchParams(window.location.search).get("q") ?? "";
+  });
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
 
   const hasUsers = users.length > 0;
+
+  useEffect(() => {
+    function handleAdminSearch(event: Event) {
+      const detail = (event as CustomEvent<{ query?: string }>).detail;
+      setAdminSearchQuery(detail?.query ?? "");
+    }
+
+    window.addEventListener("admin-search", handleAdminSearch);
+    return () => window.removeEventListener("admin-search", handleAdminSearch);
+  }, []);
+
+  const displayedUsers = useMemo(() => {
+    const query = adminSearchQuery.trim().toLowerCase();
+    if (!query) {
+      return users;
+    }
+
+    return users.filter((user) =>
+      [user.name, user.email, user.role]
+        .join(" ")
+        .toLowerCase()
+        .includes(query),
+    );
+  }, [adminSearchQuery, users]);
 
   const paginationLabel = useMemo(() => {
     if (totalItems === 0) {
@@ -165,7 +195,7 @@ export function UsersTableClient({
             </tr>
           </thead>
           <tbody>
-            {users.map((user) => {
+            {displayedUsers.map((user) => {
               const isSelf = user.id === currentUserId;
               const isDeleting = deletingId === user.id;
 
@@ -229,6 +259,12 @@ export function UsersTableClient({
           </tbody>
         </table>
       </div>
+
+      {adminSearchQuery && displayedUsers.length === 0 ? (
+        <div className="rounded-lg border border-dashed bg-card p-8 text-center text-sm text-muted-foreground">
+          No users match this page search.
+        </div>
+      ) : null}
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <span className="text-sm text-muted-foreground">{paginationLabel}</span>

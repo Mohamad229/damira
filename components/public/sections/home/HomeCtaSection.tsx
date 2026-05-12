@@ -1,7 +1,9 @@
 import Image from "next/image";
+
 import { Link } from "@/i18n/navigation";
 import { SectionReveal } from "@/components/public/sections/base/SectionReveal";
 import type { CtaSectionData } from "@/components/public/sections/base/types";
+import { cn } from "@/lib/utils";
 
 interface HomeCtaSectionProps {
   data: CtaSectionData;
@@ -10,54 +12,73 @@ interface HomeCtaSectionProps {
 export function HomeCtaSection({ data }: HomeCtaSectionProps) {
   return (
     <SectionReveal>
-      <section className="bg-white py-16 sm:py-20 md:py-24">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="relative overflow-hidden rounded-[2.25rem] bg-[#0097dc] px-6 py-10 text-white shadow-[0_30px_80px_-42px_rgba(0,151,220,0.85)] sm:px-8 md:px-12 md:py-14">
-            {data.backgroundImage ? (
-              <Image
-                src={data.backgroundImage.src}
-                alt={data.backgroundImage.alt}
-                fill
-                sizes="100vw"
-                className="object-cover opacity-15 mix-blend-overlay"
-              />
+      <section className="relative isolate overflow-hidden bg-[#009bd8] py-[93px] text-white">
+        {/* Optional dashboard background image */}
+        {data.backgroundImage ? (
+          <Image
+            src={data.backgroundImage.src}
+            alt={data.backgroundImage.alt || data.title || "CTA background"}
+            fill
+            sizes="100vw"
+            className="object-cover opacity-[0.08] mix-blend-overlay"
+          />
+        ) : null}
+
+        {/* Soft background depth like the target */}
+        <div className="pointer-events-none absolute inset-0 bg-[#009bd8]" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_-20%,rgba(255,255,255,0.16),transparent_38%),radial-gradient(circle_at_74%_52%,rgba(0,122,184,0.22),transparent_34%)]" />
+
+        {/* Same page padding rhythm as previous sections */}
+        <div className="relative z-10 w-full px-4 sm:px-6 md:px-8 lg:px-[210px]">
+          <div className="mx-auto max-w-[1120px] text-center">
+            {data.eyebrow ? (
+              <p className="mb-5 text-[13px] font-extrabold uppercase leading-none text-white/75">
+                {data.eyebrow}
+              </p>
             ) : null}
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.25),transparent_30%),radial-gradient(circle_at_90%_80%,rgba(76,183,72,0.35),transparent_28%)]" />
-            <div className="relative grid gap-8 lg:grid-cols-[1fr_auto] lg:items-center">
-              <div className="max-w-3xl">
-                {data.eyebrow ? (
-                  <p className="text-xs font-bold uppercase text-white/75">
-                    {data.eyebrow}
-                  </p>
-                ) : null}
-                <h2 className="mt-3 text-3xl font-black sm:text-4xl md:text-5xl">
-                  {data.title}
-                </h2>
-                {data.description ? (
-                  <p className="mt-4 max-w-2xl text-base leading-7 text-white/85">
-                    {data.description}
-                  </p>
-                ) : null}
-              </div>
-              <div className="flex flex-col gap-3 sm:flex-row lg:flex-col xl:flex-row">
+
+            <h2 className="mx-auto max-w-[1110px] text-[36px] font-black leading-[1.13] text-white sm:text-[44px] lg:text-[48px]">
+              {data.title || "Ready to scale in the Syrian healthcare market?"}
+            </h2>
+
+            {data.description ? (
+              <p className="mx-auto mt-[22px] max-w-[690px] text-[22px] font-semibold leading-[1.25] text-white/78">
+                {data.description}
+              </p>
+            ) : null}
+
+            {(data.primaryAction || data.secondaryAction) ? (
+              <div className="mt-[43px] flex flex-col items-center justify-center gap-4 sm:flex-row rtl:sm:flex-row-reverse">
                 {data.primaryAction ? (
                   <Link
                     href={data.primaryAction.href}
-                    className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-white px-6 text-sm font-black text-[#0097dc] transition hover:bg-[#f8fbff]"
+                    className={cn(
+                      "inline-flex h-[54px] min-w-[304px] items-center justify-center rounded-full",
+                      "bg-white px-8 text-[16px] font-extrabold leading-none text-[#009bd8]",
+                      "shadow-[0_18px_35px_-24px_rgba(15,23,42,0.65)]",
+                      "transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#f7fbff]",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#009bd8]",
+                    )}
                   >
                     {data.primaryAction.label}
                   </Link>
                 ) : null}
+
                 {data.secondaryAction ? (
                   <Link
                     href={data.secondaryAction.href}
-                    className="inline-flex min-h-12 items-center justify-center rounded-2xl border border-white/40 bg-white/10 px-6 text-sm font-black text-white transition hover:bg-white/20"
+                    className={cn(
+                      "inline-flex h-[54px] min-w-[227px] items-center justify-center rounded-full",
+                      "border border-white/28 bg-transparent px-8 text-[16px] font-extrabold leading-none text-white",
+                      "transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/10",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#009bd8]",
+                    )}
                   >
                     {data.secondaryAction.label}
                   </Link>
                 ) : null}
               </div>
-            </div>
+            ) : null}
           </div>
         </div>
       </section>

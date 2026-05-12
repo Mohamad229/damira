@@ -1,148 +1,155 @@
-import { writeFile, mkdir, unlink } from "fs/promises";
+import { del, put } from "@vercel/blob";
+import { randomUUID } from "crypto";
 import path from "path";
 
-export type StorageProvider = "local" | "s3";
+export type StorageProvider = "blob" | "local";
 
 export interface UploadResult {
   url: string;
   key: string;
+  pathname?: string;
   size: number;
   mimeType: string;
 }
 
-export interface StorageConfig {
-  provider: StorageProvider;
-  // Local storage
-  localUploadDir?: string;
-  localBaseUrl?: string;
-  // S3 storage
-  s3Bucket?: string;
-  s3Region?: string;
-  s3AccessKey?: string;
-  s3SecretKey?: string;
-  s3Endpoint?: string; // For R2 or custom S3-compatible storage
+const BLOB_TOKEN_ERROR = "Vercel Blob token is not configured.";
+
+function getStorageProvider(): StorageProvider {
+  const configuredProvider =
+    process.env.MEDIA_STORAGE_DRIVER || process.env.STORAGE_PROVIDER;
+
+  if (configuredProvider === "local" && process.env.NODE_ENV === "development") {
+    return "local";
+  }
+
+  return "blob";
 }
 
-function getConfig(): StorageConfig {
-  return {
-    provider: (process.env.STORAGE_PROVIDER as StorageProvider) || "local",
-    localUploadDir: process.env.LOCAL_UPLOAD_DIR || "public/uploads",
-    localBaseUrl: process.env.LOCAL_BASE_URL || "/uploads",
-    s3Bucket: process.env.S3_BUCKET,
-    s3Region: process.env.S3_REGION,
-    s3AccessKey: process.env.S3_ACCESS_KEY,
-    s3SecretKey: process.env.S3_SECRET_KEY,
-    s3Endpoint: process.env.S3_ENDPOINT,
-  };
+function getBlobToken(): string {
+  const token = process.env.BLOB_READ_WRITE_TOKEN;
+
+  if (!token) {
+    throw new Error(BLOB_TOKEN_ERROR);
+  }
+
+  return token;
 }
 
-// Generate a unique filename
-function generateFilename(originalName: string): string {
-  const timestamp = Date.now();
-  const random = Math.random().toString(36).substring(2, 8);
-  const ext = path.extname(originalName);
-  const baseName = path
-    .basename(originalName, ext)
-    .toLowerCase()
-    .replace(/[^a-z0-9]/g, "-")
-    .substring(0, 50);
-  return `${baseName}-${timestamp}-${random}${ext}`;
+function getUploadPath(originalName: string): string {
+  const now = new Date();
+  const year = String(now.getUTCFullYear());
+  const month = String(now.getUTCMonth() + 1).padStart(2, "0");
+  const ext = path.extname(originalName).toLowerCase();
+  const baseName =
+    path
+      .basename(originalName, ext)
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 60) || "media";
+  const uniquePart = `${Date.now()}-${randomUUID()}`;
+
+  return `media/${year}/${month}/${uniquePart}-${baseName}${ext}`;
 }
 
-// Local storage implementation
-async function uploadLocal(
+async function uploadBlob(
   file: Buffer,
-  filename: string,
+  originalFilename: string,
   mimeType: string,
-  config: StorageConfig,
 ): Promise<UploadResult> {
-  const uploadDir = config.localUploadDir || "public/uploads";
-  const baseUrl = config.localBaseUrl || "/uploads";
-
-  // Create upload directory if it doesn't exist
-  const fullDir = path.join(/*turbopackIgnore: true*/ process.cwd(), uploadDir);
-  await mkdir(fullDir, { recursive: true });
-
-  // Write file
-  const filePath = path.join(fullDir, filename);
-  await writeFile(filePath, file);
+  const pathname = getUploadPath(originalFilename);
+  const blob = await put(pathname, file, {
+    access: "public",
+    contentType: mimeType,
+    token: getBlobToken(),
+  });
 
   return {
-    url: `${baseUrl}/${filename}`,
-    key: filename,
+    url: blob.url,
+    key: blob.pathname,
+    pathname: blob.pathname,
     size: file.length,
     mimeType,
   };
 }
 
-async function deleteLocal(key: string, config: StorageConfig): Promise<void> {
-  const uploadDir = config.localUploadDir || "public/uploads";
-  const filePath = path.join(/*turbopackIgnore: true*/ process.cwd(), uploadDir, key);
+async function uploadLocalDevelopment(
+  file: Buffer,
+  originalFilename: string,
+  mimeType: string,
+): Promise<UploadResult> {
+  const { mkdir, writeFile } = await import("fs/promises");
+  const filename = path.basename(getUploadPath(originalFilename));
+  const uploadDir = path.join(process.cwd(), "public", "uploads");
+  const filePath = path.join(uploadDir, filename);
 
-  try {
-    await unlink(filePath);
-  } catch (error) {
-    // File might not exist, ignore error
-    console.warn(`Failed to delete file: ${key}`, error);
-  }
+  await mkdir(uploadDir, { recursive: true });
+  await writeFile(filePath, file);
+
+  return {
+    url: `/uploads/${filename}`,
+    key: filename,
+    pathname: filename,
+    size: file.length,
+    mimeType,
+  };
 }
 
-// S3 storage implementation (placeholder - implement when needed)
-async function uploadS3(
-  file: Buffer,
-  filename: string,
-  mimeType: string,
-  config: StorageConfig,
-): Promise<UploadResult> {
-  // TODO: Implement S3 upload using AWS SDK
-  // For now, throw an error
-  throw new Error(
-    "S3 storage not yet implemented. Please use local storage for development.",
+async function deleteLocalDevelopment(keyOrUrl: string): Promise<void> {
+  if (process.env.NODE_ENV !== "development") {
+    return;
+  }
+
+  const { unlink } = await import("fs/promises");
+  const filename = keyOrUrl.startsWith("/uploads/")
+    ? keyOrUrl.replace("/uploads/", "")
+    : path.basename(keyOrUrl);
+  const filePath = path.join(process.cwd(), "public", "uploads", filename);
+
+  await unlink(filePath).catch(() => undefined);
+}
+
+function isBlobUrl(value: string): boolean {
+  return (
+    value.includes(".public.blob.vercel-storage.com/") ||
+    value.startsWith("media/")
   );
 }
 
-async function deleteS3(key: string, config: StorageConfig): Promise<void> {
-  // TODO: Implement S3 delete using AWS SDK
-  throw new Error("S3 storage not yet implemented.");
-}
-
-// Main storage interface
 export const storage = {
   async upload(
     file: Buffer,
     originalFilename: string,
     mimeType: string,
   ): Promise<UploadResult> {
-    const config = getConfig();
-    const filename = generateFilename(originalFilename);
+    const provider = getStorageProvider();
 
-    if (config.provider === "s3") {
-      return uploadS3(file, filename, mimeType, config);
+    if (provider === "local") {
+      return uploadLocalDevelopment(file, originalFilename, mimeType);
     }
 
-    return uploadLocal(file, filename, mimeType, config);
+    return uploadBlob(file, originalFilename, mimeType);
   },
 
-  async delete(key: string): Promise<void> {
-    const config = getConfig();
-
-    if (config.provider === "s3") {
-      return deleteS3(key, config);
+  async delete(keyOrUrl: string): Promise<void> {
+    if (isBlobUrl(keyOrUrl)) {
+      await del(keyOrUrl, { token: getBlobToken() });
+      return;
     }
 
-    return deleteLocal(key, config);
+    await deleteLocalDevelopment(keyOrUrl);
   },
 
   getPublicUrl(key: string): string {
-    const config = getConfig();
-
-    if (config.provider === "s3") {
-      // Return S3 URL
-      return `https://${config.s3Bucket}.s3.${config.s3Region}.amazonaws.com/${key}`;
+    if (key.startsWith("http://") || key.startsWith("https://")) {
+      return key;
     }
 
-    // Return local URL
-    return `${config.localBaseUrl}/${key}`;
+    if (key.startsWith("/uploads/")) {
+      return key;
+    }
+
+    return key.startsWith("media/") ? key : `/uploads/${key}`;
   },
 };
 

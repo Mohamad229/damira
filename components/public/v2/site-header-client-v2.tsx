@@ -130,7 +130,7 @@ export function SiteHeaderClientV2({ navItems, mainNavLabel }: SiteHeaderClientV
 
                 {/* Dropdown Menu */}
                 {item.subItems && (
-                  <div className="absolute top-full left-1/2 z-50 mt-1 w-60 -translate-x-1/2 opacity-0 invisible translate-y-3 rounded-2xl border border-slate-100/50 bg-white/95 backdrop-blur-xl p-2.5 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] shadow-[#0097dc]/5 transition-all duration-300 ease-out group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
+                  <div className="invisible absolute left-1/2 top-full z-50 mt-1 w-60 -translate-x-1/2 translate-y-3 rounded-2xl border border-slate-100/50 bg-white/95 p-2.5 opacity-0 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] shadow-[#0097dc]/5 backdrop-blur-xl transition-all duration-300 ease-out group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 rtl:text-right">
                     <ul className="flex w-full flex-col gap-1">
                       {item.subItems.map((sub, i) => (
                         <li key={i}>
@@ -140,7 +140,7 @@ export function SiteHeaderClientV2({ navItems, mainNavLabel }: SiteHeaderClientV
                           >
                             <span className="relative">
                               {sub.label}
-                              <span className="absolute -bottom-1 left-0 h-0.5 w-0 rounded-full bg-[#0097dc] opacity-0 transition-all duration-300 group-hover/sub:w-full group-hover/sub:opacity-100" />
+                              <span className="absolute -bottom-1 left-0 h-0.5 w-0 rounded-full bg-[#0097dc] opacity-0 transition-all duration-300 group-hover/sub:w-full group-hover/sub:opacity-100 rtl:left-auto rtl:right-0" />
                             </span>
                           </a>
                         </li>
@@ -206,7 +206,7 @@ export function SiteHeaderClientV2({ navItems, mainNavLabel }: SiteHeaderClientV
 
                   {/* Mobile Submenu Dropdown */}
                   {item.subItems && (
-                    <div className="mt-1 flex flex-col gap-1 border-l-2 border-[#dbe8f5] ml-4 pl-3">
+                    <div className="mt-1 flex flex-col gap-1 border-l-2 border-[#dbe8f5] ml-4 pl-3 rtl:ml-0 rtl:mr-4 rtl:border-l-0 rtl:border-r-2 rtl:pl-0 rtl:pr-3 rtl:text-right">
                       {item.subItems.map((sub, i) => (
                         <a
                           key={i}

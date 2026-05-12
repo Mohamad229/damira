@@ -13,9 +13,6 @@ import type {
   PageData,
   SectionData,
   GetPageContentResponse,
-  HomePageContent,
-  AboutPageContent,
-  ServicesPageContent,
 } from "@/lib/content/types";
 import type { Locale } from "@/i18n/config";
 
@@ -97,83 +94,43 @@ export async function getPageContent(
   }
 }
 
-/**
- * Load home page content
- * Typed version returns HomePageContent
- */
+async function getStructuredPageData(
+  pageKey: string,
+  locale: Locale,
+): Promise<PageData | null> {
+  const content = await getPageContent(pageKey, locale);
+  if (!content) return null;
+
+  return {
+    title: content.title,
+    metaTitle: content.metaTitle,
+    metaDescription: content.metaDescription,
+    ...content.sections,
+  };
+}
+
 export async function getHomePageContent(
   locale: Locale = "en" as Locale,
-): Promise<HomePageContent | null> {
-  const content = await getPageContent("home", locale);
-  if (!content) return null;
-
-  return {
-    title: content.title,
-    metaTitle: content.metaTitle,
-    metaDescription: content.metaDescription,
-    hero: content.sections.hero,
-    trustMetrics: content.sections.trustMetrics,
-    capabilities: content.sections.capabilities,
-    featuredProducts: content.sections.featuredProducts,
-    cta: content.sections.cta,
-  };
+): Promise<PageData | null> {
+  return getStructuredPageData("home", locale);
 }
 
-/**
- * Load about page content
- */
 export async function getAboutPageContent(
   locale: Locale = "en" as Locale,
-): Promise<AboutPageContent | null> {
-  const content = await getPageContent("about", locale);
-  if (!content) return null;
-
-  return {
-    title: content.title,
-    metaTitle: content.metaTitle,
-    metaDescription: content.metaDescription,
-    hero: content.sections.hero,
-    story: content.sections.story,
-    missionVision: content.sections.missionVision,
-    values: content.sections.values,
-  };
+): Promise<PageData | null> {
+  return getStructuredPageData("about", locale);
 }
 
-/**
- * Load services page content
- */
 export async function getServicesPageContent(
   locale: Locale = "en" as Locale,
-): Promise<ServicesPageContent | null> {
-  const content = await getPageContent("services", locale);
-  if (!content) return null;
-
-  return {
-    title: content.title,
-    metaTitle: content.metaTitle,
-    metaDescription: content.metaDescription,
-    hero: content.sections.hero,
-    serviceBlocks: content.sections.serviceBlocks,
-    infrastructure: content.sections.infrastructure,
-  };
+): Promise<PageData | null> {
+  return getStructuredPageData("services", locale);
 }
 
-/**
- * Load products page content
- */
 export async function getProductsPageContent(
   locale: Locale = "en" as Locale,
 ): Promise<PageData | null> {
-  const content = await getPageContent("products", locale);
-  if (!content) return null;
-
-  return {
-    title: content.title,
-    metaTitle: content.metaTitle,
-    metaDescription: content.metaDescription,
-    hero: content.sections.hero,
-    introduction: content.sections.introduction,
-  };
+  return getStructuredPageData("products", locale);
 }
 
 /**
@@ -182,16 +139,7 @@ export async function getProductsPageContent(
 export async function getContactPageContent(
   locale: Locale = "en" as Locale,
 ): Promise<PageData | null> {
-  const content = await getPageContent("contact", locale);
-  if (!content) return null;
-
-  return {
-    title: content.title,
-    metaTitle: content.metaTitle,
-    metaDescription: content.metaDescription,
-    hero: content.sections.hero,
-    contactInfo: content.sections.contactInfo,
-  };
+  return getStructuredPageData("contact", locale);
 }
 
 /**

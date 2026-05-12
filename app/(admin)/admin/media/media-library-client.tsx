@@ -1,7 +1,8 @@
 "use client";
 
+/* eslint-disable @next/next/no-img-element -- Admin previews must render newly uploaded Blob URLs immediately. */
+
 import { useState, useEffect, useCallback, useTransition } from "react";
-import Image from "next/image";
 import {
   Grid3x3,
   List,
@@ -78,7 +79,12 @@ const PAGE_SIZE_OPTIONS = [12, 24, 48];
 export function MediaLibraryClient({ initialData }: MediaLibraryClientProps) {
   // State
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(() => {
+    if (typeof window === "undefined") {
+      return "";
+    }
+    return new URLSearchParams(window.location.search).get("q") ?? "";
+  });
   const [typeFilter, setTypeFilter] = useState<FilterType>("all");
   const [currentPage, setCurrentPage] = useState(initialData.page);
   const [pageSize, setPageSize] = useState(20);
@@ -88,6 +94,16 @@ export function MediaLibraryClient({ initialData }: MediaLibraryClientProps) {
   const [showUploadZone, setShowUploadZone] = useState(false);
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
+
+  useEffect(() => {
+    function handleAdminSearch(event: Event) {
+      const detail = (event as CustomEvent<{ query?: string }>).detail;
+      setSearchQuery(detail?.query ?? "");
+    }
+
+    window.addEventListener("admin-search", handleAdminSearch);
+    return () => window.removeEventListener("admin-search", handleAdminSearch);
+  }, []);
 
   // Load media function
   const loadMedia = useCallback(
@@ -117,14 +133,12 @@ export function MediaLibraryClient({ initialData }: MediaLibraryClientProps) {
   // Debounced search effect
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (searchQuery !== "" || typeFilter !== "all") {
-        loadMedia({
-          search: searchQuery,
-          type: typeFilter === "all" ? undefined : typeFilter,
-          page: 1,
-        });
-        setCurrentPage(1);
-      }
+      loadMedia({
+        search: searchQuery,
+        type: typeFilter === "all" ? undefined : typeFilter,
+        page: 1,
+      });
+      setCurrentPage(1);
     }, 300);
 
     return () => clearTimeout(timer);
@@ -214,8 +228,29 @@ export function MediaLibraryClient({ initialData }: MediaLibraryClientProps) {
     document.body.removeChild(link);
   };
 
-  const handleUploadComplete = () => {
-    loadMedia();
+  const handleUploadComplete = (uploadedMedia: MediaWithUser[]) => {
+    if (uploadedMedia.length > 0) {
+      setSearchQuery("");
+      setTypeFilter("all");
+      setCurrentPage(1);
+      setData((previous) => {
+        const existingIds = new Set(previous.media.map((item) => item.id));
+        const newItems = uploadedMedia.filter((item) => !existingIds.has(item.id));
+        const nextMedia = [...newItems, ...previous.media];
+
+        return {
+          ...previous,
+          media: nextMedia.slice(0, pageSize),
+          total: previous.total + newItems.length,
+          page: 1,
+          totalPages: Math.max(
+            1,
+            Math.ceil((previous.total + newItems.length) / pageSize),
+          ),
+        };
+      });
+    }
+
     setShowUploadZone(false);
   };
 
@@ -423,7 +458,7 @@ function SearchFilterBar({
           <span className="hidden sm:inline">Type:</span>
         </div>
         <div className="flex rounded-lg border border-border bg-background p-1">
-          {(["all", "image", "document"] as const).map((type) => (
+          {(["all", "image", "document", "video"] as const).map((type) => (
             <button
               key={type}
               onClick={() => onTypeFilterChange(type)}
@@ -497,7 +532,7 @@ function UploadZone({
   onUploadComplete,
 }: {
   onClose: () => void;
-  onUploadComplete: () => void;
+  onUploadComplete: (uploadedMedia: MediaWithUser[]) => void;
 }) {
   const [isDragging, setIsDragging] = useState(false);
   const [files, setFiles] = useState<UploadFile[]>([]);
@@ -553,6 +588,7 @@ function UploadZone({
     if (pendingFiles.length === 0) return;
 
     setIsUploading(true);
+    const uploadedMedia: MediaWithUser[] = [];
 
     for (const uploadFile of pendingFiles) {
       try {
@@ -572,7 +608,12 @@ function UploadZone({
           body: formData,
         });
 
-        if (response.ok) {
+        const result = (await response.json().catch(() => null)) as
+          | { success?: boolean; media?: MediaWithUser; error?: string }
+          | null;
+
+        if (response.ok && result?.success && result.media) {
+          uploadedMedia.push(result.media);
           setFiles((prev) =>
             prev.map((f) =>
               f.id === uploadFile.id
@@ -581,10 +622,15 @@ function UploadZone({
             ),
           );
         } else {
-          const error = await response.text();
           setFiles((prev) =>
             prev.map((f) =>
-              f.id === uploadFile.id ? { ...f, status: "error", error } : f,
+              f.id === uploadFile.id
+                ? {
+                    ...f,
+                    status: "error",
+                    error: result?.error || "Upload failed",
+                  }
+                : f,
             ),
           );
         }
@@ -601,14 +647,14 @@ function UploadZone({
 
     setIsUploading(false);
 
-    const successCount = files.filter((f) => f.status === "success").length;
+    const successCount = uploadedMedia.length;
     if (successCount > 0) {
       toast({
         title: "Upload Complete",
         description: `${successCount} file${successCount > 1 ? "s" : ""} uploaded successfully`,
         variant: "success",
       });
-      onUploadComplete();
+      onUploadComplete(uploadedMedia);
     }
   };
 
@@ -638,7 +684,7 @@ function UploadZone({
           type="file"
           multiple
           onChange={handleFileSelect}
-          accept="image/*,.pdf,.doc,.docx"
+          accept="image/*,video/mp4,video/webm,.pdf,.doc,.docx"
           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
         />
 
@@ -890,12 +936,10 @@ function MediaGridCard({
       {/* Thumbnail */}
       <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-muted/50 to-muted">
         {isImage && !imageError ? (
-          <Image
+          <img
             src={media.url}
             alt={media.name}
-            fill
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-            className="object-cover transition-transform duration-500 group-hover:scale-110"
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
             onError={() => setImageError(true)}
           />
         ) : (
@@ -1099,12 +1143,10 @@ function MediaListRow({
       <td className="p-4">
         <div className="relative size-12 rounded-lg overflow-hidden bg-muted">
           {isImage && !imageError ? (
-            <Image
+            <img
               src={media.url}
               alt={media.name}
-              fill
-              sizes="48px"
-              className="object-cover"
+              className="h-full w-full object-cover"
               onError={() => setImageError(true)}
             />
           ) : (
@@ -1372,12 +1414,10 @@ function MediaPreviewModal({
         {/* Preview Area */}
         <div className="relative flex-1 min-h-[300px] bg-gradient-to-br from-muted/50 via-muted to-muted/50 flex items-center justify-center overflow-hidden">
           {isImage ? (
-            <Image
+            <img
               src={media.url}
               alt={media.name}
-              fill
-              sizes="(max-width: 1024px) 100vw, 900px"
-              className="object-contain"
+              className="h-full w-full object-contain"
             />
           ) : isVideo ? (
             <video src={media.url} controls className="max-w-full max-h-full" />

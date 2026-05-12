@@ -1,4 +1,8 @@
 import { cn } from "@/lib/utils";
+import {
+  isSectionMediaIcon,
+  SectionIconImage,
+} from "@/components/public/sections/base/SectionIconImage";
 import type { StatsSectionData } from "@/components/public/sections/base/types";
 
 interface CoverageReachSectionProps {
@@ -23,7 +27,7 @@ export function CoverageReachSection({ data, className }: CoverageReachSectionPr
 
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-2 lg:gap-10">
           {data.items.map((item, index) => {
-            const Icon = item.icon;
+            const Icon = typeof item.icon === "function" ? item.icon : null;
             return (
               <article
                 key={item.id}
@@ -31,7 +35,16 @@ export function CoverageReachSection({ data, className }: CoverageReachSectionPr
                 style={{ animationDelay: `${index * 120}ms` }}
               >
                 <div className="mb-4 flex items-end gap-3">
-                  {Icon && <Icon className="h-5 w-5 text-[#4cb748]" />}
+                  {isSectionMediaIcon(item.icon) ? (
+                    <SectionIconImage
+                      icon={item.icon}
+                      width={22}
+                      height={22}
+                      className="h-5 w-5 object-contain"
+                    />
+                  ) : Icon ? (
+                    <Icon className="h-5 w-5 text-[#4cb748]" />
+                  ) : null}
                   <span className="text-4xl font-extrabold tracking-tight text-[#0097dc] sm:text-5xl lg:text-6xl">
                     {item.value}
                   </span>
