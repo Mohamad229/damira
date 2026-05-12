@@ -1,8 +1,7 @@
-import Image from "next/image";
-
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 
+import { CmsImage } from "./CmsImage";
 import { SectionReveal } from "./SectionReveal";
 import type { ContentSectionData } from "./types";
 
@@ -108,7 +107,7 @@ export function ContentSection({
                     data.carousel && "overflow-x-auto scroll-smooth",
                   )}
                 >
-                  <Image
+                  <CmsImage
                     src={image.src}
                     alt={image.alt}
                     fill

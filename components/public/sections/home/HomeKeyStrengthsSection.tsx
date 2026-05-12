@@ -1,4 +1,3 @@
-import Image from "next/image";
 import {
   Building2,
   FileText,
@@ -12,6 +11,7 @@ import type {
   ServiceCardData,
 } from "@/components/public/sections/base/types";
 import { SectionReveal } from "@/components/public/sections/base/SectionReveal";
+import { CmsImage } from "@/components/public/sections/base/CmsImage";
 import {
   isSectionMediaIcon,
   SectionIconImage,
@@ -129,7 +129,7 @@ export function HomeKeyStrengthsSection({
                     "shadow-[0_28px_55px_-38px_rgba(15,23,42,0.65)]",
                   )}
                 >
-                  <Image
+                  <CmsImage
                     src={sectionImage}
                     alt={sectionImageAlt}
                     fill

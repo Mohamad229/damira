@@ -1,8 +1,7 @@
-import Image from "next/image";
-
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 
+import { CmsImage } from "./CmsImage";
 import type { ProductCardData } from "./types";
 
 interface ProductCardProps {
@@ -14,7 +13,7 @@ export function ProductCard({ data }: ProductCardProps) {
     <article className="group overflow-hidden rounded-3xl border border-border/70 bg-card shadow-[var(--shadow-card)] transition duration-300 hover:-translate-y-0.5 hover:shadow-lg">
       <div className="relative h-52 overflow-hidden bg-[radial-gradient(circle_at_20%_20%,hsl(var(--color-primary)/0.35),transparent_55%),radial-gradient(circle_at_80%_80%,hsl(var(--color-secondary)/0.3),transparent_60%)]">
         {data.image ? (
-          <Image
+          <CmsImage
             src={data.image.src}
             alt={data.image.alt}
             fill

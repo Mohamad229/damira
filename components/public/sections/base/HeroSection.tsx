@@ -1,8 +1,7 @@
-import Image from "next/image";
-
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 
+import { CmsImage } from "./CmsImage";
 import { SectionReveal } from "./SectionReveal";
 import type { HeroSectionData } from "./types";
 
@@ -22,11 +21,12 @@ export function HeroSection({ data, className }: HeroSectionProps) {
       >
         {data.backgroundImage ? (
           <div className="absolute inset-0 opacity-[0.18]">
-            <Image
+            <CmsImage
               src={data.backgroundImage.src}
               alt={data.backgroundImage.alt}
               fill
-              priority
+              loading="eager"
+              fetchPriority="high"
               sizes="100vw"
               className="object-cover"
             />

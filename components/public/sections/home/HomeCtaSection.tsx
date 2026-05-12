@@ -1,6 +1,5 @@
-import Image from "next/image";
-
 import { Link } from "@/i18n/navigation";
+import { CmsImage } from "@/components/public/sections/base/CmsImage";
 import { SectionReveal } from "@/components/public/sections/base/SectionReveal";
 import type { CtaSectionData } from "@/components/public/sections/base/types";
 import { cn } from "@/lib/utils";
@@ -15,7 +14,7 @@ export function HomeCtaSection({ data }: HomeCtaSectionProps) {
       <section className="relative isolate overflow-hidden bg-[#009bd8] py-[93px] text-white">
         {/* Optional dashboard background image */}
         {data.backgroundImage ? (
-          <Image
+          <CmsImage
             src={data.backgroundImage.src}
             alt={data.backgroundImage.alt || data.title || "CTA background"}
             fill

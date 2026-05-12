@@ -1,6 +1,5 @@
-import Image from "next/image";
-
 import { cn } from "@/lib/utils";
+import { CmsImage } from "@/components/public/sections/base/CmsImage";
 import { SectionReveal } from "@/components/public/sections/base/SectionReveal";
 import type { HeroSectionData } from "@/components/public/sections/base/types";
 
@@ -35,11 +34,12 @@ export function ProductsHeroSection({
       >
         {/* Background image from admin dashboard */}
         {backgroundImageSrc ? (
-          <Image
+          <CmsImage
             src={backgroundImageSrc}
             alt={data.backgroundImage?.alt || title}
             fill
-            priority
+            loading="eager"
+            fetchPriority="high"
             sizes="100vw"
             className="z-0 object-cover"
           />

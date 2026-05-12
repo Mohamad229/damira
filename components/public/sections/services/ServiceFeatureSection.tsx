@@ -1,7 +1,7 @@
-import Image from "next/image";
 import { CheckCircle2, Package } from "lucide-react";
 
 import { Link } from "@/i18n/navigation";
+import { CmsImage } from "@/components/public/sections/base/CmsImage";
 import { SectionReveal } from "@/components/public/sections/base/SectionReveal";
 import {
   isSectionMediaIcon,
@@ -201,7 +201,7 @@ export function ServiceFeatureSection({
                 )}
               >
                 {image ? (
-                  <Image
+                  <CmsImage
                     src={image.src}
                     alt={image.alt || data.title || "Service feature image"}
                     fill

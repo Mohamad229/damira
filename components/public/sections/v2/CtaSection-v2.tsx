@@ -1,5 +1,5 @@
-import Image from "next/image";
 import { Link } from "@/i18n/navigation";
+import { CmsImage } from "@/components/public/sections/base/CmsImage";
 import { cn } from "@/lib/utils";
 import type { CtaSectionData } from "@/components/public/sections/base/types";
 import { SectionReveal } from "@/components/public/sections/base";
@@ -18,7 +18,7 @@ export function CtaSection({ data, className, delay }: CtaSectionProps) {
           <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#0097dc] via-[#00a5e1] to-[#0097dc] text-white shadow-[0_35px_80px_-40px_rgba(0,151,220,0.8)]">
             {data.backgroundImage && (
               <div className="absolute inset-0 z-0 opacity-15 mix-blend-overlay">
-                <Image
+                <CmsImage
                   src={data.backgroundImage.src}
                   alt={data.backgroundImage.alt}
                   fill

@@ -1,5 +1,5 @@
-import Image from "next/image";
 import { Link } from "@/i18n/navigation";
+import { CmsImage } from "@/components/public/sections/base/CmsImage";
 import { cn } from "@/lib/utils";
 import type { ContentSectionData } from "@/components/public/sections/base/types";
 
@@ -95,7 +95,7 @@ export function ContentSection({
             )}
           >
             {imageItems.length > 0 && (
-              <Image
+              <CmsImage
                 src={imageItems[0].src}
                 alt={imageItems[0].alt}
                 fill

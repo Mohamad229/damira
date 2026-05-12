@@ -1,7 +1,6 @@
-import Image from "next/image";
-
 import { Link } from "@/i18n/navigation";
 
+import { CmsImage } from "./CmsImage";
 import { SectionReveal } from "./SectionReveal";
 import type { CtaSectionData } from "./types";
 
@@ -18,7 +17,7 @@ export function CtaSection({ data, className }: CtaSectionProps) {
           <div className="relative overflow-hidden rounded-[2rem] border border-border/70 bg-gradient-to-br from-primary to-[#007fb8] p-7 text-white shadow-[var(--shadow-card)] sm:p-10">
             {data.backgroundImage ? (
               <div className="absolute inset-0 opacity-25">
-                <Image
+                <CmsImage
                   src={data.backgroundImage.src}
                   alt={data.backgroundImage.alt}
                   fill

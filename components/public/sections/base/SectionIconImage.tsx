@@ -1,6 +1,5 @@
-import Image from "next/image";
-
 import type { SectionIcon, SectionMedia } from "./types";
+import { CmsImage } from "./CmsImage";
 
 export function isSectionMediaIcon(icon: SectionIcon | undefined): icon is SectionMedia {
   return Boolean(
@@ -24,7 +23,7 @@ export function SectionIconImage({
   height?: number;
 }) {
   return (
-    <Image
+    <CmsImage
       src={icon.src}
       alt={icon.alt || ""}
       width={width}

@@ -1,5 +1,4 @@
-import Image from "next/image";
-
+import { CmsImage } from "@/components/public/sections/base/CmsImage";
 import { SectionReveal } from "@/components/public/sections/base/SectionReveal";
 import type { ContentSectionData } from "@/components/public/sections/base/types";
 import { cn } from "@/lib/utils";
@@ -180,7 +179,7 @@ export function CompanyOverviewSection({ data }: CompanyOverviewSectionProps) {
                     "shadow-[0_20px_35px_-30px_rgba(15,23,42,0.65)]",
                   )}
                 >
-                  <Image
+                  <CmsImage
                     src={firstImage.src}
                     alt={firstImage.alt}
                     fill
@@ -200,7 +199,7 @@ export function CompanyOverviewSection({ data }: CompanyOverviewSectionProps) {
                     "shadow-[0_20px_35px_-30px_rgba(15,23,42,0.65)]",
                   )}
                 >
-                  <Image
+                  <CmsImage
                     src={secondImage.src}
                     alt={secondImage.alt}
                     fill
@@ -232,7 +231,7 @@ export function CompanyOverviewSection({ data }: CompanyOverviewSectionProps) {
                     "shadow-[0_20px_35px_-30px_rgba(15,23,42,0.65)]",
                   )}
                 >
-                  <Image
+                  <CmsImage
                     src={thirdImage.src}
                     alt={thirdImage.alt}
                     fill

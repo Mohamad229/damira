@@ -1,6 +1,7 @@
 export * from "./CardGrid";
 export * from "./ContentSection";
 export * from "./CtaSection";
+export * from "./CmsImage";
 export * from "./HeroSection";
 export * from "./ProductCard";
 export * from "./SectionReveal";

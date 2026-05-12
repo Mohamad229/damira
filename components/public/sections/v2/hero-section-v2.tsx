@@ -1,5 +1,5 @@
-import Image from "next/image";
 import { Link } from "@/i18n/navigation";
+import { CmsImage } from "@/components/public/sections/base/CmsImage";
 import { cn } from "@/lib/utils";
 import { SectionReveal } from "@/components/public/sections/base/SectionReveal";
 import type { HeroSectionData } from "@/components/public/sections/base/types";
@@ -61,11 +61,12 @@ export function HeroSectionV2({ data, className }: HeroSectionV2Props) {
             <div className="absolute -inset-3 -z-10 rounded-[2rem] bg-gradient-to-br from-[#c5e1f5] via-[#ffffff] to-[#daecd4] blur-xl" />
             <div className="relative aspect-[4/3] overflow-hidden rounded-[1.75rem] border border-[#e7f1fa] bg-white shadow-[0_30px_70px_-35px_rgba(15,23,42,0.35)] sm:aspect-[16/11] lg:aspect-square">
               {data.backgroundImage && (
-                <Image
+                <CmsImage
                   src={data.backgroundImage.src}
                   alt={data.backgroundImage.alt || data.title}
                   fill
-                  priority
+                  loading="eager"
+                  fetchPriority="high"
                   className="object-cover transition-transform duration-700 ease-out hover:scale-[1.03]"
                 />
               )}

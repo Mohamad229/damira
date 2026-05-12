@@ -1,6 +1,6 @@
-import Image from "next/image";
 import { CheckCircle2, ShieldCheck } from "lucide-react";
 
+import { CmsImage } from "@/components/public/sections/base/CmsImage";
 import type {
   ContentSectionData,
   SectionIcon,
@@ -385,13 +385,12 @@ export function PartnershipAdvantageSection({
                   )}
                 >
                   {image?.src ? (
-                    <Image
+                    <CmsImage
                       src={image.src}
                       alt={image.alt || title || "Damira Pharma partnership"}
                       fill
                       sizes="(min-width: 1280px) 430px, (min-width: 1024px) 40vw, 100vw"
                       className="object-cover"
-                      priority={false}
                     />
                   ) : (
                     <div className="h-full w-full bg-[linear-gradient(135deg,#dceffb_0%,#ffffff_52%,#eef8f1_100%)]" />

@@ -1,6 +1,6 @@
-import Image from "next/image";
 import { Building2, Mail, PhoneCall } from "lucide-react";
 
+import { CmsImage } from "@/components/public/sections/base/CmsImage";
 import { SectionReveal } from "@/components/public/sections/base";
 import { cn } from "@/lib/utils";
 
@@ -107,7 +107,7 @@ function ContactLinkRow({
     <>
       <span className="flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-full bg-[#e2f4ff] text-[#009fe3] transition-colors group-hover:bg-[#009fe3] group-hover:text-white sm:h-[46px] sm:w-[46px]">
         {iconImage?.src ? (
-          <Image
+          <CmsImage
             src={iconImage.src}
             alt={iconImage.alt || ""}
             width={24}
@@ -207,7 +207,7 @@ export function ContactInfoSection({
                 <div className="relative z-10 mb-[24px] flex items-start gap-4 sm:mb-[28px]">
                   <div className="flex h-[50px] w-[50px] shrink-0 items-center justify-center rounded-full bg-[#edfbee] text-[#2f8f54] transition-transform duration-300 group-hover:scale-110">
                     {department.icon?.src ? (
-                      <Image
+                      <CmsImage
                         src={department.icon.src}
                         alt={department.icon.alt || ""}
                         width={28}

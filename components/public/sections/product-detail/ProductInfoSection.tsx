@@ -1,10 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import { useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { Link } from "@/i18n/navigation";
+import { CmsImage } from "@/components/public/sections/base/CmsImage";
 import type { ContentSectionData } from "@/components/public/sections/base/types";
 import { SectionReveal } from "@/components/public/sections/base/SectionReveal";
 import { cn } from "@/lib/utils";
@@ -92,12 +92,13 @@ export function ProductInfoSection({ data }: ProductInfoSectionProps) {
               )}
             >
               {activeImage?.src ? (
-                <Image
+                <CmsImage
                   key={activeImage.src}
                   src={activeImage.src}
                   alt={activeImage.alt || data.title || "Product image"}
                   fill
-                  priority={activeImageIndex === 0}
+                  loading={activeImageIndex === 0 ? "eager" : "lazy"}
+                  fetchPriority={activeImageIndex === 0 ? "high" : "auto"}
                   sizes="(min-width: 1536px) 38vw, (min-width: 1024px) 42vw, 100vw"
                   className="object-cover"
                 />
@@ -193,7 +194,7 @@ export function ProductInfoSection({ data }: ProductInfoSectionProps) {
                         : "border-[#dce9f6] hover:border-[#91caee]",
                     )}
                   >
-                    <Image
+                    <CmsImage
                       src={image.src}
                       alt={image.alt || data.title || "Product thumbnail"}
                       fill

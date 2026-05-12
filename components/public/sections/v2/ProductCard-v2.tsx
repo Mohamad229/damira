@@ -1,5 +1,5 @@
-import Image from "next/image";
 import { Link } from "@/i18n/navigation";
+import { CmsImage } from "@/components/public/sections/base/CmsImage";
 import { cn } from "@/lib/utils";
 import type { ProductCardData } from "@/components/public/sections/base/types";
 
@@ -30,7 +30,7 @@ export function ProductCard({ data, className }: ProductCardProps) {
       {data.image && (
         <div className="relative mb-6 aspect-[4/3] w-full overflow-hidden rounded-xl bg-[#f3f8fd]">
           <div className="absolute inset-0 z-10 bg-black/0 transition-colors duration-300 group-hover:bg-black/5" />
-          <Image
+          <CmsImage
             src={data.image.src}
             alt={data.image.alt}
             fill

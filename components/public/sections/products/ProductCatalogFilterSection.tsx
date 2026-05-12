@@ -1,11 +1,11 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ChevronDown, Search } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 
 import { Link } from "@/i18n/navigation";
+import { CmsImage } from "@/components/public/sections/base/CmsImage";
 import type { ProductCardData } from "@/components/public/sections/base";
 import { type Locale } from "@/i18n/config";
 import { cn } from "@/lib/utils";
@@ -100,7 +100,7 @@ function ProductCatalogCard({ data }: { data: ProductCardData }) {
     >
       <div className="relative aspect-[16/11] overflow-hidden bg-[#f8fbff] sm:aspect-[4/3] xl:aspect-[16/11]">
         {data.image ? (
-          <Image
+          <CmsImage
             src={data.image.src}
             alt={data.image.alt || data.name}
             fill

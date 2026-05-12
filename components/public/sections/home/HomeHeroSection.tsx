@@ -1,8 +1,8 @@
-import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
+import { CmsImage } from "@/components/public/sections/base/CmsImage";
 import { SectionReveal } from "@/components/public/sections/base/SectionReveal";
 import type { HeroSectionData } from "@/components/public/sections/base/types";
 
@@ -59,11 +59,12 @@ export function HomeHeroSection({ data, className }: HomeHeroSectionProps) {
         {/* Right image area - visible on xl and larger screens */}
         <div className="absolute inset-y-0 right-0 hidden w-1/2 overflow-hidden rtl:left-0 rtl:right-auto xl:block">
           {data.backgroundImage?.src ? (
-            <Image
+            <CmsImage
               src={data.backgroundImage.src}
               alt={data.backgroundImage.alt || title}
               fill
-              priority
+              loading="eager"
+              fetchPriority="high"
               sizes="50vw"
               className="object-cover"
             />
@@ -79,11 +80,12 @@ export function HomeHeroSection({ data, className }: HomeHeroSectionProps) {
         {/* Mobile / tablet / smaller than xl background image */}
         <div className="absolute inset-0 overflow-hidden xl:hidden">
           {data.backgroundImage?.src ? (
-            <Image
+            <CmsImage
               src={data.backgroundImage.src}
               alt={data.backgroundImage.alt || title}
               fill
-              priority
+              loading="eager"
+              fetchPriority="high"
               sizes="100vw"
               className="object-cover"
             />

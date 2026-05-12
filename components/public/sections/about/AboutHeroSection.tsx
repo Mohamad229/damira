@@ -1,6 +1,5 @@
-import Image from "next/image";
-
 import { cn } from "@/lib/utils";
+import { CmsImage } from "@/components/public/sections/base/CmsImage";
 import { SectionReveal } from "@/components/public/sections/base/SectionReveal";
 import type { HeroSectionData } from "@/components/public/sections/base/types";
 
@@ -28,11 +27,12 @@ export function AboutHeroSection({ data, className }: AboutHeroSectionProps) {
       >
         {/* Background image from admin dashboard */}
         {data.backgroundImage?.src ? (
-          <Image
+          <CmsImage
             src={data.backgroundImage.src}
             alt={data.backgroundImage.alt || title}
             fill
-            priority
+            loading="eager"
+            fetchPriority="high"
             sizes="100vw"
             className="object-cover "
           />

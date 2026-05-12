@@ -1,6 +1,5 @@
-import Image from "next/image";
-
 import { Link } from "@/i18n/navigation";
+import { CmsImage } from "@/components/public/sections/base/CmsImage";
 import { cn } from "@/lib/utils";
 import type { PublicProductCard } from "@/lib/actions/public-products";
 
@@ -44,7 +43,7 @@ export function ProductCard({
         )}
       >
         {product.coverImageUrl ? (
-          <Image
+          <CmsImage
             src={product.coverImageUrl}
             alt={product.name}
             fill

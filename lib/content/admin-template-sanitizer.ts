@@ -78,6 +78,14 @@ function isIconLikeKey(key: string): boolean {
   return /icon$/i.test(key);
 }
 
+function isMediaRecord(value: SanitizedJson | undefined): value is SanitizedRecord {
+  return (
+    isSanitizedRecord(value) &&
+    typeof value.src === "string" &&
+    typeof value.alt === "string"
+  );
+}
+
 function isAllowedIconPath(
   pageKey: string,
   sectionKey: string,
@@ -151,14 +159,6 @@ export function sanitizeTemplateValue(
     for (const [key, child] of Object.entries(value)) {
       const childPath = [...path, key];
 
-      if (
-        context &&
-        isIconLikeKey(key) &&
-        !isAllowedIconPath(context.pageKey, context.sectionKey, childPath)
-      ) {
-        continue;
-      }
-
       const sanitizedChild = sanitizeTemplateValue(
         child,
         context
@@ -167,8 +167,17 @@ export function sanitizeTemplateValue(
               sectionKey: context.sectionKey,
               path: childPath,
             }
-          : undefined,
+            : undefined,
       );
+
+      if (
+        context &&
+        isIconLikeKey(key) &&
+        !isAllowedIconPath(context.pageKey, context.sectionKey, childPath) &&
+        !isMediaRecord(sanitizedChild)
+      ) {
+        continue;
+      }
 
       if (sanitizedChild !== undefined) {
         output[key] = sanitizedChild;
