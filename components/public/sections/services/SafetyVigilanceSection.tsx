@@ -6,5 +6,5 @@ interface SafetyVigilanceSectionProps {
 }
 
 export function SafetyVigilanceSection({ data }: SafetyVigilanceSectionProps) {
-  return <ServiceFeatureSection data={data} index={4} accent="blue" />;
+  return <ServiceFeatureSection data={data} index={4} accent="green" />;
 }

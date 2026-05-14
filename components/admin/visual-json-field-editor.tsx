@@ -48,6 +48,7 @@ interface EditorNodeProps {
   template: JsonValue;
   path: string[];
   onChange: (value: JsonValue) => void;
+  sanitizerContext?: VisualJsonFieldEditorProps["sanitizerContext"];
 }
 
 const LONG_TEXT_KEYS = new Set([
@@ -61,8 +62,32 @@ const LONG_TEXT_KEYS = new Set([
 ]);
 
 const URL_KEY_PATTERN = /(href|url|link|src)$/i;
-const MEDIA_KEY_PATTERN = /(image|icon|logo|photo|media|thumbnail|illustration)$/i;
+const MEDIA_KEY_PATTERN =
+  /(image|icon|logo|photo|media|thumbnail|illustration)$/i;
 const INTERNAL_KEYS = new Set(["id"]);
+
+const FIXED_ARRAY_PATHS = new Set([
+  "home.coverageReach.items",
+  "about.legacySuccess.stats.items",
+]);
+
+function getEditorPathKey(
+  context: VisualJsonFieldEditorProps["sanitizerContext"] | undefined,
+  path: string[],
+) {
+  if (!context) {
+    return path.join(".");
+  }
+
+  return [context.pageKey, context.sectionKey, ...path].join(".");
+}
+
+function isFixedArrayPath(
+  context: VisualJsonFieldEditorProps["sanitizerContext"] | undefined,
+  path: string[],
+) {
+  return FIXED_ARRAY_PATHS.has(getEditorPathKey(context, path));
+}
 
 function isPlainObject(value: unknown): value is Record<string, JsonValue> {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
@@ -78,7 +103,10 @@ function humanizeKey(key: string): string {
 }
 
 function itemLabel(key: string, index: number, value: JsonValue): string {
-  const valueTitle = isPlainObject(value) && typeof value.title === "string" ? value.title.trim() : "";
+  const valueTitle =
+    isPlainObject(value) && typeof value.title === "string"
+      ? value.title.trim()
+      : "";
   if (valueTitle) {
     return valueTitle;
   }
@@ -107,8 +135,16 @@ function itemKey(path: string[], index: number, value: JsonValue): string {
   return `${path.join(".") || "root"}-${index}`;
 }
 
-function isMediaObject(key: string, value: JsonValue, template: JsonValue): boolean {
-  const objectValue = isPlainObject(value) ? value : isPlainObject(template) ? template : null;
+function isMediaObject(
+  key: string,
+  value: JsonValue,
+  template: JsonValue,
+): boolean {
+  const objectValue = isPlainObject(value)
+    ? value
+    : isPlainObject(template)
+      ? template
+      : null;
   if (!objectValue) {
     return false;
   }
@@ -133,11 +169,18 @@ export function VisualJsonFieldEditor({
     [template, parsedValue],
   );
   const effectiveValue = useMemo(
-    () => sanitizeValueAgainstTemplate(parsedValue, normalizedTemplate, sanitizerContext),
+    () =>
+      sanitizeValueAgainstTemplate(
+        parsedValue,
+        normalizedTemplate,
+        sanitizerContext,
+      ),
     [parsedValue, normalizedTemplate, sanitizerContext],
   );
 
-  const [rawDraft, setRawDraft] = useState(() => stringifySanitized(effectiveValue));
+  const [rawDraft, setRawDraft] = useState(() =>
+    stringifySanitized(effectiveValue),
+  );
   const [rawError, setRawError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -171,7 +214,9 @@ export function VisualJsonFieldEditor({
       setRawError(null);
       onChange(JSON.stringify(nextValue));
     } catch {
-      setRawError("Invalid JSON. The structured fields above remain unchanged until this is fixed.");
+      setRawError(
+        "Invalid JSON. The structured fields above remain unchanged until this is fixed.",
+      );
     }
   }
 
@@ -179,9 +224,12 @@ export function VisualJsonFieldEditor({
     <div className="space-y-5 rounded-2xl border border-border/70 bg-card p-4 shadow-sm sm:p-5">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h3 className="font-heading text-base font-bold text-foreground">{label}</h3>
+          <h3 className="font-heading text-base font-bold text-foreground">
+            {label}
+          </h3>
           <p className="mt-1 text-sm leading-6 text-muted-foreground">
-            Edit simple structured fields. Media fields can be picked from the admin library.
+            Edit simple structured fields. Media fields can be picked from the
+            admin library.
           </p>
         </div>
         <span className="inline-flex w-fit items-center rounded-full border border-primary/15 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
@@ -193,6 +241,7 @@ export function VisualJsonFieldEditor({
         value={effectiveValue}
         template={normalizedTemplate}
         path={[]}
+        sanitizerContext={sanitizerContext}
         onChange={handleStructuredChange}
       />
 
@@ -200,7 +249,9 @@ export function VisualJsonFieldEditor({
         <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-semibold text-muted-foreground transition-colors group-open:text-foreground">
           <Code2 className="h-4 w-4" />
           Advanced developer JSON fallback
-          <span className="ml-auto text-xs font-normal">Open only when needed</span>
+          <span className="ml-auto text-xs font-normal">
+            Open only when needed
+          </span>
         </summary>
         <div className="mt-3 space-y-2">
           <Textarea
@@ -209,19 +260,32 @@ export function VisualJsonFieldEditor({
             className="min-h-[240px] rounded-xl font-mono text-xs leading-5"
             spellCheck={false}
           />
-          {rawError ? <p className="text-xs font-medium text-red-600">{rawError}</p> : null}
+          {rawError ? (
+            <p className="text-xs font-medium text-red-600">{rawError}</p>
+          ) : null}
         </div>
       </details>
     </div>
   );
 }
 
-function EditorNode({ value, template, path, onChange }: EditorNodeProps) {
+function EditorNode({
+  value,
+  template,
+  path,
+  onChange,
+  sanitizerContext,
+}: EditorNodeProps) {
   const key = path[path.length - 1] ?? "content";
 
   if (Array.isArray(value) || Array.isArray(template)) {
     const arrayValue = Array.isArray(value) ? value : [];
-    const itemTemplate = Array.isArray(template) && template.length > 0 ? template[0] : arrayValue[0] ?? "";
+    const itemTemplate =
+      Array.isArray(template) && template.length > 0
+        ? template[0]
+        : (arrayValue[0] ?? "");
+
+    const isFixedArray = isFixedArrayPath(sanitizerContext, path);
 
     return (
       <div className="space-y-3">
@@ -246,7 +310,10 @@ function EditorNode({ value, template, path, onChange }: EditorNodeProps) {
                   disabled={index === 0}
                   onClick={() => {
                     const next = [...arrayValue];
-                    [next[index - 1], next[index]] = [next[index], next[index - 1]];
+                    [next[index - 1], next[index]] = [
+                      next[index],
+                      next[index - 1],
+                    ];
                     onChange(next);
                   }}
                   aria-label="Move item up"
@@ -261,23 +328,34 @@ function EditorNode({ value, template, path, onChange }: EditorNodeProps) {
                   disabled={index === arrayValue.length - 1}
                   onClick={() => {
                     const next = [...arrayValue];
-                    [next[index], next[index + 1]] = [next[index + 1], next[index]];
+                    [next[index], next[index + 1]] = [
+                      next[index + 1],
+                      next[index],
+                    ];
                     onChange(next);
                   }}
                   aria-label="Move item down"
                 >
                   <ArrowDown className="h-4 w-4" />
                 </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="h-8 w-8 rounded-full p-0 text-red-600 hover:bg-red-50 hover:text-red-700"
-                  onClick={() => onChange(arrayValue.filter((_, itemIndex) => itemIndex !== index))}
-                  aria-label="Remove item"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+                {!isFixedArray ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="h-8 w-8 rounded-full p-0 text-red-600 hover:bg-red-50 hover:text-red-700"
+                    onClick={() =>
+                      onChange(
+                        arrayValue.filter(
+                          (_, itemIndex) => itemIndex !== index,
+                        ),
+                      )
+                    }
+                    aria-label="Remove item"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                ) : null}
               </div>
             </div>
 
@@ -286,24 +364,33 @@ function EditorNode({ value, template, path, onChange }: EditorNodeProps) {
                 value={item}
                 template={itemTemplate}
                 path={[...path, String(index)]}
+                sanitizerContext={sanitizerContext}
                 onChange={(nextItem) =>
-                  onChange(arrayValue.map((existingItem, itemIndex) => (itemIndex === index ? nextItem : existingItem)))
+                  onChange(
+                    arrayValue.map((existingItem, itemIndex) =>
+                      itemIndex === index ? nextItem : existingItem,
+                    ),
+                  )
                 }
               />
             </div>
           </div>
         ))}
 
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          className="gap-2 rounded-full border-primary/20 bg-primary/5 text-primary hover:bg-primary/10"
-          onClick={() => onChange([...arrayValue, createItemFromTemplate(itemTemplate)])}
-        >
-          <Plus className="h-4 w-4" />
-          Add {humanizeKey(key).toLowerCase().replace(/s$/, "")}
-        </Button>
+        {!isFixedArray ? (
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="gap-2 rounded-full border-primary/20 bg-primary/5 text-primary hover:bg-primary/10"
+            onClick={() =>
+              onChange([...arrayValue, createItemFromTemplate(itemTemplate)])
+            }
+          >
+            <Plus className="h-4 w-4" />
+            Add {humanizeKey(key).toLowerCase().replace(/s$/, "")}
+          </Button>
+        ) : null}
       </div>
     );
   }
@@ -324,44 +411,47 @@ function EditorNode({ value, template, path, onChange }: EditorNodeProps) {
 
     return (
       <div className="grid gap-4 md:grid-cols-2">
-        {Object.entries(objectTemplate).filter(([nestedKey]) => !INTERNAL_KEYS.has(nestedKey)).map(([nestedKey, nestedTemplate]) => {
-          const nestedValue = sanitizeValueAgainstTemplate(objectValue[nestedKey], nestedTemplate);
-          const isWide =
-            Array.isArray(nestedValue) ||
-            isPlainObject(nestedValue) ||
-            LONG_TEXT_KEYS.has(nestedKey) ||
-            nestedKey.toLowerCase().includes("description");
+        {Object.entries(objectTemplate)
+          .filter(([nestedKey]) => !INTERNAL_KEYS.has(nestedKey))
+          .map(([nestedKey, nestedTemplate]) => {
+            const nestedValue = sanitizeValueAgainstTemplate(
+              objectValue[nestedKey],
+              nestedTemplate,
+            );
+            const isWide =
+              Array.isArray(nestedValue) ||
+              isPlainObject(nestedValue) ||
+              LONG_TEXT_KEYS.has(nestedKey) ||
+              nestedKey.toLowerCase().includes("description");
 
-          return (
-            <div key={nestedKey} className={cn("space-y-2", isWide && "md:col-span-2")}>
-              <Label className="text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground">
-                {humanizeKey(nestedKey)}
-              </Label>
-              <EditorNode
-                value={nestedValue}
-                template={nestedTemplate}
-                path={[...path, nestedKey]}
-                onChange={(nextNestedValue) =>
-                  onChange({
-                    ...objectValue,
-                    [nestedKey]: nextNestedValue,
-                  })
-                }
-              />
-            </div>
-          );
-        })}
+            return (
+              <div
+                key={nestedKey}
+                className={cn("space-y-2", isWide && "md:col-span-2")}
+              >
+                <Label className="text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground">
+                  {humanizeKey(nestedKey)}
+                </Label>
+                <EditorNode
+                  value={nestedValue}
+                  template={nestedTemplate}
+                  path={[...path, nestedKey]}
+                  sanitizerContext={sanitizerContext}
+                  onChange={(nextNestedValue) =>
+                    onChange({
+                      ...objectValue,
+                      [nestedKey]: nextNestedValue,
+                    })
+                  }
+                />
+              </div>
+            );
+          })}
       </div>
     );
   }
 
-  return (
-    <PrimitiveEditor
-      fieldKey={key}
-      value={value}
-      onChange={onChange}
-    />
-  );
+  return <PrimitiveEditor fieldKey={key} value={value} onChange={onChange} />;
 }
 
 function PrimitiveEditor({
@@ -382,7 +472,9 @@ function PrimitiveEditor({
           onChange={(event) => onChange(event.target.checked)}
           className="h-4 w-4 rounded border-gray-300 accent-primary"
         />
-        <span className="text-sm font-medium text-foreground">{value ? "Enabled" : "Disabled"}</span>
+        <span className="text-sm font-medium text-foreground">
+          {value ? "Enabled" : "Disabled"}
+        </span>
       </label>
     );
   }
@@ -476,10 +568,17 @@ function MediaObjectEditor({
         <div className="space-y-2">
           <p className="text-sm font-semibold text-foreground">Media asset</p>
           <p className="max-w-md text-xs leading-5 text-muted-foreground">
-            Pick from the media library or paste a direct URL. Keep alt text descriptive for accessibility.
+            Pick from the media library or paste a direct URL. Keep alt text
+            descriptive for accessibility.
           </p>
           <div className="flex flex-wrap gap-2">
-            <Button type="button" variant="outline" size="sm" className="rounded-full" onClick={() => setPickerOpen(true)}>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="rounded-full"
+              onClick={() => setPickerOpen(true)}
+            >
               {src ? "Change media" : "Select media"}
             </Button>
             {src ? (
@@ -500,12 +599,24 @@ function MediaObjectEditor({
 
       <div className="grid gap-3 md:grid-cols-2">
         <div className="space-y-1.5">
-          <Label className="text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground">Media URL</Label>
-          <Input value={src} onChange={(event) => updateMedia({ src: event.target.value })} className="rounded-xl bg-card" />
+          <Label className="text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground">
+            Media URL
+          </Label>
+          <Input
+            value={src}
+            onChange={(event) => updateMedia({ src: event.target.value })}
+            className="rounded-xl bg-card"
+          />
         </div>
         <div className="space-y-1.5">
-          <Label className="text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground">Alt text</Label>
-          <Input value={alt} onChange={(event) => updateMedia({ alt: event.target.value })} className="rounded-xl bg-card" />
+          <Label className="text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground">
+            Alt text
+          </Label>
+          <Input
+            value={alt}
+            onChange={(event) => updateMedia({ alt: event.target.value })}
+            className="rounded-xl bg-card"
+          />
         </div>
       </div>
 

@@ -48,7 +48,7 @@ export function ProductsHeroSection({
         )}
 
         {/* Softer overlays so the image stays visible */}
-        <div className="absolute inset-0 z-[1] bg-white/55 sm:bg-white/50 lg:bg-white/46" />
+        {/* <div className="absolute inset-0 z-[1] bg-white/55 sm:bg-white/50 lg:bg-white/46" /> */}
 
         <div
           className={cn(

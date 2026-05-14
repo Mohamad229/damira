@@ -191,7 +191,6 @@ export interface ProductsPageData {
     items: Array<{
       id: string;
       title: string;
-      icon?: ServiceCardData["icon"];
     }>;
   };
   catalog: GridWithProducts;
@@ -250,7 +249,7 @@ const PRODUCT_CARDS_EN: ProductCardData[] = [
     storage: "Store in dry conditions below 25C",
     badge: "Current Portfolio",
     href: "/products/rinolac",
-    image: { src: "/uploads/public/rinolac.jpg", alt: "Rinolac product pack" },
+    image: { src: "", alt: "Rinolac product pack" },
   },
   {
     id: "rino-plus",
@@ -262,7 +261,7 @@ const PRODUCT_CARDS_EN: ProductCardData[] = [
     storage: "Controlled room temperature",
     badge: "Current Portfolio",
     href: "/products/rino-plus",
-    image: { src: "/uploads/public/rino-plus.jpg", alt: "Rino Plus packaging" },
+    image: { src: "", alt: "Rino Plus packaging" },
   },
   {
     id: "ausnutria",
@@ -275,7 +274,7 @@ const PRODUCT_CARDS_EN: ProductCardData[] = [
     badge: "Current Portfolio",
     href: "/products/ausnutria",
     image: {
-      src: "/uploads/public/ausnutria.jpg",
+      src: "",
       alt: "Ausnutria product range",
     },
   },
@@ -292,7 +291,7 @@ const PRODUCT_CARDS_AR: ProductCardData[] = [
     storage: "يحفظ في مكان جاف تحت 25 درجة",
     badge: "المحفظة الحالية",
     href: "/products/rinolac",
-    image: { src: "/uploads/public/rinolac.jpg", alt: "منتج رينولاك" },
+    image: { src: "", alt: "منتج رينولاك" },
   },
   {
     id: "rino-plus",
@@ -304,7 +303,7 @@ const PRODUCT_CARDS_AR: ProductCardData[] = [
     storage: "درجة حرارة الغرفة المضبوطة",
     badge: "المحفظة الحالية",
     href: "/products/rino-plus",
-    image: { src: "/uploads/public/rino-plus.jpg", alt: "منتج رينو بلس" },
+    image: { src: "", alt: "منتج رينو بلس" },
   },
   {
     id: "ausnutria",
@@ -316,7 +315,7 @@ const PRODUCT_CARDS_AR: ProductCardData[] = [
     storage: "يحفظ بعيدًا عن الرطوبة",
     badge: "المحفظة الحالية",
     href: "/products/ausnutria",
-    image: { src: "/uploads/public/ausnutria.jpg", alt: "منتجات أوسنوتريا" },
+    image: { src: "", alt: "منتجات أوسنوتريا" },
   },
 ];
 
@@ -341,7 +340,7 @@ const PUBLIC_UI_EN: PublicUiData = {
         },
       ],
       backgroundImage: {
-        src: "/uploads/public/hero-healthcare.jpg",
+        src: "",
         alt: "Healthcare logistics and pharmaceutical operations",
       },
     },
@@ -402,7 +401,7 @@ const PUBLIC_UI_EN: PublicUiData = {
       description:
         "A corporate execution model built for compliance, control, and measurable outcomes.",
       image: {
-        src: "/uploads/public/key-strengths-warehouse.jpg",
+        src: "",
         alt: "Healthcare logistics and pharmaceutical distribution facility",
       },
       items: [
@@ -597,7 +596,7 @@ const PUBLIC_UI_EN: PublicUiData = {
       title: "About Damira Pharma",
       subtitle: "Specialized Healthcare Division of Al Ahlam Group",
       backgroundImage: {
-        src: "/uploads/public/about-hero.jpg",
+        src: "",
         alt: "Damira Pharma facility and team",
       },
     },
@@ -615,15 +614,15 @@ const PUBLIC_UI_EN: PublicUiData = {
       ],
       images: [
         {
-          src: "/uploads/public/about-overview.jpg",
+          src: "",
           alt: "Healthcare laboratory operations",
         },
         {
-          src: "/uploads/public/about-overview.jpg",
+          src: "",
           alt: "Healthcare distribution facility",
         },
         {
-          src: "/uploads/public/about-overview.jpg",
+          src: "",
           alt: "Medical healthcare equipment",
         },
       ],
@@ -781,7 +780,7 @@ const PUBLIC_UI_EN: PublicUiData = {
       ],
       icon: editableIcon("Infrastructure service icon"),
       image: {
-        src: "/uploads/public/service-infrastructure.jpg",
+        src: "",
         alt: "Storage infrastructure",
       },
     },
@@ -795,7 +794,7 @@ const PUBLIC_UI_EN: PublicUiData = {
       ],
       icon: editableIcon("Regulatory service icon"),
       image: {
-        src: "/uploads/public/service-regulatory.jpg",
+        src: "",
         alt: "Regulatory documentation",
       },
     },
@@ -809,7 +808,7 @@ const PUBLIC_UI_EN: PublicUiData = {
       ],
       icon: editableIcon("Safety and vigilance service icon"),
       image: {
-        src: "/uploads/public/service-safety.jpg",
+        src: "",
         alt: "Safety vigilance operations",
       },
       imagePosition: "left",
@@ -825,7 +824,7 @@ const PUBLIC_UI_EN: PublicUiData = {
       ],
       icon: editableIcon("Logistics and distribution service icon"),
       image: {
-        src: "/uploads/public/service-logistics.jpg",
+        src: "",
         alt: "Distribution fleet",
       },
       imagePosition: "left",
@@ -841,7 +840,7 @@ const PUBLIC_UI_EN: PublicUiData = {
       ],
       icon: editableIcon("Market access service icon"),
       image: {
-        src: "/uploads/public/service-market-access.jpg",
+        src: "",
         alt: "Market access strategy",
       },
     },
@@ -865,7 +864,7 @@ const PUBLIC_UI_EN: PublicUiData = {
         },
       ],
       backgroundImage: {
-        src: "/uploads/public/products-hero.jpg",
+        src: "",
         alt: "Pharmaceutical product portfolio",
       },
     },
@@ -875,27 +874,22 @@ const PUBLIC_UI_EN: PublicUiData = {
         {
           id: "p1",
           title: "Oncology Therapies",
-          icon: editableIcon("Strategic specialization icon"),
         },
         {
           id: "p2",
           title: "ICU Life-Saving Drugs",
-          icon: editableIcon("ICU life-saving drugs icon"),
         },
         {
           id: "p3",
           title: "Clinical Nutrition",
-          icon: editableIcon("Clinical nutrition icon"),
         },
         {
           id: "p4",
           title: "Pediatric Products",
-          icon: editableIcon("Pediatric products icon"),
         },
         {
           id: "p5",
           title: "Diagnostic Solutions",
-          icon: editableIcon("Diagnostic solutions icon"),
         },
       ],
     },
@@ -1100,7 +1094,7 @@ const PUBLIC_UI_EN: PublicUiData = {
       overlayTitle: "Compliant Market Access",
       overlayDescription: "Built for resilient healthcare partnerships.",
       image: {
-        src: "/uploads/public/partnership-advantage.jpg",
+        src: "",
         alt: "Healthcare market access partnership",
       },
       items: [
@@ -1302,7 +1296,7 @@ const PUBLIC_UI_AR: PublicUiData = {
         { label: "كن شريكًا", href: "/partnerships", variant: "secondary" },
       ],
       backgroundImage: {
-        src: "/uploads/public/hero-healthcare.jpg",
+        src: "",
         alt: "عمليات لوجستية وصحية دوائية",
       },
     },
@@ -1360,7 +1354,7 @@ const PUBLIC_UI_AR: PublicUiData = {
       title: "نقاط القوة الرئيسية",
       description: "نموذج تنفيذ مؤسسي قائم على الامتثال والنتائج.",
       image: {
-        src: "/uploads/public/key-strengths-warehouse.jpg",
+        src: "",
         alt: "مرفق لوجستي لتوزيع المنتجات الدوائية",
       },
       items: [
@@ -1374,29 +1368,25 @@ const PUBLIC_UI_AR: PublicUiData = {
         {
           id: "cold-chain",
           title: "سلسلة باردة متقدمة",
-          description:
-            "بيئات 2-8 درجات وفائقة الانخفاض مع مراقبة مستمرة.",
+          description: "بيئات 2-8 درجات وفائقة الانخفاض مع مراقبة مستمرة.",
           icon: editableIcon("أيقونة السلسلة الباردة"),
         },
         {
           id: "regulatory",
           title: "خبرة تنظيمية",
-          description:
-            "ملفات منظمة ومسارات ترخيص ومتابعة تنظيمية مستمرة.",
+          description: "ملفات منظمة ومسارات ترخيص ومتابعة تنظيمية مستمرة.",
           icon: editableIcon("أيقونة الخبرة التنظيمية"),
         },
         {
           id: "distribution",
           title: "توزيع وطني",
-          description:
-            "قدرات وصول ميدانية تشمل المشافي والصيدليات والمؤسسات.",
+          description: "قدرات وصول ميدانية تشمل المشافي والصيدليات والمؤسسات.",
           icon: editableIcon("أيقونة التوزيع الوطني"),
         },
         {
           id: "legacy-strength",
           title: "إرث مجموعة يتجاوز 50 عاما",
-          description:
-            "نضج تشغيلي واستقرار مالي عبر جذور مجموعة الأحلام.",
+          description: "نضج تشغيلي واستقرار مالي عبر جذور مجموعة الأحلام.",
           icon: editableIcon("أيقونة إرث المجموعة"),
         },
       ],
@@ -1554,7 +1544,7 @@ const PUBLIC_UI_AR: PublicUiData = {
       title: "عن داميرا فارما",
       subtitle: "قسم الرعاية الصحية المتخصصة في مجموعة الأحلام",
       backgroundImage: {
-        src: "/uploads/public/about-hero.jpg",
+        src: "",
         alt: "فريق ومرفق داميرا فارما",
       },
     },
@@ -1572,15 +1562,15 @@ const PUBLIC_UI_AR: PublicUiData = {
       ],
       images: [
         {
-          src: "/uploads/public/about-overview.jpg",
+          src: "",
           alt: "عمليات مختبرية للرعاية الصحية",
         },
         {
-          src: "/uploads/public/about-overview.jpg",
+          src: "",
           alt: "مرفق توزيع للرعاية الصحية",
         },
         {
-          src: "/uploads/public/about-overview.jpg",
+          src: "",
           alt: "معدات طبية للرعاية الصحية",
         },
       ],
@@ -1606,8 +1596,7 @@ const PUBLIC_UI_AR: PublicUiData = {
         {
           id: "quality",
           title: "الجودة والامتثال",
-          description:
-            "كل عملية مصممة لتحقيق الاتساق والتوثيق وسلامة المرضى.",
+          description: "كل عملية مصممة لتحقيق الاتساق والتوثيق وسلامة المرضى.",
           icon: editableIcon("أيقونة الجودة والامتثال"),
         },
         {
@@ -1620,15 +1609,13 @@ const PUBLIC_UI_AR: PublicUiData = {
         {
           id: "ethics",
           title: "الأخلاقيات والشراكات",
-          description:
-            "تعاون شفاف مع حوكمة مبدئية ومسؤولية طويلة الأمد.",
+          description: "تعاون شفاف مع حوكمة مبدئية ومسؤولية طويلة الأمد.",
           icon: editableIcon("أيقونة الأخلاقيات والشراكات"),
         },
         {
           id: "team",
           title: "تطوير الفريق",
-          description:
-            "برامج بناء قدرات منظمة تدعم الأداء واستمرارية القيادة.",
+          description: "برامج بناء قدرات منظمة تدعم الأداء واستمرارية القيادة.",
           icon: editableIcon("أيقونة تطوير الفريق"),
         },
         {
@@ -1726,7 +1713,7 @@ const PUBLIC_UI_AR: PublicUiData = {
       ],
       icon: editableIcon("أيقونة خدمة البنية التحتية"),
       image: {
-        src: "/uploads/public/service-infrastructure.jpg",
+        src: "",
         alt: "بنية تخزين دوائية",
       },
     },
@@ -1740,7 +1727,7 @@ const PUBLIC_UI_AR: PublicUiData = {
       ],
       icon: editableIcon("أيقونة الخدمة التنظيمية"),
       image: {
-        src: "/uploads/public/service-regulatory.jpg",
+        src: "",
         alt: "إعداد ملفات تنظيمية",
       },
     },
@@ -1754,7 +1741,7 @@ const PUBLIC_UI_AR: PublicUiData = {
       ],
       icon: editableIcon("أيقونة السلامة والتيقظ"),
       image: {
-        src: "/uploads/public/service-safety.jpg",
+        src: "",
         alt: "متابعة السلامة والتيقظ الدوائي",
       },
       imagePosition: "left",
@@ -1770,7 +1757,7 @@ const PUBLIC_UI_AR: PublicUiData = {
       ],
       icon: editableIcon("أيقونة اللوجستيات والتوزيع"),
       image: {
-        src: "/uploads/public/service-logistics.jpg",
+        src: "",
         alt: "أسطول توزيع دوائي",
       },
       imagePosition: "left",
@@ -1786,7 +1773,7 @@ const PUBLIC_UI_AR: PublicUiData = {
       ],
       icon: editableIcon("أيقونة الوصول للسوق"),
       image: {
-        src: "/uploads/public/service-market-access.jpg",
+        src: "",
         alt: "استراتيجية الوصول للسوق",
       },
     },
@@ -1811,7 +1798,7 @@ const PUBLIC_UI_AR: PublicUiData = {
         },
       ],
       backgroundImage: {
-        src: "/uploads/public/products-hero.jpg",
+        src: "",
         alt: "محفظة منتجات دوائية",
       },
     },
@@ -1821,27 +1808,22 @@ const PUBLIC_UI_AR: PublicUiData = {
         {
           id: "p1",
           title: "علاجات الأورام",
-          icon: editableIcon("أيقونة علاجات الأورام"),
         },
         {
           id: "p2",
           title: "أدوية العناية المركزة",
-          icon: editableIcon("أيقونة أدوية العناية المركزة"),
         },
         {
           id: "p3",
           title: "التغذية السريرية",
-          icon: editableIcon("أيقونة التغذية السريرية"),
         },
         {
           id: "p4",
           title: "منتجات الأطفال",
-          icon: editableIcon("أيقونة منتجات الأطفال"),
         },
         {
           id: "p5",
           title: "حلول التشخيص",
-          icon: editableIcon("أيقونة حلول التشخيص"),
         },
       ],
     },
@@ -1905,8 +1887,7 @@ const PUBLIC_UI_AR: PublicUiData = {
         {
           id: "gdp-gsp",
           title: "بروتوكولات الامتثال لممارسات GDP و GSP",
-          description:
-            "ممارسات توزيع وتخزين مضبوطة على كامل سلسلة الجودة.",
+          description: "ممارسات توزيع وتخزين مضبوطة على كامل سلسلة الجودة.",
           icon: editableIcon("أيقونة الامتثال للتوزيع والتخزين"),
         },
         {
@@ -1919,8 +1900,7 @@ const PUBLIC_UI_AR: PublicUiData = {
         {
           id: "conduct-fmv",
           title: "مدونة سلوك وسياسات قيمة سوقية عادلة",
-          description:
-            "سلوك تجاري شفاف متوافق مع معايير الشراكة الأخلاقية.",
+          description: "سلوك تجاري شفاف متوافق مع معايير الشراكة الأخلاقية.",
           icon: editableIcon("أيقونة مدونة السلوك"),
         },
         {
@@ -1997,43 +1977,37 @@ const PUBLIC_UI_AR: PublicUiData = {
         {
           id: "w1",
           title: "تخصص استراتيجي",
-          description:
-            "قطاعات علاجية مركزة بخبرة تشغيلية عميقة.",
+          description: "قطاعات علاجية مركزة بخبرة تشغيلية عميقة.",
           icon: editableIcon("أيقونة التخصص الاستراتيجي"),
         },
         {
           id: "w2",
           title: "بنية جاهزة للتدقيق",
-          description:
-            "أنظمة معتمدة مصممة لتوقعات الجودة الدولية.",
+          description: "أنظمة معتمدة مصممة لتوقعات الجودة الدولية.",
           icon: editableIcon("أيقونة بنية جاهزة للتدقيق"),
         },
         {
           id: "w3",
           title: "قوة تنظيمية",
-          description:
-            "تنفيذ منضبط للتسجيل والامتثال عبر مراحل دورة الحياة.",
+          description: "تنفيذ منضبط للتسجيل والامتثال عبر مراحل دورة الحياة.",
           icon: editableIcon("أيقونة القوة التنظيمية"),
         },
         {
           id: "w4",
           title: "قدرات وصول للسوق",
-          description:
-            "تواصل مع المشافي والمتخصصين عبر برامج وصول منظمة.",
+          description: "تواصل مع المشافي والمتخصصين عبر برامج وصول منظمة.",
           icon: editableIcon("أيقونة قدرات الوصول للسوق"),
         },
         {
           id: "w5",
           title: "تسويق قائم على البيانات",
-          description:
-            "تخطيط أداء مدعوم بذكاء السوق والفرق الميدانية.",
+          description: "تخطيط أداء مدعوم بذكاء السوق والفرق الميدانية.",
           icon: editableIcon("أيقونة التسويق القائم على البيانات"),
         },
         {
           id: "w6",
           title: "دعم مالي",
-          description:
-            "مدعومة بالاستقرار المالي الراسخ لمجموعة الأحلام.",
+          description: "مدعومة بالاستقرار المالي الراسخ لمجموعة الأحلام.",
           icon: editableIcon("أيقونة الدعم المالي"),
         },
       ],
@@ -2047,22 +2021,20 @@ const PUBLIC_UI_AR: PublicUiData = {
       overlayTitle: "وصول سوقي متوافق",
       overlayDescription: "مصمم لشراكات رعاية صحية مرنة.",
       image: {
-        src: "/uploads/public/partnership-advantage.jpg",
+        src: "",
         alt: "شراكة وصول سوقي في الرعاية الصحية",
       },
       items: [
         {
           id: "risk-mitigation",
           title: "تخفيف المخاطر",
-          description:
-            "أطر امتثال صارمة تحمي سمعة علامتكم في الأسواق المعقدة.",
+          description: "أطر امتثال صارمة تحمي سمعة علامتكم في الأسواق المعقدة.",
           icon: editableIcon("أيقونة تخفيف المخاطر"),
         },
         {
           id: "accelerated-access",
           title: "تسريع الوصول",
-          description:
-            "خبرتنا التنظيمية تسرع التسجيل ومسارات دخول السوق.",
+          description: "خبرتنا التنظيمية تسرع التسجيل ومسارات دخول السوق.",
           icon: editableIcon("أيقونة تسريع الوصول"),
         },
         {

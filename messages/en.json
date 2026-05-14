@@ -161,38 +161,62 @@
     }
   },
   "header": {
-    "tagline": "Trusted. Healthy.",
-    "location": "Damascus, Syria",
-    "email": "info@damirapharma.sy",
-    "partnerCta": "Become a Partner",
-    "overview": "Overview",
-    "menuOpen": "Open menu",
-    "menuClose": "Close menu",
     "mainNav": "Main navigation",
-    "mobileNav": "Mobile navigation",
-    "sectionMenu": "sections"
+    "toggleNavigation": "Toggle navigation",
+    "switchLanguage": "Switch language",
+    "subnav": {
+      "home": {
+        "atAGlance": "At a Glance",
+        "strategicFocus": "Strategic Focus",
+        "keyStrengths": "Key Strengths",
+        "coverageReach": "Coverage & Reach",
+        "successHighlight": "Success Highlight"
+      },
+      "about": {
+        "companyOverview": "Company Overview",
+        "visionMission": "Vision & Mission",
+        "coreValues": "Core Values",
+        "legacySuccess": "Legacy & Success"
+      },
+      "services": {
+        "regulatoryServices": "Regulatory Services",
+        "infrastructure": "Infrastructure",
+        "marketAccess": "Market Access",
+        "logisticsDistribution": "Logistics & Distribution",
+        "safetyVigilance": "Safety & Vigilance"
+      },
+      "products": {
+        "pipelineSegments": "Pipeline Segments",
+        "productCatalog": "Product Catalog"
+      },
+      "quality": {
+        "qualityManagementSystem": "Quality Management System",
+        "ethicsCompliance": "Ethics & Compliance"
+      },
+      "partnerships": {
+        "whyPartner": "Why Partner",
+        "damiraAdvantage": "Damira Advantage",
+        "inquiryForm": "Inquiry Form"
+      },
+      "contact": {
+        "contactInfo": "Contact Info",
+        "contactForm": "Contact Form"
+      }
+    }
   },
-  "footer": {
-    "rights": "All rights reserved",
-    "privacy": "Privacy Policy",
-    "terms": "Terms of Service",
-    "description": "Building Syria's specialized healthcare distribution and commercialization ecosystem.",
-    "quickLinks": "Quick Links",
-    "focusAreas": "Focus Areas",
-    "atAGlance": "At a Glance",
-    "location": "Damascus, Syria",
-    "email": "info@damirapharma.sy",
-    "coverage": "Coverage",
-    "coverageValue": "Nationwide across Syria",
-    "compliance": "GDP & GSP Aligned",
-    "complianceValue": "Audit-ready quality and compliance operations",
-    "founded": "Founded",
-    "facility": "Facility",
-    "storage": "Climate-Controlled Storage",
-    "years": "Group Legacy",
-    "focusOncology": "Oncology & Hematology",
-    "focusCriticalCare": "Critical Care & ICU",
-    "focusNutrition": "Specialized Nutrition & Pediatrics",
-    "focusDiagnostics": "Advanced Diagnostics & Devices"
+  "footerV2": {
+    "siteName": "Damira Pharma",
+    "description": "The trusted bridge between global life science innovators and Syrian healthcare infrastructure. Part of Al Ahlam Group, established 1974.",
+    "company": "Company",
+    "solutions": "Solutions",
+    "contactInfo": "Contact Info",
+    "contactAddress": "Erbin, Damascus Countryside, Syria",
+    "regulatoryAffairs": "Regulatory Affairs",
+    "marketAccess": "Market Access",
+    "distributionServices": "Distribution Services",
+    "productPortfolio": "Product Portfolio",
+    "rightsSuffix": "All rights reserved. ISO & FDA Certified Facility.",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service"
   }
 }

@@ -314,21 +314,6 @@ async function isMediaInUse(mediaUrl: string): Promise<boolean> {
       return true;
     }
 
-    // Check if media is used in legacy page sections (stored in JSON data field)
-    const pageSections = await db.pageSection.findMany({
-      select: { id: true, data: true },
-    });
-
-    // Check if any section's data contains the media URL
-    const hasMediaInSections = pageSections.some((section) => {
-      const dataStr = JSON.stringify(section.data);
-      return dataStr.includes(mediaUrl);
-    });
-
-    if (hasMediaInSections) {
-      return true;
-    }
-
     return false;
   } catch (error) {
     console.error("Error checking media usage:", error);

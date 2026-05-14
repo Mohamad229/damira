@@ -1,12 +1,13 @@
 "use server";
 
-import { z } from "zod";
-import bcrypt from "bcryptjs";
 import { revalidatePath } from "next/cache";
+import { UserRole } from "@prisma/client";
+import bcrypt from "bcryptjs";
+import { z } from "zod";
 
+import { createAdminNotification } from "@/lib/actions/admin-notifications";
 import db from "@/lib/db";
 import { requireAuth, requireRole } from "@/lib/auth-utils";
-import { UserRole } from "@prisma/client";
 
 // Constants
 const SALT_ROUNDS = 12;
@@ -174,7 +175,7 @@ export async function getUserById(
  */
 export async function createUser(formData: FormData): Promise<ActionState> {
   try {
-    await requireRole([UserRole.ADMIN]);
+    const currentUser = await requireRole([UserRole.ADMIN]);
 
     const rawData = {
       email: formData.get("email") as string,
@@ -222,6 +223,16 @@ export async function createUser(formData: FormData): Promise<ActionState> {
     });
 
     revalidatePath(ADMIN_USERS_PATH);
+
+    await createAdminNotification({
+      type: "USER_CREATED",
+      title: "User created",
+      message: `${newUser.name} was added as ${newUser.role.toLowerCase().replace(/_/g, " ")}`,
+      href: `/admin/users/${newUser.id}/edit`,
+      entityType: "User",
+      entityId: newUser.id,
+      actorId: currentUser.id,
+    });
 
     return {
       success: true,
@@ -332,6 +343,16 @@ export async function updateUser(
     });
 
     revalidatePath(ADMIN_USERS_PATH);
+
+    await createAdminNotification({
+      type: "USER_UPDATED",
+      title: "User updated",
+      message: `${updatedUser.name} account details were updated`,
+      href: `/admin/users/${updatedUser.id}/edit`,
+      entityType: "User",
+      entityId: updatedUser.id,
+      actorId: currentUser.id,
+    });
 
     return {
       success: true,

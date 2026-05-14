@@ -7,72 +7,79 @@ export async function SiteHeaderV2() {
   const tHeader = await getTranslations("header");
 
   const navItems: HeaderNavItem[] = [
-    { 
-      href: "/", 
+    {
+      href: "/",
       label: tCommon("home"),
       subItems: [
-        { href: "/#home-at-a-glance", label: "At a Glance" },
-        { href: "/#home-strategic-focus", label: "Strategic Focus" },
-        { href: "/#home-strengths", label: "Key Strengths" },
-        { href: "/#home-coverage", label: "Coverage & Reach" },
-        { href: "/#home-success-highlight", label: "Success Highlight" },
-      ]
+        { href: "/#home-at-a-glance", label: tHeader("subnav.home.atAGlance") },
+        { href: "/#home-strategic-focus", label: tHeader("subnav.home.strategicFocus") },
+        { href: "/#home-strengths", label: tHeader("subnav.home.keyStrengths") },
+        { href: "/#home-coverage", label: tHeader("subnav.home.coverageReach") },
+        { href: "/#home-success-highlight", label: tHeader("subnav.home.successHighlight") },
+      ],
     },
-    { 
-      href: "/about", 
+    {
+      href: "/about",
       label: tCommon("about"),
       subItems: [
-        { href: "/about#about-company-overview", label: "Company Overview" },
-        { href: "/about#about-vision-mission", label: "Vision & Mission" },
-        { href: "/about#about-values", label: "Core Values" },
-        { href: "/about#about-legacy-success", label: "Legacy & Success" },
-      ]
+        { href: "/about#about-company-overview", label: tHeader("subnav.about.companyOverview") },
+        { href: "/about#about-vision-mission", label: tHeader("subnav.about.visionMission") },
+        { href: "/about#about-values", label: tHeader("subnav.about.coreValues") },
+        { href: "/about#about-legacy-success", label: tHeader("subnav.about.legacySuccess") },
+      ],
     },
-    { 
-      href: "/services", 
+    {
+      href: "/services",
       label: tCommon("services"),
       subItems: [
-        { href: "/services#services-regulatory", label: "Regulatory Services" },
-        { href: "/services#services-infrastructure", label: "Infrastructure" },
-        { href: "/services#services-market-access", label: "Market Access" },
-        { href: "/services#services-logistics", label: "Logistics & Distribution" },
-        { href: "/services#services-safety", label: "Safety & Vigilance" },
-      ]
+        { href: "/services#services-regulatory", label: tHeader("subnav.services.regulatoryServices") },
+        { href: "/services#services-infrastructure", label: tHeader("subnav.services.infrastructure") },
+        { href: "/services#services-market-access", label: tHeader("subnav.services.marketAccess") },
+        { href: "/services#services-logistics", label: tHeader("subnav.services.logisticsDistribution") },
+        { href: "/services#services-safety", label: tHeader("subnav.services.safetyVigilance") },
+      ],
     },
-    { 
-      href: "/products", 
+    {
+      href: "/products",
       label: tCommon("products"),
       subItems: [
-        { href: "/products#products-pipeline", label: "Pipeline Segments" },
-        { href: "/products#products-catalog", label: "Product Catalog" },
-      ]
+        { href: "/products#products-pipeline", label: tHeader("subnav.products.pipelineSegments") },
+        { href: "/products#products-catalog", label: tHeader("subnav.products.productCatalog") },
+      ],
     },
-    { 
-      href: "/quality", 
+    {
+      href: "/quality",
       label: tCommon("compliance"),
       subItems: [
-        { href: "/quality#quality-compliance", label: "Quality Management System" },
-        { href: "/quality#quality-ethics", label: "Ethics & Compliance" },
-      ]
+        { href: "/quality#quality-compliance", label: tHeader("subnav.quality.qualityManagementSystem") },
+        { href: "/quality#quality-ethics", label: tHeader("subnav.quality.ethicsCompliance") },
+      ],
     },
-    { 
-      href: "/partnerships", 
+    {
+      href: "/partnerships",
       label: tCommon("partnerships"),
       subItems: [
-        { href: "/partnerships#partners-why", label: "Why Partner" },
-        { href: "/partnerships#partners-advantage", label: "Damira Advantage" },
-        { href: "/partnerships#partners-inquiry", label: "Inquiry Form" },
-      ]
+        { href: "/partnerships#partners-why", label: tHeader("subnav.partnerships.whyPartner") },
+        { href: "/partnerships#partners-advantage", label: tHeader("subnav.partnerships.damiraAdvantage") },
+        { href: "/partnerships#partners-inquiry", label: tHeader("subnav.partnerships.inquiryForm") },
+      ],
     },
-    { 
-      href: "/contact", 
+    {
+      href: "/contact",
       label: tCommon("contact"),
       subItems: [
-        { href: "/contact#contact-info", label: "Contact Info" },
-        { href: "/contact#contact-form", label: "Contact Form" },
-      ]
+        { href: "/contact#contact-info", label: tHeader("subnav.contact.contactInfo") },
+        { href: "/contact#contact-form", label: tHeader("subnav.contact.contactForm") },
+      ],
     },
   ];
 
-  return <SiteHeaderClientV2 navItems={navItems} mainNavLabel={tHeader("mainNav")} />;
+  return (
+    <SiteHeaderClientV2
+      navItems={navItems}
+      mainNavLabel={tHeader("mainNav")}
+      toggleNavLabel={tHeader("toggleNavigation")}
+      switchLanguageLabel={tHeader("switchLanguage")}
+    />
+  );
 }

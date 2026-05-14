@@ -23,9 +23,12 @@ import {
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
-  getRecentAdminActivity,
-  type AdminActivityItem,
-} from "@/lib/actions/admin-activity";
+  getAdminNotifications,
+  getUnreadAdminNotificationCount,
+  markAdminNotificationRead,
+  markAllAdminNotificationsRead,
+  type AdminNotificationItem,
+} from "@/lib/actions/admin-notifications";
 import { useSidebar } from "./sidebar-provider";
 
 interface BreadcrumbItem {
@@ -141,6 +144,38 @@ const ACTIVITY_ICONS = {
   user: UserRound,
 } as const;
 
+type ActivityIconKey = keyof typeof ACTIVITY_ICONS;
+
+function getActivityIconKey(item: AdminNotificationItem): ActivityIconKey {
+  const value = `${item.entityType || item.type}`.toLowerCase();
+
+  if (value.includes("form")) {
+    return "form";
+  }
+
+  if (value.includes("product")) {
+    return "product";
+  }
+
+  if (value.includes("page")) {
+    return "page";
+  }
+
+  if (value.includes("media")) {
+    return "media";
+  }
+
+  if (value.includes("user")) {
+    return "user";
+  }
+
+  return "page";
+}
+
+function formatTypeLabel(type: string) {
+  return type.toLowerCase().replace(/_/g, " ");
+}
+
 function formatRelativeTime(value: string) {
   const timestamp = Date.parse(value);
   if (Number.isNaN(timestamp)) {
@@ -163,43 +198,59 @@ function formatRelativeTime(value: string) {
 }
 
 function NotificationBell() {
-  const [items, setItems] = useState<AdminActivityItem[]>([]);
+  const [items, setItems] = useState<AdminNotificationItem[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
-  const [seenIds, setSeenIds] = useState<Set<string>>(new Set());
   const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
-    const stored = window.localStorage.getItem("damira-admin-seen-activity");
-    if (stored) {
-      try {
-        setSeenIds(new Set(JSON.parse(stored) as string[]));
-      } catch {
-        setSeenIds(new Set());
-      }
-    }
-
     startTransition(async () => {
-      const result = await getRecentAdminActivity();
-      if (result.success && result.data) {
-        setItems(result.data);
+      const [notificationsResult, countResult] = await Promise.all([
+        getAdminNotifications(10),
+        getUnreadAdminNotificationCount(),
+      ]);
+
+      if (notificationsResult.success && notificationsResult.data) {
+        setItems(notificationsResult.data);
+      }
+
+      if (countResult.success && countResult.data) {
+        setUnreadCount(countResult.data.count);
       }
     });
   }, []);
 
-  const unreadCount = items.filter((item) => !seenIds.has(item.id)).length;
-
   const handleToggle = () => {
-    const nextOpen = !isOpen;
-    setIsOpen(nextOpen);
+    setIsOpen((current) => !current);
+  };
 
-    if (nextOpen && items.length > 0) {
-      const nextSeen = new Set([...seenIds, ...items.map((item) => item.id)]);
-      setSeenIds(nextSeen);
-      window.localStorage.setItem(
-        "damira-admin-seen-activity",
-        JSON.stringify(Array.from(nextSeen).slice(-100)),
-      );
-    }
+  const handleMarkRead = (id: string) => {
+    const wasUnread = items.some((item) => item.id === id && item.isUnread);
+
+    startTransition(async () => {
+      const result = await markAdminNotificationRead(id);
+      if (result.success && result.data) {
+        setItems((current) =>
+          current.map((item) => (item.id === id ? result.data! : item)),
+        );
+        if (wasUnread) {
+          setUnreadCount((current) => Math.max(0, current - 1));
+        }
+      }
+    });
+  };
+
+  const handleMarkAllRead = () => {
+    startTransition(async () => {
+      const result = await markAllAdminNotificationsRead();
+      if (result.success) {
+        const readAt = new Date().toISOString();
+        setItems((current) =>
+          current.map((item) => ({ ...item, readAt, isUnread: false })),
+        );
+        setUnreadCount(0);
+      }
+    });
   };
 
   return (
@@ -223,10 +274,27 @@ function NotificationBell() {
       {isOpen ? (
         <div className="absolute right-0 top-full z-50 mt-2 w-[min(360px,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-border bg-popover text-popover-foreground shadow-xl">
           <div className="border-b border-border px-4 py-3">
-            <p className="text-sm font-bold text-foreground">Recent activity</p>
-            <p className="mt-0.5 text-xs text-muted-foreground">
-              Local seen state only. Persistent read status needs a DB model.
-            </p>
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="text-sm font-bold text-foreground">Notifications</p>
+                <p className="mt-0.5 text-xs text-muted-foreground">
+                  {unreadCount > 0
+                    ? `${unreadCount} unread notification${unreadCount === 1 ? "" : "s"}`
+                    : "All notifications are read"}
+                </p>
+              </div>
+              {unreadCount > 0 ? (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 rounded-full px-3 text-xs"
+                  disabled={isPending}
+                  onClick={handleMarkAllRead}
+                >
+                  Mark all read
+                </Button>
+              ) : null}
+            </div>
           </div>
 
           <div className="max-h-[420px] overflow-y-auto p-2">
@@ -237,14 +305,9 @@ function NotificationBell() {
               </div>
             ) : items.length > 0 ? (
               items.map((item) => {
-                const Icon = ACTIVITY_ICONS[item.type];
-                return (
-                  <Link
-                    key={item.id}
-                    href={item.href}
-                    onClick={() => setIsOpen(false)}
-                    className="flex gap-3 rounded-xl px-3 py-3 transition-colors hover:bg-muted"
-                  >
+                const Icon = ACTIVITY_ICONS[getActivityIconKey(item)];
+                const content = (
+                  <>
                     <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
                       <Icon className="h-4 w-4" />
                     </span>
@@ -253,21 +316,57 @@ function NotificationBell() {
                         <span className="truncate text-sm font-semibold text-foreground">
                           {item.title}
                         </span>
-                        {item.isNew ? (
+                        {item.isUnread ? (
                           <span className="rounded-full bg-accent/10 px-2 py-0.5 text-[10px] font-bold uppercase text-accent-dark">
                             New
                           </span>
                         ) : null}
                       </span>
-                      <span className="mt-0.5 block truncate text-xs text-muted-foreground">
-                        {item.message}
+                      <span className="mt-0.5 block text-[11px] font-semibold uppercase text-primary">
+                        {formatTypeLabel(item.type)}
                       </span>
+                      {item.message ? (
+                        <span className="mt-0.5 block truncate text-xs text-muted-foreground">
+                          {item.message}
+                        </span>
+                      ) : null}
                       <span className="mt-1 flex items-center gap-1 text-[11px] text-muted-foreground">
-                        <CheckCircle2 className="h-3 w-3" />
+                        <Clock3 className="h-3 w-3" />
                         {formatRelativeTime(item.createdAt)}
                       </span>
                     </span>
-                  </Link>
+                  </>
+                );
+
+                return (
+                  <div
+                    key={item.id}
+                    className="flex gap-3 rounded-xl px-3 py-3 transition-colors hover:bg-muted"
+                  >
+                    {item.href ? (
+                      <Link
+                        href={item.href}
+                        onClick={() => setIsOpen(false)}
+                        className="flex min-w-0 flex-1 gap-3"
+                      >
+                        {content}
+                      </Link>
+                    ) : (
+                      <div className="flex min-w-0 flex-1 gap-3">{content}</div>
+                    )}
+                    {item.isUnread ? (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="mt-0.5 h-8 w-8 shrink-0 rounded-full text-muted-foreground hover:text-primary"
+                        disabled={isPending}
+                        aria-label="Mark notification as read"
+                        onClick={() => handleMarkRead(item.id)}
+                      >
+                        <CheckCircle2 className="h-4 w-4" />
+                      </Button>
+                    ) : null}
+                  </div>
                 );
               })
             ) : (

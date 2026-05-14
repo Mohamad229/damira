@@ -159,40 +159,63 @@
       "errorTitle": "خطأ في الإرسال",
       "genericError": "تعذر معالجة طلبك حالياً."
     }
-  },
-  "header": {
-    "tagline": "موثوق. صحي.",
-    "location": "دمشق، سوريا",
-    "email": "info@damirapharma.sy",
-    "partnerCta": "كن شريكاً معنا",
-    "overview": "نظرة عامة",
-    "menuOpen": "فتح القائمة",
-    "menuClose": "إغلاق القائمة",
+  },"header": {
     "mainNav": "التنقل الرئيسي",
-    "mobileNav": "تنقل الجوال",
-    "sectionMenu": "الأقسام"
+    "toggleNavigation": "فتح وإغلاق قائمة التنقل",
+    "switchLanguage": "تبديل اللغة",
+    "subnav": {
+      "home": {
+        "atAGlance": "لمحة عامة",
+        "strategicFocus": "التركيز الاستراتيجي",
+        "keyStrengths": "نقاط القوة الرئيسية",
+        "coverageReach": "التغطية والانتشار",
+        "successHighlight": "إبراز النجاح"
+      },
+      "about": {
+        "companyOverview": "نظرة عامة على الشركة",
+        "visionMission": "الرؤية والرسالة",
+        "coreValues": "القيم الأساسية",
+        "legacySuccess": "الإرث والنجاح"
+      },
+      "services": {
+        "regulatoryServices": "الخدمات التنظيمية",
+        "infrastructure": "البنية التحتية",
+        "marketAccess": "الوصول إلى السوق",
+        "logisticsDistribution": "الخدمات اللوجستية والتوزيع",
+        "safetyVigilance": "السلامة والتيقظ"
+      },
+      "products": {
+        "pipelineSegments": "شرائح المنتجات",
+        "productCatalog": "كتالوج المنتجات"
+      },
+      "quality": {
+        "qualityManagementSystem": "نظام إدارة الجودة",
+        "ethicsCompliance": "الأخلاقيات والامتثال"
+      },
+      "partnerships": {
+        "whyPartner": "لماذا الشراكة",
+        "damiraAdvantage": "ميزة داميرا",
+        "inquiryForm": "نموذج الاستفسار"
+      },
+      "contact": {
+        "contactInfo": "معلومات التواصل",
+        "contactForm": "نموذج التواصل"
+      }
+    }
   },
-  "footer": {
-    "rights": "جميع الحقوق محفوظة",
-    "privacy": "سياسة الخصوصية",
-    "terms": "شروط الخدمة",
-    "description": "نبني منظومة سورية متخصصة في توزيع وتسويق منتجات الرعاية الصحية.",
-    "quickLinks": "روابط سريعة",
-    "focusAreas": "مجالات التركيز",
-    "atAGlance": "لمحة سريعة",
-    "location": "دمشق، سوريا",
-    "email": "info@damirapharma.sy",
-    "coverage": "التغطية",
-    "coverageValue": "تغطية وطنية في جميع أنحاء سوريا",
-    "compliance": "متوافق مع GDP و GSP",
-    "complianceValue": "عمليات جودة وامتثال جاهزة للتدقيق",
-    "founded": "سنة التأسيس",
-    "facility": "المنشأة",
-    "storage": "سعة التخزين المكيّف",
-    "years": "إرث المجموعة",
-    "focusOncology": "الأورام وأمراض الدم",
-    "focusCriticalCare": "الرعاية الحرجة والعناية المركزة",
-    "focusNutrition": "التغذية المتخصصة وطب الأطفال",
-    "focusDiagnostics": "التشخيصات والأجهزة الطبية المتقدمة"
+  "footerV2": {
+    "siteName": "داميرا فارما",
+    "description": "الجسر الموثوق بين مبتكري علوم الحياة عالميًا والبنية التحتية للرعاية الصحية في سوريا. جزء من مجموعة الأحلام، التي تأسست عام 1974.",
+    "company": "الشركة",
+    "solutions": "الحلول",
+    "contactInfo": "معلومات التواصل",
+    "contactAddress": "عربين، ريف دمشق، سوريا",
+    "regulatoryAffairs": "الشؤون التنظيمية",
+    "marketAccess": "الوصول إلى السوق",
+    "distributionServices": "خدمات التوزيع",
+    "productPortfolio": "محفظة المنتجات",
+    "rightsSuffix": "جميع الحقوق محفوظة. منشأة حاصلة على شهادات ISO و FDA.",
+    "privacyPolicy": "سياسة الخصوصية",
+    "termsOfService": "شروط الخدمة"
   }
 }

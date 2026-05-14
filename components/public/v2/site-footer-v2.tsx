@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { getTranslations } from "next-intl/server";
 import { Mail, MapPin, Phone } from "lucide-react";
 
 import { localeDirection, type Locale } from "@/i18n/config";
@@ -44,28 +45,36 @@ function FooterLinksColumn({
 }
 
 export async function SiteFooterV2({ locale }: SiteFooterV2Props) {
+  const tCommon = await getTranslations({ locale, namespace: "common" });
+  const tFooter = await getTranslations({ locale, namespace: "footerV2" });
+
   const siteSettings = await getPublicSiteSettings();
 
   const currentYear = new Date().getFullYear();
   const direction = localeDirection[locale];
 
-  const siteName = siteSettings.siteName || "Damira Pharma";
+  const siteName = siteSettings.siteName || tFooter("siteName");
   const contactEmail = siteSettings.contactEmail || "info@damirapharma.sy";
+  const contactPhone = siteSettings.contactPhone || "+963 935 222 202";
+  const contactPhoneHref = `tel:${contactPhone.replace(/[^\d+]/g, "")}`;
+
   const contactAddress =
-    siteSettings.contactAddress || "Erbin, Damascus Countryside, Syria";
+    locale === "ar"
+      ? tFooter("contactAddress")
+      : siteSettings.contactAddress || tFooter("contactAddress");
 
   const companyLinks: FooterLink[] = [
-    { href: "/about", label: "About Us" },
-    { href: "/quality", label: "Quality & Compliance" },
-    { href: "/partnerships", label: "Partnerships" },
-    { href: "/contact", label: "Contact Us" },
+    { href: "/about", label: tCommon("about") },
+    { href: "/quality", label: tCommon("compliance") },
+    { href: "/partnerships", label: tCommon("partnerships") },
+    { href: "/contact", label: tCommon("contact") },
   ];
 
   const solutionLinks: FooterLink[] = [
-    { href: "/services#services-logistics", label: "Distribution Services" },
-    { href: "/services#services-regulatory", label: "Regulatory Affairs" },
-    { href: "/products", label: "Product Portfolio" },
-    { href: "/services#services-market-access", label: "Market Access" },
+    { href: "/services#services-regulatory", label: tFooter("regulatoryAffairs") },
+    { href: "/services#services-market-access", label: tFooter("marketAccess") },
+    { href: "/services#services-logistics", label: tFooter("distributionServices") },
+    { href: "/products", label: tFooter("productPortfolio") },
   ];
 
   return (
@@ -92,22 +101,20 @@ export async function SiteFooterV2({ locale }: SiteFooterV2Props) {
             </Link>
 
             <p className="mt-4 max-w-[340px] text-[14px] font-medium leading-[1.7] text-[#9aa8bc] sm:mt-5 sm:text-[15px]">
-              The trusted bridge between global life science innovators and
-              Syrian healthcare infrastructure. Part of Al Ahlam Group,
-              established 1974.
+              {tFooter("description")}
             </p>
           </section>
 
           {/* Company */}
-          <FooterLinksColumn title="Company" links={companyLinks} />
+          <FooterLinksColumn title={tFooter("company")} links={companyLinks} />
 
           {/* Solutions */}
-          <FooterLinksColumn title="Solutions" links={solutionLinks} />
+          <FooterLinksColumn title={tFooter("solutions")} links={solutionLinks} />
 
           {/* Contact Info */}
           <section>
             <h3 className="mb-4 text-[13px] font-extrabold uppercase tracking-[0.08em] text-white sm:mb-5 sm:text-[14px]">
-              Contact Info
+              {tFooter("contactInfo")}
             </h3>
 
             <div className="space-y-4">
@@ -120,12 +127,12 @@ export async function SiteFooterV2({ locale }: SiteFooterV2Props) {
               </div>
 
               <a
-                href="tel:+963935222202"
+                href={contactPhoneHref}
                 className="flex items-center gap-3 text-[14px] font-medium text-[#94a3b8] transition-colors hover:text-[#00a9e8] sm:text-[15px]"
               >
                 <Phone className="h-[17px] w-[17px] shrink-0 text-[#00a9e8]" />
 
-                <span dir="ltr">+963 935 222 202</span>
+                <span dir="ltr">{contactPhone}</span>
               </a>
 
               <a
@@ -134,7 +141,9 @@ export async function SiteFooterV2({ locale }: SiteFooterV2Props) {
               >
                 <Mail className="h-[17px] w-[17px] shrink-0 text-[#00a9e8]" />
 
-                <span className="break-all">{contactEmail}</span>
+                <span className="break-all" dir="ltr">
+                  {contactEmail}
+                </span>
               </a>
             </div>
           </section>
@@ -143,24 +152,18 @@ export async function SiteFooterV2({ locale }: SiteFooterV2Props) {
         {/* Bottom */}
         <div className="flex flex-col gap-4 pt-6 text-[13px] font-medium leading-[1.6] text-[#63718a] sm:pt-7 md:flex-row md:items-center md:justify-between md:gap-8">
           <p>
-            © <span dir="ltr">{currentYear}</span> {siteName}. All rights
-            reserved. ISO & FDA Certified Facility.
+            © <span dir="ltr">{currentYear}</span> {siteName}.{" "}
+            {tFooter("rightsSuffix")}
           </p>
 
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
-            <Link
-              href="/privacy-policy"
-              className="transition-colors hover:text-[#00a9e8]"
-            >
-              Privacy Policy
-            </Link>
+            <span className="transition-colors hover:text-[#00a9e8]">
+              {tFooter("privacyPolicy")}
+            </span>
 
-            <Link
-              href="/terms-of-service"
-              className="transition-colors hover:text-[#00a9e8]"
-            >
-              Terms of Service
-            </Link>
+            <span className="transition-colors hover:text-[#00a9e8]">
+              {tFooter("termsOfService")}
+            </span>
           </div>
         </div>
       </div>

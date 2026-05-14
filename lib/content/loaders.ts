@@ -22,7 +22,7 @@ interface PageContentFieldRecord {
   value: string | null;
 }
 
-interface PageSectionWithFields {
+interface PageContentSectionWithFields {
   sectionKey: string;
   fields: PageContentFieldRecord[];
 }
@@ -31,7 +31,7 @@ interface PageSectionWithFields {
  * Extract a single section's data from PageContent
  */
 function extractSectionData(
-  sections: PageSectionWithFields[] | undefined,
+  sections: PageContentSectionWithFields[] | undefined,
   sectionKey: string,
 ): SectionData | null {
   if (!sections) return null;
@@ -185,13 +185,13 @@ export async function getAllPageContents(
 }
 
 /**
- * Get sections for a page
+ * Get content sections for a page
  * Useful in admin for rendering section editors
  */
-export async function getPageSections(
+export async function getPageContentSections(
   pageKey: string,
   locale: Locale,
-): Promise<PageSectionWithFields[]> {
+): Promise<PageContentSectionWithFields[]> {
   try {
     const content = await db.pageContent.findUnique({
       where: { pageKey_locale: { pageKey, locale } },
@@ -211,9 +211,9 @@ export async function getPageSections(
 }
 
 /**
- * Get a specific section's data
+ * Get a specific content section's data
  */
-export async function getPageSection(
+export async function getPageContentSection(
   pageKey: string,
   sectionKey: string,
   locale: Locale,

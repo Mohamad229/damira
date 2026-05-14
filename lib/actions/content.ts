@@ -8,7 +8,8 @@
  */
 
 import { revalidatePath } from "next/cache";
-import db from "@/lib/db";
+
+import { createAdminNotification } from "@/lib/actions/admin-notifications";
 import { requireAuth, isAdmin } from "@/lib/auth-utils";
 import {
   sanitizeTemplateValue,
@@ -25,6 +26,8 @@ import {
   getSectionDefinition,
 } from "@/lib/content/page-definitions";
 import { getPublicUiData } from "@/lib/content/public-ui";
+import db from "@/lib/db";
+
 import type { PublicUiData } from "@/lib/content/public-ui";
 import type { UpdatePageContent } from "@/lib/content/validators";
 import type { UpdatePageContentResponse } from "@/lib/content/types";
@@ -67,7 +70,7 @@ export async function updatePageContentField(
   value: string | null,
 ): Promise<UpdatePageContentResponse> {
   try {
-    await requireAuth();
+    const user = await requireAuth();
 
     if (!(await isAdmin())) {
       return {
@@ -172,6 +175,16 @@ export async function updatePageContentField(
     revalidatePath(`/[locale]/${pageKey}`, "page");
     revalidatePath("/admin/pages");
 
+    await createAdminNotification({
+      type: "PAGE_CONTENT_UPDATED",
+      title: "Page content updated",
+      message: `${pagedef.label} ${sectionDef.label} content was updated (${locale.toUpperCase()})`,
+      href: `/admin/pages/${pageKey}/edit?locale=${locale}`,
+      entityType: "PageContent",
+      entityId: content.id,
+      actorId: user.id,
+    });
+
     return {
       success: true,
       message: `Field updated successfully`,
@@ -192,7 +205,7 @@ export async function updatePageContent(
   data: UpdatePageContent,
 ): Promise<UpdatePageContentResponse> {
   try {
-    await requireAuth();
+    const user = await requireAuth();
 
     if (!(await isAdmin())) {
       return {
@@ -310,6 +323,16 @@ export async function updatePageContent(
     // Revalidate cache
     revalidatePath(`/[locale]/${validated.pageKey}`, "page");
     revalidatePath("/admin/pages");
+
+    await createAdminNotification({
+      type: "PAGE_CONTENT_UPDATED",
+      title: "Page content updated",
+      message: `${pagedef.label} page content was updated (${validated.locale.toUpperCase()})`,
+      href: `/admin/pages/${validated.pageKey}/edit?locale=${validated.locale}`,
+      entityType: "PageContent",
+      entityId: content.id,
+      actorId: user.id,
+    });
 
     return {
       success: true,

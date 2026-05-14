@@ -17,10 +17,13 @@ export type HeaderNavItem = {
 type SiteHeaderClientV2Props = {
   navItems: HeaderNavItem[];
   mainNavLabel: string;
+  toggleNavLabel: string;
+  switchLanguageLabel: string;
 };
 
 function normalizePath(pathname: string): string {
-  if (pathname.length > 1 && pathname.endsWith("/")) return pathname.slice(0, -1);
+  if (pathname.length > 1 && pathname.endsWith("/"))
+    return pathname.slice(0, -1);
   return pathname;
 }
 
@@ -42,7 +45,10 @@ function buildLocalizedHashHref(href: string, locale: string): string {
 
   if (!path.startsWith("/")) return href;
 
-  if (locale !== "en" && (path === `/${locale}` || path.startsWith(`/${locale}/`))) {
+  if (
+    locale !== "en" &&
+    (path === `/${locale}` || path.startsWith(`/${locale}/`))
+  ) {
     return `${path}${hash}`;
   }
 
@@ -52,11 +58,16 @@ function buildLocalizedHashHref(href: string, locale: string): string {
   return `${localizedPath}${hash}`;
 }
 
-export function SiteHeaderClientV2({ navItems, mainNavLabel }: SiteHeaderClientV2Props) {
+export function SiteHeaderClientV2({
+  navItems,
+  mainNavLabel,
+  toggleNavLabel,
+  switchLanguageLabel,
+}: SiteHeaderClientV2Props) {
   const pathname = usePathname();
   const locale = useLocale();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  
+
   // 1. تحديد الحالة الأولية للسكرول بدون الحاجة لعمل setState داخل الـ useEffect
   const [scrolled, setScrolled] = useState(() => {
     if (typeof window !== "undefined") {
@@ -77,10 +88,10 @@ export function SiteHeaderClientV2({ navItems, mainNavLabel }: SiteHeaderClientV
     const handleScroll = () => {
       setScrolled(window.scrollY > 16);
     };
-    
+
     // لا نستدعي handleScroll() هنا مباشرة كما كان في السابق
     window.addEventListener("scroll", handleScroll, { passive: true });
-    
+
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -107,7 +118,10 @@ export function SiteHeaderClientV2({ navItems, mainNavLabel }: SiteHeaderClientV
         </Link>
 
         {/* Desktop nav */}
-        <nav aria-label={mainNavLabel} className="hidden items-center gap-1.5 min-[900px]:flex">
+        <nav
+          aria-label={mainNavLabel}
+          className="hidden items-center gap-1.5 min-[900px]:flex"
+        >
           {navItems.map((item) => {
             const active = isNavItemActive(pathname, item.href);
             return (
@@ -164,9 +178,13 @@ export function SiteHeaderClientV2({ navItems, mainNavLabel }: SiteHeaderClientV
             className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-[#dce8f5] bg-white text-slate-700 transition-colors hover:border-[#91caee] hover:text-[#0097dc] min-[900px]:hidden"
             onClick={() => setIsMobileMenuOpen((v) => !v)}
             aria-expanded={isMobileMenuOpen}
-            aria-label="Toggle navigation"
+            aria-label={toggleNavLabel}
           >
-            {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            {isMobileMenuOpen ? (
+              <X className="h-5 w-5" />
+            ) : (
+              <Menu className="h-5 w-5" />
+            )}
           </button>
         </div>
       </div>
@@ -179,7 +197,6 @@ export function SiteHeaderClientV2({ navItems, mainNavLabel }: SiteHeaderClientV
         ].join(" ")}
       >
         <div className="mx-auto w-full max-w-7xl px-4 py-4 sm:px-6">
-
           <nav className="flex flex-col gap-2">
             {navItems.map((item) => {
               const active = isNavItemActive(pathname, item.href);
@@ -225,9 +242,8 @@ export function SiteHeaderClientV2({ navItems, mainNavLabel }: SiteHeaderClientV
           </nav>
 
           <div className="mb-4">
-            <LanguageSwitcher variant="inline" label="Switch Language" />
+            <LanguageSwitcher variant="inline" label={switchLanguageLabel} />
           </div>
-          
         </div>
       </div>
     </header>

@@ -54,7 +54,7 @@ export function ServicesHeroSection({
         {/* Mobile/tablet soft decoration */}
         <div className="pointer-events-none absolute -right-[90px] top-0 h-[230px] w-[230px] rounded-bl-[72px] rounded-tl-[72px] bg-[#eaf6fd] rtl:-left-[90px] rtl:right-auto rtl:rounded-br-[72px] rtl:rounded-tl-none rtl:rounded-tr-[72px] sm:-right-[70px] sm:h-[280px] sm:w-[280px] rtl:sm:-left-[70px] md:-right-[40px] md:h-[330px] md:w-[330px] rtl:md:-left-[40px] lg:hidden" />
 
-        {/* Desktop right rounded block */}
+        {/* Desktop rounded block */}
         <div
           className={cn(
             "pointer-events-none absolute right-0 top-0 hidden h-full bg-[#eaf6fd] rtl:left-0 rtl:right-auto",
@@ -78,7 +78,12 @@ export function ServicesHeroSection({
             "py-[70px] sm:py-[78px] lg:py-[82px]",
           )}
         >
-          <div className="max-w-[780px] rtl:ms-auto rtl:text-right">
+          <div
+            className={cn(
+              "w-full max-w-[780px]",
+              "rtl:ms-0 rtl:me-auto rtl:text-right",
+            )}
+          >
             {data.eyebrow ? (
               <div
                 className={cn(
@@ -127,7 +132,15 @@ export function ServicesHeroSection({
             ) : null}
 
             {data.actions?.length ? (
-              <div className="mt-[32px] flex flex-col gap-3 sm:mt-[36px] sm:flex-row sm:flex-wrap rtl:sm:flex-row-reverse rtl:sm:justify-end lg:mt-[38px]">
+              <div
+                className={cn(
+                  "mt-[32px] flex w-full flex-col gap-3",
+                  "items-start",
+                  "sm:mt-[36px] sm:flex-row sm:flex-wrap sm:items-center sm:justify-start",
+                  "rtl:items-end rtl:sm:items-center",
+                  "lg:mt-[38px]",
+                )}
+              >
                 {data.actions.map((action, index) => {
                   const isPrimary = index === 0;
 

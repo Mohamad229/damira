@@ -12,22 +12,28 @@ interface HomeStatsSectionProps {
 }
 
 function renderStatValue(value: string) {
-  const normalizedValue = String(value);
+  const normalizedValue = String(value).trim();
 
-  if (normalizedValue.includes("m²") || normalizedValue.includes("m2")) {
-    const number = normalizedValue.replace("m²", "").replace("m2", "").trim();
+  const unitMatch = normalizedValue.match(/\s*(m²|m2|m³|m3)\s*$/i);
 
-    return (
-      <>
-        {number}{" "}
-        <span className="align-super text-[18px] font-extrabold leading-none tracking-[-0.02em] text-[#8da0bd] sm:text-[19px]">
-          m²
-        </span>
-      </>
-    );
+  if (!unitMatch) {
+    return normalizedValue;
   }
 
-  return normalizedValue;
+  const unit = unitMatch[1].toLowerCase();
+  const number = normalizedValue.slice(0, unitMatch.index).trim();
+
+  const formattedUnit =
+    unit === "m3" || unit === "m³" ? "m³" : "m²";
+
+  return (
+    <>
+      {number}{" "}
+      <span className="align-super text-[18px] font-extrabold leading-none tracking-[-0.02em] text-[#8da0bd] sm:text-[19px]">
+        {formattedUnit}
+      </span>
+    </>
+  );
 }
 
 function getVisibleStatsCount() {

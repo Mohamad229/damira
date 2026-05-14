@@ -124,70 +124,6 @@ model Manufacturer {
   products Product[]
 }
 
-// Legacy arbitrary page builder models.
-// TODO: Remove these models in a dedicated migration after production data has
-// been audited and no migration/rollback path depends on the old Page tables.
-model Page {
-  id          String  @id @default(cuid())
-  slug        String  @unique
-  isPublished Boolean @default(false)
-
-  translations PageTranslation[]
-  sections     PageSection[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model PageTranslation {
-  id              String  @id @default(cuid())
-  locale          String // 'en' or 'ar'
-  title           String
-  metaTitle       String?
-  metaDescription String?
-
-  pageId String
-  page   Page   @relation(fields: [pageId], references: [id], onDelete: Cascade)
-
-  @@unique([pageId, locale])
-}
-
-model PageSection {
-  id    String      @id @default(cuid())
-  type  SectionType
-  order Int
-  data  Json? // Flexible JSON for section-specific data
-
-  pageId String
-  page   Page   @relation(fields: [pageId], references: [id], onDelete: Cascade)
-
-  translations PageSectionTranslation[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-enum SectionType {
-  HERO
-  TEXT
-  CARDS
-  STATS
-  FEATURES
-  CTA
-  IMAGE_TEXT
-}
-
-model PageSectionTranslation {
-  id      String @id @default(cuid())
-  locale  String // 'en' or 'ar'
-  content Json // Translated content as JSON
-
-  sectionId String
-  section   PageSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
-
-  @@unique([sectionId, locale])
-}
-
 // Media Library
 model Media {
   id       String @id @default(cuid())
@@ -223,6 +159,24 @@ model FormSubmission {
   updatedAt DateTime @updatedAt
 }
 
+model AdminNotification {
+  id         String    @id @default(cuid())
+  type       String
+  title      String
+  message    String?
+  href       String?
+  entityType String?
+  entityId   String?
+  actorId    String?
+  readAt     DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([createdAt])
+  @@index([readAt])
+  @@index([type])
+  @@index([entityType, entityId])
+}
+
 enum FormType {
   CONTACT
   PARTNERSHIP
@@ -235,8 +189,7 @@ enum SubmissionStatus {
   ARCHIVED
 }
 
-// Structured Page Content (v2 - New System)
-// Replaces dynamic PageSection system with fixed page structures
+// Structured Page Content
 model PageContent {
   id      String @id @default(cuid())
   pageKey String // "home", "about", "services", etc.

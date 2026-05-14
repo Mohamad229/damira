@@ -1,9 +1,10 @@
 "use server";
 
-import { FormType } from "@prisma/client";
 import { revalidatePath } from "next/cache";
+import { FormType } from "@prisma/client";
 import { z } from "zod";
 
+import { createAdminNotification } from "@/lib/actions/admin-notifications";
 import db from "@/lib/db";
 
 export type PublicFormState = {
@@ -96,6 +97,20 @@ function mapFormType(
   return FormType.CONTACT;
 }
 
+function getFormNotificationTitle(
+  type: "CONTACT" | "PARTNERSHIP" | "PRODUCT_INQUIRY",
+): string {
+  if (type === "PARTNERSHIP") {
+    return "New partnership inquiry";
+  }
+
+  if (type === "PRODUCT_INQUIRY") {
+    return "New product inquiry";
+  }
+
+  return "New contact form submission";
+}
+
 function validationState(
   locale: "en" | "ar",
   fieldErrors: Record<string, string[] | undefined>,
@@ -153,7 +168,7 @@ export async function submitPublicForm(
   }
 
   try {
-    await db.formSubmission.create({
+    const submission = await db.formSubmission.create({
       data: {
         type: mapFormType(payload.type),
         name: payload.name,
@@ -164,6 +179,15 @@ export async function submitPublicForm(
         message: payload.message,
         productId: "productId" in payload ? payload.productId || null : null,
       },
+    });
+
+    await createAdminNotification({
+      type: "FORM_SUBMITTED",
+      title: getFormNotificationTitle(payload.type),
+      message: `${payload.name}${payload.company ? `, ${payload.company}` : ""}`,
+      href: `/admin/forms/${submission.id}`,
+      entityType: "FormSubmission",
+      entityId: submission.id,
     });
 
     revalidatePath("/admin/forms");

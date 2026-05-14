@@ -126,7 +126,12 @@ function ContactLinkRow({
 
         <span
           dir={isPhone ? "ltr" : undefined}
-          className="mt-[7px] block break-words text-[14px] font-medium leading-[1.45] tracking-[-0.01em] text-[#263b59] transition-colors group-hover:text-[#009fe3] sm:text-[15px] lg:text-[16px]"
+          className={cn(
+            "mt-[7px] block break-words text-[14px] font-medium leading-[1.45] tracking-[-0.01em]",
+            "text-[#263b59] transition-colors group-hover:text-[#009fe3]",
+            "sm:text-[15px] lg:text-[16px]",
+            isPhone && "rtl:text-right",
+          )}
         >
           {value}
         </span>

@@ -1,9 +1,10 @@
 "use server";
 
-import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { Prisma, ProductStatus, ProductType } from "@prisma/client";
+import { z } from "zod";
 
+import { createAdminNotification } from "@/lib/actions/admin-notifications";
 import db from "@/lib/db";
 import { requireAuth } from "@/lib/auth-utils";
 
@@ -206,15 +207,13 @@ async function getProductUsageCount(productId: string): Promise<number> {
       where: { productId },
     });
 
-    // Check if product is referenced in page sections (stored in JSON)
-    const pageSections = await db.pageSection.findMany({
-      select: { id: true, data: true },
+    const pageReferences = await db.pageContentField.count({
+      where: {
+        value: {
+          contains: productId,
+        },
+      },
     });
-
-    const pageReferences = pageSections.filter((section) => {
-      const dataStr = JSON.stringify(section.data);
-      return dataStr.includes(productId);
-    }).length;
 
     return formSubmissions + pageReferences;
   } catch (error) {
@@ -558,7 +557,7 @@ export async function createProduct(
   input: CreateProductInput,
 ): Promise<ActionState & { data?: { productId: string } }> {
   try {
-    await requireAuth();
+    const user = await requireAuth();
 
     // Validate input
     const validatedInput = CreateProductSchema.safeParse(input);
@@ -694,6 +693,16 @@ export async function createProduct(
     revalidatePath(ADMIN_PRODUCTS_PATH);
     revalidatePublicProductPaths(slug);
 
+    await createAdminNotification({
+      type: "PRODUCT_CREATED",
+      title: "Product created",
+      message: `${normalizedEnglishName} was added to the product catalog`,
+      href: `/admin/products/${product.id}/edit`,
+      entityType: "Product",
+      entityId: product.id,
+      actorId: user.id,
+    });
+
     return {
       success: true,
       data: { productId: product.id },
@@ -717,7 +726,7 @@ export async function updateProduct(
   input: UpdateProductInput,
 ): Promise<ActionState> {
   try {
-    await requireAuth();
+    const user = await requireAuth();
 
     // Validate input
     const validatedInput = UpdateProductSchema.safeParse(input);
@@ -755,7 +764,17 @@ export async function updateProduct(
     // Check if product exists
     const existingProduct = await db.product.findUnique({
       where: { id },
-      select: { id: true, slug: true },
+      select: {
+        id: true,
+        slug: true,
+        status: true,
+        isPublished: true,
+        translations: {
+          where: { locale: "en" },
+          select: { name: true },
+          take: 1,
+        },
+      },
     });
 
     if (!existingProduct) {
@@ -943,6 +962,35 @@ export async function updateProduct(
     revalidatePath(ADMIN_PRODUCTS_PATH);
     revalidatePublicProductPaths(existingProduct.slug);
 
+    const productName =
+      englishName?.trim() ||
+      name?.trim() ||
+      existingProduct.translations[0]?.name ||
+      "Untitled product";
+    const statusChanged =
+      (status !== undefined && status !== existingProduct.status) ||
+      (isPublished !== undefined && isPublished !== existingProduct.isPublished);
+    const visibilityLabel =
+      isPublished === undefined
+        ? existingProduct.isPublished
+          ? "published"
+          : "draft"
+        : isPublished
+          ? "published"
+          : "draft";
+
+    await createAdminNotification({
+      type: statusChanged ? "PRODUCT_STATUS_CHANGED" : "PRODUCT_UPDATED",
+      title: statusChanged ? "Product status changed" : "Product updated",
+      message: statusChanged
+        ? `${productName} is now ${visibilityLabel} with ${status || existingProduct.status} availability`
+        : `${productName} was updated`,
+      href: `/admin/products/${id}/edit`,
+      entityType: "Product",
+      entityId: id,
+      actorId: user.id,
+    });
+
     return { success: true };
   } catch (error) {
     if (error instanceof Error && error.message.includes("NEXT_REDIRECT")) {
@@ -967,7 +1015,7 @@ export async function deleteProduct(id: string): Promise<
   }
 > {
   try {
-    await requireAuth();
+    const user = await requireAuth();
 
     if (!id || typeof id !== "string") {
       return { error: "Invalid product ID" };
@@ -976,7 +1024,15 @@ export async function deleteProduct(id: string): Promise<
     // Check if product exists
     const product = await db.product.findUnique({
       where: { id },
-      select: { id: true, slug: true },
+      select: {
+        id: true,
+        slug: true,
+        translations: {
+          where: { locale: "en" },
+          select: { name: true },
+          take: 1,
+        },
+      },
     });
 
     if (!product) {
@@ -1000,6 +1056,16 @@ export async function deleteProduct(id: string): Promise<
 
     revalidatePath(ADMIN_PRODUCTS_PATH);
     revalidatePublicProductPaths(product.slug);
+
+    await createAdminNotification({
+      type: "PRODUCT_DELETED",
+      title: "Product deleted",
+      message: `${product.translations[0]?.name || "A product"} was removed from the catalog`,
+      href: ADMIN_PRODUCTS_PATH,
+      entityType: "Product",
+      entityId: id,
+      actorId: user.id,
+    });
 
     return { success: true };
   } catch (error) {

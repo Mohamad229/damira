@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
+import { createAdminNotification } from "@/lib/actions/admin-notifications";
 import { auth } from "@/lib/auth";
 import storage from "@/lib/storage";
 
@@ -299,6 +300,16 @@ export async function POST(request: NextRequest) {
           },
         },
       },
+    });
+
+    await createAdminNotification({
+      type: "MEDIA_UPLOADED",
+      title: "Media uploaded",
+      message: `${displayName} was uploaded to the media library`,
+      href: "/admin/media",
+      entityType: "Media",
+      entityId: media.id,
+      actorId: session.user.id,
     });
 
     // 10. Return success response

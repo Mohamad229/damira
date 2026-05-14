@@ -9,23 +9,14 @@ import db from "@/lib/db";
 export const dynamic = "force-dynamic";
 
 export default async function AdminDashboardPage() {
-  const [
-    products,
-    pagesV2,
-    pagesLegacy,
-    mediaFiles,
-    formSubmissions,
-    users,
-  ] = await Promise.all([
-    db.product.count(),
-    db.pageContent.count(),
-    db.page.count(),
-    db.media.count(),
-    db.formSubmission.count(),
-    db.user.count(),
-  ]);
-
-  const managedPages = Math.max(pagesV2, pagesLegacy);
+  const [products, managedPages, mediaFiles, formSubmissions, users] =
+    await Promise.all([
+      db.product.count(),
+      db.pageContent.count(),
+      db.media.count(),
+      db.formSubmission.count(),
+      db.user.count(),
+    ]);
 
   return (
     <div className="space-y-6">

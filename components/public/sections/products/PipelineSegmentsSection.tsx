@@ -1,4 +1,4 @@
-import type { CardGridData, SectionIcon } from "@/components/public/sections/base/types";
+import type { CardGridData } from "@/components/public/sections/base/types";
 import { SectionReveal } from "@/components/public/sections/base/SectionReveal";
 import { cn } from "@/lib/utils";
 
@@ -6,7 +6,6 @@ interface PipelineSegmentsSectionData extends CardGridData {
   items: Array<{
     id: string;
     title: string;
-    icon?: SectionIcon;
   }>;
 }
 

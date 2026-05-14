@@ -246,6 +246,7 @@ function AdvantageCard({
       <span
         className={cn(
           "absolute bottom-0 left-0 h-[4px] w-full origin-left scale-x-0 rounded-full transition-transform duration-300 group-hover:scale-x-100",
+          "rtl:left-auto rtl:right-0 rtl:origin-right",
           theme.bar,
         )}
       />
@@ -335,7 +336,7 @@ export function PartnershipAdvantageSection({
             ) : null}
           </div>
 
-          {/* Mobile: image then cards. Desktop: cards left, image right */}
+          {/* Mobile: image then cards. Desktop: cards right in Arabic, image left */}
           <div
             className={cn(
               "mx-auto grid max-w-[1220px] items-stretch",
@@ -344,8 +345,8 @@ export function PartnershipAdvantageSection({
               "xl:grid-cols-[minmax(0,1.02fr)_minmax(430px,0.98fr)] xl:gap-[56px]",
             )}
           >
-            {/* Cards left on desktop, below image on mobile */}
-            <div className="order-2 lg:order-1 rtl:lg:order-2">
+            {/* Cards/content */}
+            <div className="order-2 lg:order-1 rtl:text-right">
               <div
                 className={cn(
                   "grid grid-cols-1 gap-[18px]",
@@ -364,8 +365,8 @@ export function PartnershipAdvantageSection({
               </div>
             </div>
 
-            {/* Image right on desktop, after title on mobile */}
-            <div className="order-1 lg:order-2 rtl:lg:order-1">
+            {/* Image */}
+            <div className="order-1 lg:order-2">
               <div
                 className={cn(
                   "relative h-full overflow-hidden rounded-[22px]",

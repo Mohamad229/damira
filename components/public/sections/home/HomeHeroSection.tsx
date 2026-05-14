@@ -111,7 +111,7 @@ export function HomeHeroSection({ data, className }: HomeHeroSectionProps) {
               "w-full",
               "max-w-[670px]",
               "mx-auto lg:mx-0",
-              "rtl:text-right rtl:lg:ms-auto rtl:lg:me-0",
+              "rtl:text-right rtl:lg:ms-0 rtl:lg:me-auto",
             )}
           >
             {/* Eyebrow */}
@@ -159,7 +159,14 @@ export function HomeHeroSection({ data, className }: HomeHeroSectionProps) {
 
             {/* Buttons */}
             {actions.length ? (
-              <div className="mt-[40px] flex flex-col gap-4 sm:flex-row sm:items-center rtl:sm:flex-row-reverse rtl:sm:justify-end">
+              <div
+                className={cn(
+                  "mt-[40px] flex w-full flex-col gap-4",
+                  "items-start",
+                  "sm:flex-row sm:items-center sm:justify-start",
+                  "rtl:items-end rtl:sm:items-center",
+                )}
+              >
                 {actions.map((action, index) => {
                   const isPrimary = index === 0;
 

@@ -34,6 +34,8 @@ const ITEM_ICON_SECTIONS = new Set([
 ]);
 
 const ARRAY_LENGTH_LIMITS = new Map<string, number>([
+  ["home.coverageReach.items", 4],
+  ["about.legacySuccess.stats.items", 4],
   ["quality.complianceDetails.items", 2],
   ["quality.ethicsCompliance.items", 4],
 ]);
