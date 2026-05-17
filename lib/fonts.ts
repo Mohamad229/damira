@@ -26,13 +26,14 @@ export const cairo = Cairo({
 export const tajawal = Tajawal({
   variable: "--font-tajawal",
   subsets: ["arabic", "latin"],
-  weight: ["300", "400", "500", "700", "800"],
+  weight: ["300", "400", "500", "700", "800", "900"],
+  display: "swap",
 });
 
 export const montserrat = Montserrat({
   variable: "--font-montserrat",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
+  weight: ["300", "400", "500", "700", "800", "900"],
 });
 
 export const roboto = Roboto({

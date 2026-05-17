@@ -137,24 +137,6 @@
   --sidebar-ring: hsl(var(--color-primary-light));
 }
 
-/* RTL Support */
-[dir="rtl"] {
-  --font-sans: var(--font-tajawal), system-ui, sans-serif;
-  --font-heading: var(--font-tajawal), system-ui, sans-serif;
-}
-
-[dir="rtl"] [data-public-rtl] :where(h1, h2, h3, h4, h5, h6, p, li, label, input, textarea, select) {
-  text-align: right;
-}
-
-[dir="rtl"] [data-public-rtl] :where(.text-center, .text-center h1, .text-center h2, .text-center h3, .text-center p) {
-  text-align: center;
-}
-
-[dir="rtl"] [data-public-rtl] :where(.lucide-arrow-left, .lucide-arrow-right, .lucide-chevron-left, .lucide-chevron-right) {
-  transform: scaleX(-1);
-}
-
 /* Tailwind v4 Theme Configuration */
 @theme inline {
   /* Brand Colors */
@@ -253,6 +235,88 @@
   }
 }
 
+.font-tajawal {
+  font-family: var(--font-tajawal), "Tajawal", system-ui, sans-serif;
+}
+
+/* RTL public typography */
+[dir="rtl"],
+[dir="rtl"] body,
+[dir="rtl"] [data-public-rtl],
+[data-public-rtl="true"] {
+  --font-sans: var(--font-tajawal), "Tajawal", system-ui, sans-serif;
+  --font-heading: var(--font-tajawal), "Tajawal", system-ui, sans-serif;
+  font-family: var(--font-tajawal), "Tajawal", system-ui, sans-serif !important;
+}
+
+[data-public-rtl="true"] :where(h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p,
+  span,
+  a,
+  button,
+  label,
+  input,
+  textarea,
+  select,
+  option,
+  li,
+  strong,
+  b,
+  div) {
+  font-family: var(--font-tajawal), "Tajawal", system-ui, sans-serif !important;
+}
+
+[data-public-rtl="true"] :where(h1, h2, h3, h4, h5, h6) {
+  font-weight: 800 !important;
+}
+
+[data-public-rtl="true"] :where(h3, h4, h5, h6) {
+  font-weight: 700 !important;
+}
+
+[data-public-rtl="true"] :where(.font-black, .font-extrabold) {
+  font-weight: 800 !important;
+}
+
+[data-public-rtl="true"] :where(button, a[class*="button"], .public-button-hover) {
+  font-weight: 700 !important;
+}
+
+[data-public-rtl="true"] :where(h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p,
+  span,
+  a,
+  button,
+  label,
+  input,
+  textarea,
+  select,
+  li) {
+  letter-spacing: 0 !important;
+}
+
+[data-public-rtl="true"] :where(h1, h2, h3, h4, h5, h6, p, li, label, input, textarea, select) {
+  text-align: right;
+}
+
+[data-public-rtl="true"] :where(.text-center, .text-center h1, .text-center h2, .text-center h3, .text-center p) {
+  text-align: center;
+}
+
+[data-public-rtl="true"] :where(.lucide-arrow-left, .lucide-arrow-right, .lucide-chevron-left, .lucide-chevron-right) {
+  transform: scaleX(-1);
+}
+
 /* Focus States */
 *:focus-visible {
   outline: 2px solid hsl(var(--color-primary));
@@ -337,6 +401,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   .reveal-on-scroll,
   .reveal-on-scroll.revealed,
   .public-card-hover,

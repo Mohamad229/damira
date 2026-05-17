@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -51,6 +51,18 @@ export function AboutContentSection({
   const [activeIndex, setActiveIndex] = useState(0);
   const activeSlide = slides[activeIndex];
   const hasMultipleSlides = slides.length > 1;
+  const sectionRef = useRef<HTMLElement>(null);
+  const [isRtl, setIsRtl] = useState(false);
+
+  useEffect(() => {
+    const sectionElement = sectionRef.current;
+
+    if (!sectionElement || typeof window === "undefined") {
+      return;
+    }
+
+    setIsRtl(window.getComputedStyle(sectionElement).direction === "rtl");
+  }, []);
 
   function goToPreviousSlide() {
     setActiveIndex((currentIndex) =>
@@ -64,8 +76,14 @@ export function AboutContentSection({
     );
   }
 
+  const goToVisualLeftSlide = isRtl ? goToNextSlide : goToPreviousSlide;
+  const goToVisualRightSlide = isRtl ? goToPreviousSlide : goToNextSlide;
+  const visualLeftLabel = isRtl ? "Next content" : "Previous content";
+  const visualRightLabel = isRtl ? "Previous content" : "Next content";
+
   return (
     <section
+      ref={sectionRef}
       className={cn(
         "relative overflow-hidden border-y border-[#e8eff7] bg-white",
         "py-[72px] sm:py-[82px] lg:py-[90px] xl:py-[96px]",
@@ -89,8 +107,8 @@ export function AboutContentSection({
             <>
               <button
                 type="button"
-                onClick={goToPreviousSlide}
-                aria-label="Previous content"
+                onClick={goToVisualLeftSlide}
+                aria-label={visualLeftLabel}
                 className={cn(
                   "absolute top-1/2 z-20 hidden -translate-y-1/2 items-center justify-center rounded-full",
                   "border border-[#c8d9e8] bg-white text-[#11182d]",
@@ -102,13 +120,16 @@ export function AboutContentSection({
                   "md:-left-[18px] lg:-left-[24px]",
                 )}
               >
-                <ArrowLeft className="h-[19px] w-[19px] stroke-[2.4]" />
+                <ArrowLeft
+                  className="h-[19px] w-[19px] stroke-[2.4]"
+                  style={{ transform: "none" }}
+                />
               </button>
 
               <button
                 type="button"
-                onClick={goToNextSlide}
-                aria-label="Next content"
+                onClick={goToVisualRightSlide}
+                aria-label={visualRightLabel}
                 className={cn(
                   "absolute top-1/2 z-20 hidden -translate-y-1/2 items-center justify-center rounded-full",
                   "border border-[#c8d9e8] bg-white text-[#11182d]",
@@ -120,7 +141,10 @@ export function AboutContentSection({
                   "md:-right-[18px] lg:-right-[24px]",
                 )}
               >
-                <ArrowRight className="h-[19px] w-[19px] stroke-[2.4]" />
+                <ArrowRight
+                  className="h-[19px] w-[19px] stroke-[2.4]"
+                  style={{ transform: "none" }}
+                />
               </button>
             </>
           ) : null}
@@ -261,14 +285,17 @@ export function AboutContentSection({
 
           {/* Mobile controls */}
           {hasMultipleSlides ? (
-            <div className="mt-[24px] flex flex-wrap items-center justify-center gap-4 md:hidden">
+            <div className="mt-[24px] flex flex-wrap items-center justify-center gap-4 md:hidden" dir="ltr">
               <button
                 type="button"
-                onClick={goToPreviousSlide}
-                aria-label="Previous content"
+                onClick={goToVisualLeftSlide}
+                aria-label={visualLeftLabel}
                 className="flex h-[42px] w-[42px] items-center justify-center rounded-full border border-[#c8d9e8] bg-white text-[#11182d] transition-all duration-300 hover:border-[#009fe3] hover:text-[#009fe3]"
               >
-                <ArrowLeft className="h-[18px] w-[18px] stroke-[2.4]" />
+                <ArrowLeft
+                  className="h-[18px] w-[18px] stroke-[2.4]"
+                  style={{ transform: "none" }}
+                />
               </button>
 
               <div className="flex items-center gap-[8px]">
@@ -290,11 +317,14 @@ export function AboutContentSection({
 
               <button
                 type="button"
-                onClick={goToNextSlide}
-                aria-label="Next content"
+                onClick={goToVisualRightSlide}
+                aria-label={visualRightLabel}
                 className="flex h-[42px] w-[42px] items-center justify-center rounded-full border border-[#c8d9e8] bg-white text-[#11182d] transition-all duration-300 hover:border-[#009fe3] hover:text-[#009fe3]"
               >
-                <ArrowRight className="h-[18px] w-[18px] stroke-[2.4]" />
+                <ArrowRight
+                  className="h-[18px] w-[18px] stroke-[2.4]"
+                  style={{ transform: "none" }}
+                />
               </button>
             </div>
           ) : null}

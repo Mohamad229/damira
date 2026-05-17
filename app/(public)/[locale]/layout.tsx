@@ -31,6 +31,7 @@ export default async function PublicLayout({ children, params }: Props) {
   const messages = await getMessages();
   const direction = localeDirection[locale as Locale];
   const currentLocale = locale as Locale;
+  const isArabic = currentLocale === "ar";
 
   const organizationSchema = {
     "@context": "https://schema.org",
@@ -58,7 +59,12 @@ export default async function PublicLayout({ children, params }: Props) {
       <div
         lang={locale}
         dir={direction}
-        className="min-h-screen bg-background text-foreground"
+        data-public-rtl={isArabic ? "true" : undefined}
+        className={
+          isArabic
+            ? "min-h-screen bg-background text-foreground font-tajawal"
+            : "min-h-screen bg-background text-foreground"
+        }
       >
         <script
           type="application/ld+json"
@@ -67,7 +73,7 @@ export default async function PublicLayout({ children, params }: Props) {
           }}
         />
         <SiteHeaderV2 />
-        <main className="flex-1" data-public-rtl={direction === "rtl" ? "true" : undefined}>
+        <main className="flex-1">
           {children}
         </main>
         <SiteFooterV2 locale={currentLocale} />
