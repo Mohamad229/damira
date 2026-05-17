@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
 import {
   ChevronDown,
   ChevronUp,
@@ -80,6 +79,8 @@ export function ProductFormClient({
   const router = useRouter();
   const { toast } = useToast();
   const formRef = useRef<HTMLFormElement>(null);
+  const effectiveProductId = initialData?.id ?? productId;
+  const isEditMode = Boolean(effectiveProductId);
 
   // Section expansion state
   const [expandedSections, setExpandedSections] = useState<Set<FormSection>>(
@@ -108,7 +109,12 @@ export function ProductFormClient({
     therapeuticAreaId: initialData?.therapeuticArea?.id || "",
     manufacturerId: initialData?.manufacturer?.id || "",
     coverImageId: initialData?.coverImage || "",
-    attachmentIds: initialData?.attachments?.map((a) => a.id) || [],
+    attachmentIds: [
+      ...(initialData?.images?.map((image) => getMediaPickerId(image)) || []),
+      ...(initialData?.attachments?.map((attachment) =>
+        getMediaPickerId(attachment),
+      ) || []),
+    ],
     storageConditions: initialData?.advancedDetails?.storageConditions || "",
     regulatoryInfo: initialData?.advancedDetails?.regulatoryInfo || "",
     englishName:
@@ -137,10 +143,15 @@ export function ProductFormClient({
 
   // Media picker states
   const [showCoverImagePicker, setShowCoverImagePicker] = useState(false);
-  const [showAttachmentsPicker, setShowAttachmentsPicker] = useState(false);
+  const [showGalleryImagesPicker, setShowGalleryImagesPicker] = useState(false);
+  const [showProductAttachmentsPicker, setShowProductAttachmentsPicker] =
+    useState(false);
   const [selectedCoverImage, setSelectedCoverImage] =
     useState<MediaWithUser | null>(null);
-  const [selectedAttachments, setSelectedAttachments] = useState<
+  const [selectedGalleryImages, setSelectedGalleryImages] = useState<
+    MediaWithUser[]
+  >([]);
+  const [selectedProductAttachments, setSelectedProductAttachments] = useState<
     MediaWithUser[]
   >([]);
 
@@ -219,7 +230,13 @@ export function ProductFormClient({
             therapeuticAreaId: product.therapeuticArea?.id || "",
             manufacturerId: product.manufacturer?.id || "",
             coverImageId: product.coverImage || "",
-            attachmentIds: product.attachments?.map((a) => a.id) || [],
+            attachmentIds: [
+              ...(product.images?.map((image) => getMediaPickerId(image)) ||
+                []),
+              ...(product.attachments?.map((attachment) =>
+                getMediaPickerId(attachment),
+              ) || []),
+            ],
             storageConditions: product.advancedDetails?.storageConditions || "",
             regulatoryInfo: product.advancedDetails?.regulatoryInfo || "",
             englishName: enTrans?.name || "",
@@ -228,28 +245,20 @@ export function ProductFormClient({
             arabicDescription: arTrans?.fullDescription || "",
           });
 
-          // Initialize media
-          if (product.coverImage) {
-            // Note: This is just the ID, we may need to fetch the full media object
-            // For now, we'll just set the ID
-          }
-          if (product.attachments && product.attachments.length > 0) {
-            const attachments = product.attachments.map((a) => ({
-              id: a.id,
-              name: a.name,
-              url: a.url,
-              type: a.type as "image" | "document",
-              size: a.size,
-              uploadedAt: new Date(),
-              uploadedById: null,
-              uploadedBy: null,
-              mimeType: a.type,
-              width: null,
-              height: null,
-              createdAt: new Date(),
-            })) as MediaWithUser[];
-            setSelectedAttachments(attachments);
-          }
+          // Initialize media previews. Existing product images/attachments can
+          // come from product-specific rows, so always prefer mediaId when present.
+          const coverMedia = buildCoverMediaPreview(product);
+          setSelectedCoverImage(coverMedia);
+
+          const galleryImages = (product.images || []).map((image) =>
+            buildGalleryImageMediaPreview(image),
+          );
+          const attachments = (product.attachments || []).map((attachment) =>
+            buildAttachmentMediaPreview(attachment),
+          );
+
+          setSelectedGalleryImages(galleryImages);
+          setSelectedProductAttachments(attachments);
         }
       } catch (error) {
         console.error("Error loading product data:", error);
@@ -266,26 +275,22 @@ export function ProductFormClient({
     loadProductData();
   }, [productId, initialData, router, toast]);
 
-  // Initialize attachments if exist
+  // Initialize product media previews when server-provided initialData is available.
   useEffect(() => {
-    if (initialData?.attachments && initialData.attachments.length > 0) {
-      const attachments = initialData.attachments.map((a) => ({
-        id: a.id,
-        name: a.name,
-        url: a.url,
-        type: a.type as "image" | "document",
-        size: a.size,
-        uploadedAt: new Date(),
-        uploadedById: null,
-        uploadedBy: null,
-        mimeType: a.type,
-        width: null,
-        height: null,
-        createdAt: new Date(),
-      })) as MediaWithUser[];
-      setSelectedAttachments(attachments);
-    }
-  }, [initialData?.attachments]);
+    if (!initialData) return;
+
+    setSelectedCoverImage(buildCoverMediaPreview(initialData));
+    setSelectedGalleryImages(
+      (initialData.images || []).map((image) =>
+        buildGalleryImageMediaPreview(image),
+      ),
+    );
+    setSelectedProductAttachments(
+      (initialData.attachments || []).map((attachment) =>
+        buildAttachmentMediaPreview(attachment),
+      ),
+    );
+  }, [initialData]);
 
   // Track dirty state
   useEffect(() => {
@@ -359,30 +364,107 @@ export function ProductFormClient({
     [],
   );
 
-  // Handle attachments selection
-  const handleAttachmentsSelect = useCallback(
-    (media: MediaWithUser | MediaWithUser[]) => {
-      const mediaArray = Array.isArray(media) ? media : [media];
-      setSelectedAttachments(mediaArray);
+  const updateMediaFieldIds = useCallback(
+    (galleryImages: MediaWithUser[], productAttachments: MediaWithUser[]) => {
       setFormData((prev) => ({
         ...prev,
-        attachmentIds: mediaArray.map((m) => m.id),
+        attachmentIds: [
+          ...galleryImages.map((item) => item.id),
+          ...productAttachments.map((item) => item.id),
+        ],
       }));
-      setShowAttachmentsPicker(false);
-      setIsDirty(true);
     },
     [],
   );
 
-  // Remove attachment
-  const handleRemoveAttachment = useCallback((attachmentId: string) => {
-    setSelectedAttachments((prev) => prev.filter((a) => a.id !== attachmentId));
-    setFormData((prev) => ({
-      ...prev,
-      attachmentIds: prev.attachmentIds.filter((id) => id !== attachmentId),
-    }));
-    setIsDirty(true);
-  }, []);
+  // Gallery images are shown in the public product image carousel.
+  const handleGalleryImagesSelect = useCallback(
+    (media: MediaWithUser | MediaWithUser[]) => {
+      const incomingImages = (Array.isArray(media) ? media : [media]).filter(
+        (item) => item.type === "image",
+      );
+
+      if (incomingImages.length === 0) {
+        toast({
+          title: "No images selected",
+          description: "Please choose image files for the product gallery.",
+        });
+        setShowGalleryImagesPicker(false);
+        return;
+      }
+
+      setSelectedGalleryImages((previousImages) => {
+        const nextImages = mergeMediaById(previousImages, incomingImages);
+        updateMediaFieldIds(nextImages, selectedProductAttachments);
+        return nextImages;
+      });
+
+      setShowGalleryImagesPicker(false);
+      setIsDirty(true);
+    },
+    [selectedProductAttachments, toast, updateMediaFieldIds],
+  );
+
+  // Product attachments are supporting files and are not rendered in the image carousel.
+  const handleProductAttachmentsSelect = useCallback(
+    (media: MediaWithUser | MediaWithUser[]) => {
+      const incomingAttachments = (
+        Array.isArray(media) ? media : [media]
+      ).filter((item) => item.type !== "image");
+
+      if (incomingAttachments.length === 0) {
+        toast({
+          title: "No attachments selected",
+          description: "Please choose non-image files for product attachments.",
+        });
+        setShowProductAttachmentsPicker(false);
+        return;
+      }
+
+      setSelectedProductAttachments((previousAttachments) => {
+        const nextAttachments = mergeMediaById(
+          previousAttachments,
+          incomingAttachments,
+        );
+        updateMediaFieldIds(selectedGalleryImages, nextAttachments);
+        return nextAttachments;
+      });
+
+      setShowProductAttachmentsPicker(false);
+      setIsDirty(true);
+    },
+    [selectedGalleryImages, toast, updateMediaFieldIds],
+  );
+
+  // Remove gallery image
+  const handleRemoveGalleryImage = useCallback(
+    (imageId: string) => {
+      setSelectedGalleryImages((previousImages) => {
+        const nextImages = previousImages.filter(
+          (image) => image.id !== imageId,
+        );
+        updateMediaFieldIds(nextImages, selectedProductAttachments);
+        return nextImages;
+      });
+      setIsDirty(true);
+    },
+    [selectedProductAttachments, updateMediaFieldIds],
+  );
+
+  // Remove product attachment
+  const handleRemoveProductAttachment = useCallback(
+    (attachmentId: string) => {
+      setSelectedProductAttachments((previousAttachments) => {
+        const nextAttachments = previousAttachments.filter(
+          (attachment) => attachment.id !== attachmentId,
+        );
+        updateMediaFieldIds(selectedGalleryImages, nextAttachments);
+        return nextAttachments;
+      });
+      setIsDirty(true);
+    },
+    [selectedGalleryImages, updateMediaFieldIds],
+  );
 
   // Remove cover image
   const handleRemoveCoverImage = useCallback(() => {
@@ -441,11 +523,13 @@ export function ProductFormClient({
     try {
       setIsSubmitting(true);
       let result;
+      const imageIds = selectedGalleryImages.map((media) => media.id);
+      const attachmentIds = selectedProductAttachments.map((media) => media.id);
 
-      if (initialData?.id) {
+      if (effectiveProductId) {
         // Update existing product
         result = await updateProduct({
-          id: initialData.id,
+          id: effectiveProductId,
           name: formData.name,
           description: formData.shortDescription,
           shortDescription: formData.shortDescription,
@@ -463,6 +547,8 @@ export function ProductFormClient({
           therapeuticAreaId: formData.therapeuticAreaId || null,
           manufacturerId: formData.manufacturerId,
           coverImageId: formData.coverImageId || null,
+          imageIds,
+          attachmentIds,
         });
       } else {
         // Create new product
@@ -484,6 +570,8 @@ export function ProductFormClient({
           therapeuticAreaId: formData.therapeuticAreaId || null,
           manufacturerId: formData.manufacturerId,
           coverImageId: formData.coverImageId || null,
+          imageIds,
+          attachmentIds,
         });
       }
 
@@ -495,7 +583,7 @@ export function ProductFormClient({
       } else {
         toast({
           title: "Success",
-          description: initialData
+          description: isEditMode
             ? "Product updated successfully"
             : "Product created successfully",
         });
@@ -515,11 +603,11 @@ export function ProductFormClient({
 
   // Handle delete
   const handleDelete = async () => {
-    if (!initialData?.id) return;
+    if (!effectiveProductId) return;
 
     try {
       setIsDeleting(true);
-      const result = await deleteProduct(initialData.id);
+      const result = await deleteProduct(effectiveProductId);
 
       if (result.error) {
         toast({
@@ -558,7 +646,6 @@ export function ProductFormClient({
   };
 
   const isLoading = isSubmitting || lookupLoading || isLoadingData;
-  const isEditMode = !!initialData?.id;
 
   // ============================================================================
   // Render
@@ -776,11 +863,16 @@ export function ProductFormClient({
                   }
                   placeholder="Select visibility"
                 >
-                  <SelectOption value="true">Published (visible to users)</SelectOption>
-                  <SelectOption value="false">Draft (hidden from users)</SelectOption>
+                  <SelectOption value="true">
+                    Published (visible to users)
+                  </SelectOption>
+                  <SelectOption value="false">
+                    Draft (hidden from users)
+                  </SelectOption>
                 </Select>
                 <p className="text-xs text-muted-foreground">
-                  Only published products appear on the public catalog and product pages.
+                  Only published products appear on the public catalog and
+                  product pages.
                 </p>
               </div>
 
@@ -914,11 +1006,10 @@ export function ProductFormClient({
                 <Label className="block">Cover Image</Label>
                 {selectedCoverImage ? (
                   <div className="relative w-full h-48 rounded-lg border border-border overflow-hidden bg-muted">
-                    <Image
+                    <img
                       src={selectedCoverImage.url}
-                      alt="Cover image preview"
-                      fill
-                      className="object-cover"
+                      alt={selectedCoverImage.name || "Cover image preview"}
+                      className="h-full w-full object-cover"
                     />
                     <button
                       type="button"
@@ -948,12 +1039,84 @@ export function ProductFormClient({
                 </Button>
               </div>
 
-              {/* Attachments */}
+              {/* Gallery Images */}
               <div className="space-y-3">
-                <Label className="block">Attachments</Label>
-                {selectedAttachments.length > 0 ? (
+                <div className="space-y-1">
+                  <Label className="block">Gallery Images</Label>
+                  <p className="text-sm text-muted-foreground">
+                    Add one or more images for the product detail carousel.
+                  </p>
+                </div>
+
+                {selectedGalleryImages.length > 0 ? (
+                  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                    {selectedGalleryImages.map((image) => (
+                      <div
+                        key={image.id}
+                        className="overflow-hidden rounded-lg border border-border bg-muted"
+                      >
+                        <div className="relative h-32 w-full bg-background">
+                          <img
+                            src={image.url}
+                            alt={image.name || "Product gallery image"}
+                            className="h-full w-full object-cover"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveGalleryImage(image.id)}
+                            className="absolute right-2 top-2 rounded-full bg-red-500 p-1 text-white transition-colors hover:bg-red-600"
+                            aria-label={`Remove ${image.name}`}
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                        </div>
+                        <div className="space-y-1 p-3">
+                          <div className="flex items-center gap-2">
+                            <span className="truncate text-sm font-medium">
+                              {image.name}
+                            </span>
+                            <span className="rounded-full bg-background px-2 py-0.5 text-[10px] font-medium uppercase text-muted-foreground">
+                              Gallery
+                            </span>
+                          </div>
+                          <p className="text-xs text-muted-foreground">
+                            {formatFileSize(image.size)}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="border-2 border-dashed border-border rounded-lg p-6 text-center">
+                    <Plus className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
+                    <p className="text-sm text-muted-foreground mb-3">
+                      No gallery images added
+                    </p>
+                  </div>
+                )}
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setShowGalleryImagesPicker(true)}
+                >
+                  Add Gallery Images
+                </Button>
+              </div>
+
+              {/* Product Attachments */}
+              <div className="space-y-3">
+                <div className="space-y-1">
+                  <Label className="block">Product Attachments</Label>
+                  <p className="text-sm text-muted-foreground">
+                    Add supporting non-image files such as PDFs or product
+                    documents.
+                  </p>
+                </div>
+
+                {selectedProductAttachments.length > 0 ? (
                   <div className="space-y-2">
-                    {selectedAttachments.map((attachment) => (
+                    {selectedProductAttachments.map((attachment) => (
                       <div
                         key={attachment.id}
                         className="flex items-center justify-between bg-muted p-3 rounded-lg"
@@ -962,13 +1125,18 @@ export function ProductFormClient({
                           <span className="text-sm font-medium truncate">
                             {attachment.name}
                           </span>
+                          <span className="rounded-full bg-background px-2 py-0.5 text-[10px] font-medium uppercase text-muted-foreground">
+                            Attachment
+                          </span>
                           <span className="text-xs text-muted-foreground whitespace-nowrap">
                             {formatFileSize(attachment.size)}
                           </span>
                         </div>
                         <button
                           type="button"
-                          onClick={() => handleRemoveAttachment(attachment.id)}
+                          onClick={() =>
+                            handleRemoveProductAttachment(attachment.id)
+                          }
                           className="text-destructive hover:text-destructive/80 transition-colors"
                           aria-label={`Remove ${attachment.name}`}
                         >
@@ -981,16 +1149,16 @@ export function ProductFormClient({
                   <div className="border-2 border-dashed border-border rounded-lg p-6 text-center">
                     <Plus className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
                     <p className="text-sm text-muted-foreground mb-3">
-                      No attachments added
+                      No product attachments added
                     </p>
                   </div>
                 )}
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => setShowAttachmentsPicker(true)}
+                  onClick={() => setShowProductAttachmentsPicker(true)}
                 >
-                  Add Attachments
+                  Add Product Attachments
                 </Button>
               </div>
             </div>
@@ -1237,13 +1405,23 @@ export function ProductFormClient({
           />
 
           <MediaPicker
-            open={showAttachmentsPicker}
-            onOpenChange={setShowAttachmentsPicker}
-            onSelect={handleAttachmentsSelect}
+            open={showGalleryImagesPicker}
+            onOpenChange={setShowGalleryImagesPicker}
+            onSelect={handleGalleryImagesSelect}
+            multiple={true}
+            accept="image"
+            title="Select Gallery Images"
+            description="Choose one or more product images for the public carousel"
+          />
+
+          <MediaPicker
+            open={showProductAttachmentsPicker}
+            onOpenChange={setShowProductAttachmentsPicker}
+            onSelect={handleProductAttachmentsSelect}
             multiple={true}
             accept="all"
-            title="Select Attachments"
-            description="Choose files to attach to this product"
+            title="Select Product Attachments"
+            description="Choose non-image files such as PDFs or supporting documents"
           />
         </>
       )}
@@ -1304,6 +1482,115 @@ function FormSection({
 // ============================================================================
 // Utility Functions
 // ============================================================================
+
+type ProductMediaReference = {
+  id: string;
+  mediaId?: string | null;
+  name?: string | null;
+  alt?: string | null;
+  url?: string | null;
+  type?: string | null;
+  size?: number | null;
+};
+
+function getMediaPickerId(item: ProductMediaReference): string {
+  return item.mediaId || item.id;
+}
+
+function getOptionalString(source: unknown, key: string): string | null {
+  if (!source || typeof source !== "object") return null;
+
+  const value = (source as Record<string, unknown>)[key];
+
+  return typeof value === "string" && value.trim().length > 0 ? value : null;
+}
+
+function buildMediaPreview(input: {
+  id: string;
+  name: string;
+  url: string;
+  type: "image" | "document";
+  size?: number | null;
+  mimeType?: string | null;
+}): MediaWithUser {
+  return {
+    id: input.id,
+    name: input.name,
+    url: input.url,
+    type: input.type,
+    size: input.size ?? 0,
+    uploadedAt: new Date(),
+    uploadedById: null,
+    uploadedBy: null,
+    mimeType: input.mimeType || input.type,
+    width: null,
+    height: null,
+    createdAt: new Date(),
+  } as MediaWithUser;
+}
+
+function buildCoverMediaPreview(
+  product: ProductDetail | null | undefined,
+): MediaWithUser | null {
+  if (!product?.coverImage) return null;
+
+  const url = getOptionalString(product, "coverImageUrl");
+
+  if (!url) return null;
+
+  return buildMediaPreview({
+    id: product.coverImage,
+    name: `${product.name || "Product"} cover image`,
+    url,
+    type: "image",
+    mimeType: "image",
+  });
+}
+
+function buildGalleryImageMediaPreview(
+  image: ProductMediaReference,
+): MediaWithUser {
+  return buildMediaPreview({
+    id: getMediaPickerId(image),
+    name: image.alt || image.name || "Product image",
+    url: image.url || "",
+    type: "image",
+    size: image.size,
+    mimeType: "image",
+  });
+}
+
+function buildAttachmentMediaPreview(
+  attachment: ProductMediaReference,
+): MediaWithUser {
+  const type = attachment.type === "image" ? "image" : "document";
+
+  return buildMediaPreview({
+    id: getMediaPickerId(attachment),
+    name: attachment.name || "Product attachment",
+    url: attachment.url || "",
+    type,
+    size: attachment.size,
+    mimeType: attachment.type || type,
+  });
+}
+
+function mergeMediaById(
+  currentItems: MediaWithUser[],
+  incomingItems: MediaWithUser[],
+): MediaWithUser[] {
+  const mediaById = new Map<string, MediaWithUser>();
+
+  for (const item of currentItems) {
+    mediaById.set(item.id, item);
+  }
+
+  for (const item of incomingItems) {
+    mediaById.set(item.id, item);
+  }
+
+  return Array.from(mediaById.values());
+}
 
 function formatFileSize(bytes: number | null): string {
   if (!bytes) return "0 B";

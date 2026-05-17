@@ -48,6 +48,13 @@ export interface PublicProductDetail {
   status: ProductStatus;
   type: ProductType;
   coverImageUrl: string | null;
+  images: Array<{
+    id: string;
+    mediaId: string | null;
+    url: string;
+    alt: string | null;
+    order: number;
+  }>;
   category: { id: string; name: string } | null;
   therapeuticArea: { id: string; name: string } | null;
   manufacturer: { id: string; name: string; country: string | null } | null;
@@ -63,6 +70,25 @@ export interface PublicProductDetail {
     size: number | null;
   }>;
   relatedProducts: PublicProductCard[];
+}
+
+type ProductImageRecord = {
+  id: string;
+  productId: string;
+  mediaId: string | null;
+  url: string;
+  alt: string | null;
+  order: number;
+  createdAt: Date;
+};
+
+type ProductImageDelegate = {
+  findMany(args: unknown): Promise<ProductImageRecord[]>;
+};
+
+function productImageModel(): ProductImageDelegate {
+  return (db as unknown as { productImage: ProductImageDelegate })
+    .productImage;
 }
 
 export interface PublishedProductSlug {
@@ -317,13 +343,23 @@ export async function getPublicProductBySlug(
   }
 
   const translation = getProductTranslation(product.translations, locale);
-  const relatedProducts = await getRelatedPublicProducts(
-    locale,
-    product.id,
-    product.categoryId,
-    product.therapeuticAreaId,
+  const [relatedProducts, productImages, coverImageUrls] = await Promise.all([
+    getRelatedPublicProducts(
+      locale,
+      product.id,
+      product.categoryId,
+      product.therapeuticAreaId,
+    ),
+    productImageModel().findMany({
+      where: { productId: product.id },
+      orderBy: { order: "asc" },
+    }),
+    resolveCoverImageUrls([product.coverImage]),
+  ]);
+  const coverImageUrl = resolveCoverImageValue(
+    product.coverImage,
+    coverImageUrls,
   );
-  const coverImageUrls = await resolveCoverImageUrls([product.coverImage]);
 
   return {
     id: product.id,
@@ -333,7 +369,14 @@ export async function getPublicProductBySlug(
     fullDescription: translation?.fullDescription || null,
     status: product.status,
     type: product.type,
-    coverImageUrl: resolveCoverImageValue(product.coverImage, coverImageUrls),
+    coverImageUrl,
+    images: productImages.map((image) => ({
+      id: image.id,
+      mediaId: image.mediaId,
+      url: image.url,
+      alt: image.alt,
+      order: image.order,
+    })),
     category: product.category
       ? {
           id: product.category.id,

@@ -59,6 +59,28 @@ function sanitizeJsonFieldForSave(
   return stringifySanitized(sanitizedValue);
 }
 
+function getPublicPagePath(pageKey: string, locale: Locale): string | null {
+  const prefix = `/${locale}`;
+  const paths: Record<string, string> = {
+    home: prefix,
+    about: `${prefix}/about`,
+    services: `${prefix}/services`,
+    products: `${prefix}/products`,
+    quality: `${prefix}/quality`,
+    partnerships: `${prefix}/partnerships`,
+    contact: `${prefix}/contact`,
+  };
+
+  return paths[pageKey] || null;
+}
+
+function revalidatePublicPage(pageKey: string, locale: Locale) {
+  const publicPath = getPublicPagePath(pageKey, locale);
+  if (publicPath) {
+    revalidatePath(publicPath);
+  }
+}
+
 /**
  * Update a single field value
  */
@@ -172,7 +194,7 @@ export async function updatePageContentField(
     });
 
     // Revalidate cache
-    revalidatePath(`/[locale]/${pageKey}`, "page");
+    revalidatePublicPage(pageKey, locale);
     revalidatePath("/admin/pages");
 
     await createAdminNotification({
@@ -321,7 +343,7 @@ export async function updatePageContent(
     }
 
     // Revalidate cache
-    revalidatePath(`/[locale]/${validated.pageKey}`, "page");
+    revalidatePublicPage(validated.pageKey, validated.locale);
     revalidatePath("/admin/pages");
 
     await createAdminNotification({

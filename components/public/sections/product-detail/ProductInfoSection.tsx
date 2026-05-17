@@ -80,7 +80,7 @@ export function ProductInfoSection({ data }: ProductInfoSectionProps) {
           <div className="order-2 space-y-[14px] sm:space-y-[16px] xl:space-y-[18px]">
             <div
               className={cn(
-                "relative overflow-hidden",
+                "group relative overflow-hidden",
                 "rounded-[18px] sm:rounded-[22px] xl:rounded-[30px]",
                 "border border-[#dce9f6] bg-white",
                 "h-[300px]",
@@ -100,7 +100,7 @@ export function ProductInfoSection({ data }: ProductInfoSectionProps) {
                   loading={activeImageIndex === 0 ? "eager" : "lazy"}
                   fetchPriority={activeImageIndex === 0 ? "high" : "auto"}
                   sizes="(min-width: 1536px) 38vw, (min-width: 1024px) 42vw, 100vw"
-                  className="object-cover"
+                  className="public-image-hover object-cover"
                 />
               ) : (
                 <div className="h-full w-full bg-[linear-gradient(135deg,#daecd4,#ffffff,#c5e1f5)]" />

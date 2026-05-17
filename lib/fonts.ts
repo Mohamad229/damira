@@ -1,7 +1,11 @@
-import { Geist, Geist_Mono } from "next/font/google";
-import { Cairo } from "next/font/google";
-import { Montserrat } from "next/font/google";
-import { Roboto } from "next/font/google";
+import {
+  Cairo,
+  Geist,
+  Geist_Mono,
+  Montserrat,
+  Roboto,
+  Tajawal,
+} from "next/font/google";
 
 export const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,6 +23,12 @@ export const cairo = Cairo({
   weight: ["400", "500", "600", "700"],
 });
 
+export const tajawal = Tajawal({
+  variable: "--font-tajawal",
+  subsets: ["arabic", "latin"],
+  weight: ["300", "400", "500", "700", "800"],
+});
+
 export const montserrat = Montserrat({
   variable: "--font-montserrat",
   subsets: ["latin"],
@@ -31,4 +41,4 @@ export const roboto = Roboto({
   weight: ["300", "400", "500", "700", "900"],
 });
 
-export const fontVariables = `${geistSans.variable} ${geistMono.variable} ${cairo.variable} ${montserrat.variable} ${roboto.variable}`;
+export const fontVariables = `${geistSans.variable} ${geistMono.variable} ${cairo.variable} ${tajawal.variable} ${montserrat.variable} ${roboto.variable}`;

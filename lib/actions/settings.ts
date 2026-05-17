@@ -9,6 +9,22 @@ import db from "@/lib/db";
 
 const ADMIN_SETTINGS_PATH = "/admin/settings";
 const ADMIN_PRODUCTS_PATH = "/admin/products";
+const PUBLIC_FOOTER_PATHS = [
+  "/en",
+  "/ar",
+  "/en/about",
+  "/ar/about",
+  "/en/services",
+  "/ar/services",
+  "/en/products",
+  "/ar/products",
+  "/en/quality",
+  "/ar/quality",
+  "/en/partnerships",
+  "/ar/partnerships",
+  "/en/contact",
+  "/ar/contact",
+] as const;
 
 const LOOKUP_CREATE_SCHEMA = z
   .object({
@@ -124,12 +140,12 @@ const DELETE_LOOKUP_SCHEMA = z
 
 const SITE_SETTING_KEYS = [
   "siteName",
-  "siteTagline",
   "contactEmail",
   "contactPhone",
-  "contactAddress",
-  "seoDefaultTitle",
-  "seoDefaultDescription",
+  "footerDescriptionEn",
+  "footerDescriptionAr",
+  "contactAddressEn",
+  "contactAddressAr",
 ] as const;
 
 const SITE_SETTING_KEY_SCHEMA = z.enum(SITE_SETTING_KEYS);
@@ -170,12 +186,6 @@ const SITE_SETTINGS_SCHEMA = z
       .max(255, "Site name is too long")
       .optional()
       .nullable(),
-    siteTagline: z
-      .string()
-      .trim()
-      .max(255, "Site tagline is too long")
-      .optional()
-      .nullable(),
     contactEmail: z
       .union([
         z.string().trim().email("Invalid contact email"),
@@ -189,22 +199,28 @@ const SITE_SETTINGS_SCHEMA = z
       .max(50, "Contact phone is too long")
       .optional()
       .nullable(),
-    contactAddress: z
+    footerDescriptionEn: z
       .string()
       .trim()
-      .max(500, "Contact address is too long")
+      .max(1200, "English footer text is too long")
       .optional()
       .nullable(),
-    seoDefaultTitle: z
+    footerDescriptionAr: z
       .string()
       .trim()
-      .max(255, "SEO title is too long")
+      .max(1200, "Arabic footer text is too long")
       .optional()
       .nullable(),
-    seoDefaultDescription: z
+    contactAddressEn: z
       .string()
       .trim()
-      .max(500, "SEO description is too long")
+      .max(500, "English contact address is too long")
+      .optional()
+      .nullable(),
+    contactAddressAr: z
+      .string()
+      .trim()
+      .max(500, "Arabic contact address is too long")
       .optional()
       .nullable(),
   })
@@ -247,12 +263,12 @@ export type ManufacturerLookupItem = {
 
 export type SiteSettings = {
   siteName: string | null;
-  siteTagline: string | null;
   contactEmail: string | null;
   contactPhone: string | null;
-  contactAddress: string | null;
-  seoDefaultTitle: string | null;
-  seoDefaultDescription: string | null;
+  footerDescriptionEn: string | null;
+  footerDescriptionAr: string | null;
+  contactAddressEn: string | null;
+  contactAddressAr: string | null;
 };
 
 export type SiteSettingKey = z.infer<typeof SITE_SETTING_KEY_SCHEMA>;
@@ -373,6 +389,12 @@ function normalizeNullableString(
 function revalidateAdminSettingsPaths(): void {
   revalidatePath(ADMIN_SETTINGS_PATH);
   revalidatePath(ADMIN_PRODUCTS_PATH);
+}
+
+function revalidatePublicFooterPaths(): void {
+  for (const path of PUBLIC_FOOTER_PATHS) {
+    revalidatePath(path);
+  }
 }
 
 export async function listCategories(): Promise<
@@ -1017,12 +1039,12 @@ export async function getSiteSettings(): Promise<ActionState<SiteSettings>> {
 
     const defaults: SiteSettings = {
       siteName: null,
-      siteTagline: null,
       contactEmail: null,
       contactPhone: null,
-      contactAddress: null,
-      seoDefaultTitle: null,
-      seoDefaultDescription: null,
+      footerDescriptionEn: null,
+      footerDescriptionAr: null,
+      contactAddressEn: null,
+      contactAddressAr: null,
     };
 
     for (const setting of settings) {
@@ -1155,6 +1177,7 @@ export async function createSiteSetting(
     });
 
     revalidateAdminSettingsPaths();
+    revalidatePublicFooterPaths();
 
     return {
       success: true,
@@ -1213,6 +1236,7 @@ export async function updateSiteSetting(
     });
 
     revalidateAdminSettingsPaths();
+    revalidatePublicFooterPaths();
 
     return {
       success: true,
@@ -1259,6 +1283,7 @@ export async function deleteSiteSetting(key: string): Promise<ActionState> {
     });
 
     revalidateAdminSettingsPaths();
+    revalidatePublicFooterPaths();
 
     return { success: true };
   } catch (error) {
@@ -1291,50 +1316,54 @@ export async function updateSiteSettings(
       ([, value]) => value !== undefined,
     ) as [keyof SiteSettings, string | null][];
 
-    await db.$transaction(async (tx) => {
-      for (const [key, value] of entries) {
-        const normalizedValue = normalizeNullableString(value);
-        const existing = await tx.siteSetting.findUnique({
-          where: { key },
-          select: { id: true },
-        });
+    for (const [key, value] of entries) {
+      const normalizedValue = normalizeNullableString(value) ?? "";
 
-        if (!normalizedValue) {
-          if (existing) {
-            await tx.siteSetting.delete({
-              where: { key },
-            });
-          }
-          continue;
-        }
-
-        if (existing) {
-          await tx.siteSetting.update({
-            where: { key },
-            data: { value: normalizedValue },
-          });
-        } else {
-          await tx.siteSetting.create({
-            data: {
-              key,
-              value: normalizedValue,
-            },
-          });
-        }
-      }
-    });
-
-    revalidatePath(ADMIN_SETTINGS_PATH);
-
-    const updatedSettings = await getSiteSettings();
-
-    if (!updatedSettings.success || !updatedSettings.data) {
-      return {
-        error: updatedSettings.error || "Failed to load updated site settings",
-      };
+      await db.siteSetting.upsert({
+        where: { key },
+        create: {
+          key,
+          value: normalizedValue,
+        },
+        update: {
+          value: normalizedValue,
+        },
+      });
     }
 
-    return { success: true, data: updatedSettings.data };
+    revalidatePath(ADMIN_SETTINGS_PATH);
+    revalidatePublicFooterPaths();
+
+    const settings = await db.siteSetting.findMany({
+      where: {
+        key: {
+          in: [...SITE_SETTING_KEYS],
+        },
+      },
+      select: {
+        key: true,
+        value: true,
+      },
+    });
+
+    const updatedData: SiteSettings = {
+      siteName: null,
+      contactEmail: null,
+      contactPhone: null,
+      footerDescriptionEn: null,
+      footerDescriptionAr: null,
+      contactAddressEn: null,
+      contactAddressAr: null,
+    };
+
+    for (const setting of settings) {
+      if (setting.key in updatedData) {
+        const key = setting.key as keyof SiteSettings;
+        updatedData[key] = setting.value;
+      }
+    }
+
+    return { success: true, data: updatedData };
   } catch (error) {
     if (shouldRethrowNextError(error)) {
       throw error;

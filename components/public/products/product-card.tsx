@@ -32,7 +32,7 @@ export function ProductCard({
     <article
       className={cn(
         "group relative overflow-hidden rounded-2xl border border-border/70 bg-card",
-        "shadow-[var(--shadow-card)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg",
+        "public-card-hover shadow-[var(--shadow-card)] hover:shadow-lg",
         view === "list" && "flex flex-col md:flex-row",
       )}
     >
@@ -52,7 +52,7 @@ export function ProductCard({
                 ? "(max-width: 1024px) 100vw, 33vw"
                 : "(max-width: 768px) 100vw, 320px"
             }
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            className="public-image-hover object-cover"
           />
         ) : (
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,hsl(var(--color-primary)/0.45),transparent_60%),radial-gradient(circle_at_70%_65%,hsl(var(--color-secondary)/0.3),transparent_55%)]" />
@@ -107,7 +107,7 @@ export function ProductCard({
         <div className="mt-5">
           <Link
             href={`/products/${product.slug}`}
-            className="inline-flex items-center rounded-full border border-primary/35 bg-primary/10 px-4 py-2 text-xs font-semibold tracking-wide text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
+            className="public-button-hover inline-flex items-center rounded-full border border-primary/35 bg-primary/10 px-4 py-2 text-xs font-semibold tracking-wide text-primary hover:bg-primary hover:text-primary-foreground"
           >
             {labels.details}
           </Link>

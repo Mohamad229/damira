@@ -47,7 +47,7 @@ export function CtaSection({ data, className }: CtaSectionProps) {
                 {data.primaryAction ? (
                   <Link
                     href={data.primaryAction.href}
-                    className="inline-flex rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-accent/90"
+                    className="public-button-hover inline-flex rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-white hover:bg-accent/90"
                   >
                     {data.primaryAction.label}
                   </Link>
@@ -55,7 +55,7 @@ export function CtaSection({ data, className }: CtaSectionProps) {
                 {data.secondaryAction ? (
                   <Link
                     href={data.secondaryAction.href}
-                    className="inline-flex rounded-full border border-white/50 bg-white/10 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-white/20"
+                    className="public-button-hover inline-flex rounded-full border border-white/50 bg-white/10 px-5 py-2.5 text-sm font-semibold text-white hover:bg-white/20"
                   >
                     {data.secondaryAction.label}
                   </Link>

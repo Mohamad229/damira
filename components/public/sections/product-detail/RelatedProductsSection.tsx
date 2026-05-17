@@ -23,7 +23,7 @@ function RelatedProductCard({ data }: { data: ProductCardData }) {
         "group relative flex h-full flex-col overflow-hidden",
         "rounded-[22px] border border-[#e5eef8] bg-white",
         "shadow-[0_22px_52px_-46px_rgba(15,23,42,0.58)]",
-        "transition-all duration-300",
+        "public-card-hover",
         "hover:-translate-y-1 hover:border-[#91caee]",
         "sm:rounded-[24px]",
         "xl:rounded-[28px]",
@@ -36,7 +36,7 @@ function RelatedProductCard({ data }: { data: ProductCardData }) {
             alt={data.image.alt || data.name}
             fill
             sizes="(min-width: 1536px) 22vw, (min-width: 1280px) 25vw, (min-width: 768px) 45vw, 100vw"
-            className="object-cover transition-transform duration-700 group-hover:scale-105"
+            className="public-image-hover object-cover"
           />
         ) : (
           <div className="h-full w-full bg-[linear-gradient(135deg,#daecd4,#ffffff,#c5e1f5)]" />

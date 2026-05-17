@@ -47,6 +47,7 @@ export const ProductFormSchema = z.object({
 
   // Media
   coverImageId: z.string().optional().nullable(),
+  imageIds: z.array(z.string()).optional().default([]),
   attachmentIds: z.array(z.string()).optional().default([]),
 
   // Advanced Details (only required if type === ADVANCED)
@@ -121,6 +122,7 @@ export type ProductFormFieldValues = {
   therapeuticAreaId?: string | null;
   manufacturerId?: string;
   coverImageId?: string | null;
+  imageIds?: string[];
   attachmentIds?: string[];
   advancedDetails?: {
     storageConditions?: string | null;

@@ -59,12 +59,12 @@ interface ManufacturerFormState {
 
 interface SiteSettingsFormState {
   siteName: string;
-  siteTagline: string;
   contactEmail: string;
   contactPhone: string;
-  contactAddress: string;
-  seoDefaultTitle: string;
-  seoDefaultDescription: string;
+  footerDescriptionEn: string;
+  footerDescriptionAr: string;
+  contactAddressEn: string;
+  contactAddressAr: string;
 }
 
 function toSiteSettingsFormState(
@@ -72,12 +72,12 @@ function toSiteSettingsFormState(
 ): SiteSettingsFormState {
   return {
     siteName: settings.siteName ?? "",
-    siteTagline: settings.siteTagline ?? "",
     contactEmail: settings.contactEmail ?? "",
     contactPhone: settings.contactPhone ?? "",
-    contactAddress: settings.contactAddress ?? "",
-    seoDefaultTitle: settings.seoDefaultTitle ?? "",
-    seoDefaultDescription: settings.seoDefaultDescription ?? "",
+    footerDescriptionEn: settings.footerDescriptionEn ?? "",
+    footerDescriptionAr: settings.footerDescriptionAr ?? "",
+    contactAddressEn: settings.contactAddressEn ?? "",
+    contactAddressAr: settings.contactAddressAr ?? "",
   };
 }
 
@@ -176,12 +176,14 @@ export function SettingsManagementClient({
   const siteSettingsDirty = useMemo(() => {
     return (
       siteSettings.siteName !== siteBaseline.siteName ||
-      siteSettings.siteTagline !== siteBaseline.siteTagline ||
       siteSettings.contactEmail !== siteBaseline.contactEmail ||
       siteSettings.contactPhone !== siteBaseline.contactPhone ||
-      siteSettings.contactAddress !== siteBaseline.contactAddress ||
-      siteSettings.seoDefaultTitle !== siteBaseline.seoDefaultTitle ||
-      siteSettings.seoDefaultDescription !== siteBaseline.seoDefaultDescription
+      siteSettings.footerDescriptionEn !==
+        siteBaseline.footerDescriptionEn ||
+      siteSettings.footerDescriptionAr !==
+        siteBaseline.footerDescriptionAr ||
+      siteSettings.contactAddressEn !== siteBaseline.contactAddressEn ||
+      siteSettings.contactAddressAr !== siteBaseline.contactAddressAr
     );
   }, [siteSettings, siteBaseline]);
 
@@ -1219,8 +1221,7 @@ export function SettingsManagementClient({
           <CardHeader>
             <CardTitle>Site settings</CardTitle>
             <CardDescription>
-              Configure branding, contact details, and default SEO values used
-              across the website.
+              Configure the public footer identity and contact details.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -1234,12 +1235,12 @@ export function SettingsManagementClient({
                   async () => {
                     const result = await updateSiteSettings({
                       siteName: siteSettings.siteName,
-                      siteTagline: siteSettings.siteTagline,
                       contactEmail: siteSettings.contactEmail,
                       contactPhone: siteSettings.contactPhone,
-                      contactAddress: siteSettings.contactAddress,
-                      seoDefaultTitle: siteSettings.seoDefaultTitle,
-                      seoDefaultDescription: siteSettings.seoDefaultDescription,
+                      footerDescriptionEn: siteSettings.footerDescriptionEn,
+                      footerDescriptionAr: siteSettings.footerDescriptionAr,
+                      contactAddressEn: siteSettings.contactAddressEn,
+                      contactAddressAr: siteSettings.contactAddressAr,
                     });
 
                     if (result.success && result.data) {
@@ -1259,7 +1260,7 @@ export function SettingsManagementClient({
               }}
             >
               <div className="grid gap-5 md:grid-cols-2">
-                <div className="space-y-2">
+                {/* <div className="space-y-2">
                   <Label htmlFor="site-name">Site name</Label>
                   <Input
                     id="site-name"
@@ -1273,25 +1274,45 @@ export function SettingsManagementClient({
                     placeholder="Damira Pharma"
                     disabled={pendingAction === "site-settings-save"}
                   />
-                </div>
+                </div> */}
+
                 <div className="space-y-2">
-                  <Label htmlFor="site-tagline">Site tagline</Label>
-                  <Input
-                    id="site-tagline"
-                    value={siteSettings.siteTagline}
-                    onChange={(event) =>
-                      setSiteSettings((prev) => ({
-                        ...prev,
-                        siteTagline: event.target.value,
-                      }))
-                    }
-                    placeholder="Trusted pharmaceutical solutions"
-                    disabled={pendingAction === "site-settings-save"}
-                  />
-                </div>
+                <Label htmlFor="footer-description-en">
+                  Footer text English
+                </Label>
+                <Textarea
+                  id="footer-description-en"
+                  value={siteSettings.footerDescriptionEn}
+                  onChange={(event) =>
+                    setSiteSettings((prev) => ({
+                      ...prev,
+                      footerDescriptionEn: event.target.value,
+                    }))
+                  }
+                  rows={4}
+                  placeholder="English footer description"
+                  disabled={pendingAction === "site-settings-save"}
+                />
               </div>
 
-              <div className="grid gap-5 md:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="footer-description-ar">Footer text Arabic</Label>
+                <Textarea
+                  id="footer-description-ar"
+                  dir="rtl"
+                  value={siteSettings.footerDescriptionAr}
+                  onChange={(event) =>
+                    setSiteSettings((prev) => ({
+                      ...prev,
+                      footerDescriptionAr: event.target.value,
+                    }))
+                  }
+                  rows={4}
+                  placeholder="Arabic footer description"
+                  disabled={pendingAction === "site-settings-save"}
+                />
+              </div>
+
                 <div className="space-y-2">
                   <Label htmlFor="contact-email">Contact email</Label>
                   <Input
@@ -1308,6 +1329,7 @@ export function SettingsManagementClient({
                     disabled={pendingAction === "site-settings-save"}
                   />
                 </div>
+
                 <div className="space-y-2">
                   <Label htmlFor="contact-phone">Contact phone</Label>
                   <Input
@@ -1325,54 +1347,42 @@ export function SettingsManagementClient({
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="contact-address">Contact address</Label>
-                <Textarea
-                  id="contact-address"
-                  value={siteSettings.contactAddress}
-                  onChange={(event) =>
-                    setSiteSettings((prev) => ({
-                      ...prev,
-                      contactAddress: event.target.value,
-                    }))
-                  }
-                  rows={3}
-                  placeholder="Office address"
-                  disabled={pendingAction === "site-settings-save"}
-                />
-              </div>
-
               <div className="grid gap-5 md:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="seo-default-title">Default SEO title</Label>
-                  <Input
-                    id="seo-default-title"
-                    value={siteSettings.seoDefaultTitle}
-                    onChange={(event) =>
-                      setSiteSettings((prev) => ({
-                        ...prev,
-                        seoDefaultTitle: event.target.value,
-                      }))
-                    }
-                    placeholder="Default metadata title"
-                    disabled={pendingAction === "site-settings-save"}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="seo-default-description">
-                    Default SEO description
+                  <Label htmlFor="contact-address-en">
+                    Contact address English
                   </Label>
                   <Textarea
-                    id="seo-default-description"
-                    value={siteSettings.seoDefaultDescription}
+                    id="contact-address-en"
+                    value={siteSettings.contactAddressEn}
                     onChange={(event) =>
                       setSiteSettings((prev) => ({
                         ...prev,
-                        seoDefaultDescription: event.target.value,
+                        contactAddressEn: event.target.value,
                       }))
                     }
                     rows={3}
-                    placeholder="Default metadata description"
+                    placeholder="English office address"
+                    disabled={pendingAction === "site-settings-save"}
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="contact-address-ar">
+                    Contact address Arabic
+                  </Label>
+                  <Textarea
+                    id="contact-address-ar"
+                    dir="rtl"
+                    value={siteSettings.contactAddressAr}
+                    onChange={(event) =>
+                      setSiteSettings((prev) => ({
+                        ...prev,
+                        contactAddressAr: event.target.value,
+                      }))
+                    }
+                    rows={3}
+                    placeholder="Arabic office address"
                     disabled={pendingAction === "site-settings-save"}
                   />
                 </div>

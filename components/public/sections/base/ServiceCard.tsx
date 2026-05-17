@@ -3,6 +3,8 @@ import { CheckCircle2 } from "lucide-react";
 import { isSectionMediaIcon, SectionIconImage } from "./SectionIconImage";
 import type { ServiceCardData } from "./types";
 
+import { cn } from "@/lib/utils";
+
 interface ServiceCardProps {
   data: ServiceCardData;
 }
@@ -11,7 +13,12 @@ export function ServiceCard({ data }: ServiceCardProps) {
   const Icon = typeof data.icon === "function" ? data.icon : null;
 
   return (
-    <article className="rounded-3xl border border-border/70 bg-card p-5 shadow-[var(--shadow-card)] transition duration-300 hover:-translate-y-0.5 hover:border-primary/30">
+    <article
+      className={cn(
+        "public-card-hover rounded-3xl border border-border/70 bg-card p-5 shadow-[var(--shadow-card)]",
+        "hover:border-primary/30",
+      )}
+    >
       <div className="inline-flex rounded-2xl bg-primary/10 p-2.5 text-primary">
         {isSectionMediaIcon(data.icon) ? (
           <SectionIconImage

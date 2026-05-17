@@ -10,7 +10,7 @@ interface ProductCardProps {
 
 export function ProductCard({ data }: ProductCardProps) {
   return (
-    <article className="group overflow-hidden rounded-3xl border border-border/70 bg-card shadow-[var(--shadow-card)] transition duration-300 hover:-translate-y-0.5 hover:shadow-lg">
+    <article className="public-card-hover group overflow-hidden rounded-3xl border border-border/70 bg-card shadow-[var(--shadow-card)] hover:shadow-lg">
       <div className="relative h-52 overflow-hidden bg-[radial-gradient(circle_at_20%_20%,hsl(var(--color-primary)/0.35),transparent_55%),radial-gradient(circle_at_80%_80%,hsl(var(--color-secondary)/0.3),transparent_60%)]">
         {data.image ? (
           <CmsImage
@@ -18,7 +18,7 @@ export function ProductCard({ data }: ProductCardProps) {
             alt={data.image.alt}
             fill
             sizes="(max-width: 1024px) 100vw, 33vw"
-            className="object-cover transition duration-500 group-hover:scale-105"
+            className="public-image-hover object-cover"
           />
         ) : null}
       </div>
@@ -58,8 +58,8 @@ export function ProductCard({ data }: ProductCardProps) {
           <Link
             href={data.href}
             className={cn(
-              "mt-5 inline-flex rounded-full border border-primary/30 bg-primary/10 px-4 py-2 text-xs font-semibold tracking-[0.06em] text-primary",
-              "transition hover:bg-primary hover:text-primary-foreground",
+              "public-button-hover mt-5 inline-flex rounded-full border border-primary/30 bg-primary/10 px-4 py-2 text-xs font-semibold tracking-[0.06em] text-primary",
+              "hover:bg-primary hover:text-primary-foreground",
             )}
           >
             View Details

@@ -19,6 +19,14 @@ if (!databaseUrl) {
 
 const adapter = new PrismaPg({ connectionString: databaseUrl });
 const prisma = new PrismaClient({ adapter });
+const isProduction = process.env.NODE_ENV === "production";
+const seedAdminEmail =
+  process.env.SEED_ADMIN_EMAIL || "admin@damirapharma.com";
+const seedAdminPassword = process.env.SEED_ADMIN_PASSWORD;
+
+if (isProduction && !seedAdminPassword) {
+  throw new Error("SEED_ADMIN_PASSWORD is required when seeding production.");
+}
 
 type PageSeedInput = {
   pageKey: ActivePageKey;
@@ -165,12 +173,14 @@ async function seedStructuredPageContent() {
 async function main() {
   console.log("Starting database seeding...");
 
-  const hashedPassword = await bcrypt.hash("admin123", 12);
+  const adminPassword =
+    seedAdminPassword || "local-dev-admin-password-change-me";
+  const hashedPassword = await bcrypt.hash(adminPassword, 12);
   const adminUser = await prisma.user.upsert({
-    where: { email: "admin@damirapharma.com" },
+    where: { email: seedAdminEmail },
     update: {},
     create: {
-      email: "admin@damirapharma.com",
+      email: seedAdminEmail,
       password: hashedPassword,
       name: "Admin User",
       role: UserRole.ADMIN,
@@ -248,21 +258,25 @@ async function main() {
 
   const siteSettings = [
     { key: "siteName", value: "Damira Pharma" },
-    { key: "siteTagline", value: "Trusted. Healthy." },
     { key: "contactEmail", value: "info@damirapharma.sy" },
     { key: "contactPhone", value: "+963 935 222 202" },
     {
-      key: "contactAddress",
+      key: "footerDescriptionEn",
+      value:
+        "Specialized healthcare distribution and commercialization partner supporting pharmaceutical access across Syria.",
+    },
+    {
+      key: "footerDescriptionAr",
+      value:
+        "شريك متخصص في توزيع وتسويق حلول الرعاية الصحية ودعم الوصول إلى الأدوية في سوريا.",
+    },
+    {
+      key: "contactAddressEn",
       value: "Erbin, Damascus Countryside, Syria",
     },
     {
-      key: "seoDefaultTitle",
-      value: "Damira Pharma - Specialized Healthcare Distribution",
-    },
-    {
-      key: "seoDefaultDescription",
-      value:
-        "Damira Pharma is a specialized healthcare distribution and commercialization partner in Syria.",
+      key: "contactAddressAr",
+      value: "عربين، ريف دمشق، سوريا",
     },
   ];
 

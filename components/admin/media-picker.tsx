@@ -30,7 +30,6 @@ import { cn, formatFileSize, copyToClipboard } from "@/lib/utils";
 import type {
   MediaWithUser,
   MediaType,
-  GetMediaOptions,
 } from "@/lib/actions/media";
 import { getMedia } from "@/lib/actions/media";
 
@@ -93,25 +92,29 @@ export function MediaPicker({
 
   const pageSize = 12;
 
-  // Load media function - defined before useEffect hooks that depend on it
-  const loadMedia = useCallback(
-    async (params: GetMediaOptions = {}) => {
+  const loadMediaPage = useCallback(
+    async ({
+      page,
+      search,
+      type,
+    }: {
+      page: number;
+      search: string;
+      type?: MediaType;
+    }) => {
       startTransition(async () => {
-        const effectiveType =
-          accept !== "all"
-            ? accept
-            : params.type || (typeFilter === "all" ? undefined : typeFilter);
+        const effectiveType = accept !== "all" ? accept : type;
 
         const result = await getMedia({
-          page: currentPage,
+          page,
           limit: pageSize,
-          search: searchQuery,
+          search,
           type: effectiveType,
-          ...params,
         });
 
         if (result.success && result.data) {
           setData(result.data);
+          setCurrentPage(result.data.page);
         } else {
           toast({
             title: "Error",
@@ -121,36 +124,31 @@ export function MediaPicker({
         }
       });
     },
-    [currentPage, searchQuery, typeFilter, accept, toast],
+    [accept, toast],
   );
 
-  // Load media on open
-  useEffect(() => {
-    if (open) {
-      loadMedia({ page: 1 });
-    }
-  }, [open, loadMedia]);
-
-  // Debounced search
+  // Load media on open and whenever search/filter criteria change.
   useEffect(() => {
     if (!open) return;
 
     const timer = setTimeout(() => {
-      loadMedia({
+      loadMediaPage({
         search: searchQuery,
         type: typeFilter === "all" ? undefined : typeFilter,
         page: 1,
       });
-      setCurrentPage(1);
-    }, 300);
+    }, searchQuery ? 300 : 0);
 
     return () => clearTimeout(timer);
-  }, [searchQuery, typeFilter, open, loadMedia]);
+  }, [searchQuery, typeFilter, open, loadMediaPage]);
 
   // Handlers
   const handlePageChange = (newPage: number) => {
-    setCurrentPage(newPage);
-    loadMedia({ page: newPage });
+    loadMediaPage({
+      page: newPage,
+      search: searchQuery,
+      type: typeFilter === "all" ? undefined : typeFilter,
+    });
   };
 
   const handleToggleSelect = (media: MediaWithUser) => {

@@ -139,8 +139,8 @@
 
 /* RTL Support */
 [dir="rtl"] {
-  --font-sans: var(--font-roboto), var(--font-cairo), "Cairo", var(--font-geist-sans), system-ui, sans-serif;
-  --font-heading: var(--font-montserrat), var(--font-cairo), "Cairo", var(--font-geist-sans), system-ui, sans-serif;
+  --font-sans: var(--font-tajawal), system-ui, sans-serif;
+  --font-heading: var(--font-tajawal), system-ui, sans-serif;
 }
 
 [dir="rtl"] [data-public-rtl] :where(h1, h2, h3, h4, h5, h6, p, li, label, input, textarea, select) {
@@ -286,28 +286,64 @@
 /* Public page scroll reveal animation */
 .reveal-on-scroll {
   opacity: 0;
-  transform: translate3d(0, 18px, 0) scale(0.995);
-  filter: blur(3px);
+  transform: translate3d(0, 20px, 0);
   transition:
-    opacity 500ms cubic-bezier(0.22, 1, 0.36, 1),
-    transform 500ms cubic-bezier(0.22, 1, 0.36, 1),
-    filter 500ms cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: opacity, transform, filter;
+    opacity 600ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
 }
 
 .reveal-on-scroll.revealed {
   opacity: 1;
-  transform: translate3d(0, 0, 0) scale(1);
-  filter: blur(0);
+  transform: translate3d(0, 0, 0);
+}
+
+.public-card-hover {
+  transition:
+    transform 300ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 300ms ease,
+    background-color 300ms ease,
+    box-shadow 300ms ease;
+}
+
+.public-image-hover {
+  transition: transform 650ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.public-button-hover {
+  transition:
+    transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 260ms ease,
+    border-color 260ms ease,
+    color 260ms ease,
+    box-shadow 260ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .public-card-hover:hover {
+    transform: translate3d(0, -4px, 0) scale(1.01);
+    box-shadow: 0 24px 54px -42px rgb(15 23 42 / 0.62);
+  }
+
+  .group:hover .public-image-hover,
+  .public-image-hover:hover {
+    transform: scale(1.03);
+  }
+
+  .public-button-hover:hover {
+    transform: translate3d(0, -2px, 0);
+    box-shadow: 0 14px 30px -24px rgb(15 23 42 / 0.65);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-
   .reveal-on-scroll,
-  .reveal-on-scroll.revealed {
+  .reveal-on-scroll.revealed,
+  .public-card-hover,
+  .public-image-hover,
+  .public-button-hover {
     opacity: 1;
-    transform: none;
-    filter: none;
-    transition: none;
+    transform: none !important;
+    transition: none !important;
   }
 }

@@ -4,22 +4,22 @@ import db from "@/lib/db";
 
 export interface PublicSiteSettings {
   siteName: string | null;
-  siteTagline: string | null;
   contactEmail: string | null;
   contactPhone: string | null;
-  contactAddress: string | null;
-  seoDefaultTitle: string | null;
-  seoDefaultDescription: string | null;
+  footerDescriptionEn: string | null;
+  footerDescriptionAr: string | null;
+  contactAddressEn: string | null;
+  contactAddressAr: string | null;
 }
 
 const SITE_SETTING_KEYS = [
   "siteName",
-  "siteTagline",
   "contactEmail",
   "contactPhone",
-  "contactAddress",
-  "seoDefaultTitle",
-  "seoDefaultDescription",
+  "footerDescriptionEn",
+  "footerDescriptionAr",
+  "contactAddressEn",
+  "contactAddressAr",
 ] as const;
 
 function toNullableString(value: string | null | undefined): string | null {
@@ -34,12 +34,12 @@ function toNullableString(value: string | null | undefined): string | null {
 export const getPublicSiteSettings = cache(async (): Promise<PublicSiteSettings> => {
   const defaults: PublicSiteSettings = {
     siteName: null,
-    siteTagline: null,
     contactEmail: null,
     contactPhone: null,
-    contactAddress: null,
-    seoDefaultTitle: null,
-    seoDefaultDescription: null,
+    footerDescriptionEn: null,
+    footerDescriptionAr: null,
+    contactAddressEn: null,
+    contactAddressAr: null,
   };
 
   const settings = await db.siteSetting.findMany({

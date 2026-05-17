@@ -13,7 +13,7 @@ import { requireAuth } from "@/lib/auth-utils";
 // ============================================================================
 
 const ADMIN_PRODUCTS_PATH = "/admin/products";
-const PUBLIC_PRODUCTS_PATHS = ["/products", "/ar/products"] as const;
+const PUBLIC_PRODUCTS_PATHS = ["/en/products", "/ar/products"] as const;
 
 // ============================================================================
 // Zod Schemas
@@ -49,6 +49,8 @@ const CreateProductSchema = z.object({
   therapeuticAreaId: z.string().optional().nullable(),
   manufacturerId: z.string().optional().nullable(),
   coverImageId: z.string().optional().nullable(),
+  imageIds: z.array(z.string()).optional().default([]),
+  attachmentIds: z.array(z.string()).optional().default([]),
   isPublished: z.boolean().optional().default(true),
   shortDescription: z.string().max(2000).optional().nullable(),
   fullDescription: z.string().max(10000).optional().nullable(),
@@ -78,6 +80,8 @@ const UpdateProductSchema = z.object({
   therapeuticAreaId: z.string().optional().nullable(),
   manufacturerId: z.string().optional().nullable(),
   coverImageId: z.string().optional().nullable(),
+  imageIds: z.array(z.string()).optional(),
+  attachmentIds: z.array(z.string()).optional(),
   isPublished: z.boolean().optional(),
   shortDescription: z.string().max(2000).optional().nullable(),
   fullDescription: z.string().max(10000).optional().nullable(),
@@ -139,10 +143,18 @@ export type ProductDetail = {
   } | null;
   attachments: {
     id: string;
+    mediaId: string | null;
     name: string;
     url: string;
     type: string;
     size: number | null;
+  }[];
+  images: {
+    id: string;
+    mediaId: string | null;
+    url: string;
+    alt: string | null;
+    order: number;
   }[];
   createdAt: Date;
   updatedAt: Date;
@@ -155,6 +167,49 @@ export type PaginatedProducts = {
   pageSize: number;
   totalPages: number;
 };
+
+type ProductAttachmentRecord = {
+  id: string;
+  mediaId: string | null;
+  name: string;
+  url: string;
+  type: string;
+  size: number | null;
+  productId: string;
+  createdAt: Date;
+};
+
+type ProductImageRecord = {
+  id: string;
+  productId: string;
+  mediaId: string | null;
+  url: string;
+  alt: string | null;
+  order: number;
+  createdAt: Date;
+};
+
+type ProductAttachmentDelegate = {
+  findMany(args: unknown): Promise<ProductAttachmentRecord[]>;
+  deleteMany(args: unknown): Promise<{ count: number }>;
+  createMany(args: unknown): Promise<{ count: number }>;
+};
+
+type ProductImageDelegate = {
+  findMany(args: unknown): Promise<ProductImageRecord[]>;
+  deleteMany(args: unknown): Promise<{ count: number }>;
+  createMany(args: unknown): Promise<{ count: number }>;
+};
+
+function productAttachmentModel(): ProductAttachmentDelegate {
+  return (db as unknown as { productAttachment: ProductAttachmentDelegate })
+    .productAttachment;
+}
+
+function productImageModel(): ProductImageDelegate {
+  return (db as unknown as { productImage: ProductImageDelegate })
+    .productImage;
+}
 
 // ============================================================================
 // Helper Functions
@@ -220,6 +275,175 @@ async function getProductUsageCount(productId: string): Promise<number> {
     console.error("Error checking product usage:", error);
     return 0;
   }
+}
+
+function uniqueStrings(values: string[] | undefined): string[] {
+  return Array.from(
+    new Set(
+      (values || [])
+        .map((value) => value.trim())
+        .filter((value) => value.length > 0),
+    ),
+  );
+}
+
+async function syncProductMedia(input: {
+  productId: string;
+  productName: string;
+  imageIds?: string[];
+  attachmentIds?: string[];
+}) {
+  if (input.imageIds === undefined && input.attachmentIds === undefined) {
+    return;
+  }
+
+  const imageRefs = uniqueStrings(input.imageIds);
+  const attachmentRefs = uniqueStrings(input.attachmentIds);
+  const allRefs = Array.from(new Set([...imageRefs, ...attachmentRefs]));
+
+  const [existingImages, existingAttachments, mediaItems] = await Promise.all([
+    productImageModel().findMany({
+      where: { productId: input.productId },
+      orderBy: { order: "asc" },
+    }),
+    productAttachmentModel().findMany({
+      where: { productId: input.productId },
+      orderBy: { createdAt: "asc" },
+    }),
+    allRefs.length > 0
+      ? db.media.findMany({
+          where: {
+            id: {
+              in: allRefs,
+            },
+          },
+          select: {
+            id: true,
+            name: true,
+            url: true,
+            type: true,
+            size: true,
+          },
+        })
+      : Promise.resolve([]),
+  ]);
+
+  const existingImagesById = new Map(
+    existingImages.map((image) => [image.id, image]),
+  );
+  const existingAttachmentsById = new Map(
+    existingAttachments.map((attachment) => [attachment.id, attachment]),
+  );
+  const mediaById = new Map(mediaItems.map((media) => [media.id, media]));
+  const nextImages: Array<{
+    productId: string;
+    mediaId: string | null;
+    url: string;
+    alt: string | null;
+    order: number;
+  }> = [];
+  const nextAttachments: Array<{
+    productId: string;
+    mediaId: string | null;
+    name: string;
+    url: string;
+    type: string;
+    size: number | null;
+  }> = [];
+
+  const addImage = (ref: string) => {
+    const existingImage = existingImagesById.get(ref);
+    if (existingImage) {
+      nextImages.push({
+        productId: input.productId,
+        mediaId: existingImage.mediaId,
+        url: existingImage.url,
+        alt: existingImage.alt,
+        order: nextImages.length,
+      });
+      return;
+    }
+
+    const media = mediaById.get(ref);
+    if (!media || media.type !== "image") {
+      return;
+    }
+
+    if (nextImages.some((image) => image.mediaId === media.id)) {
+      return;
+    }
+
+    nextImages.push({
+      productId: input.productId,
+      mediaId: media.id,
+      url: media.url,
+      alt: media.name || input.productName,
+      order: nextImages.length,
+    });
+  };
+
+  for (const ref of imageRefs) {
+    addImage(ref);
+  }
+
+  for (const ref of attachmentRefs) {
+    const existingAttachment = existingAttachmentsById.get(ref);
+    if (existingAttachment) {
+      nextAttachments.push({
+        productId: input.productId,
+        mediaId: existingAttachment.mediaId,
+        name: existingAttachment.name,
+        url: existingAttachment.url,
+        type: existingAttachment.type,
+        size: existingAttachment.size,
+      });
+      continue;
+    }
+
+    const media = mediaById.get(ref);
+    if (!media) {
+      continue;
+    }
+
+    if (media.type === "image") {
+      addImage(ref);
+      continue;
+    }
+
+    nextAttachments.push({
+      productId: input.productId,
+      mediaId: media.id,
+      name: media.name,
+      url: media.url,
+      type: media.type,
+      size: media.size,
+    });
+  }
+
+  await (
+    db as unknown as {
+      $transaction(args: Promise<unknown>[]): Promise<unknown[]>;
+    }
+  ).$transaction([
+    productImageModel().deleteMany({ where: { productId: input.productId } }),
+    productAttachmentModel().deleteMany({
+      where: { productId: input.productId },
+    }),
+    ...(nextImages.length > 0
+      ? [
+          productImageModel().createMany({
+            data: nextImages,
+          }),
+        ]
+      : []),
+    ...(nextAttachments.length > 0
+      ? [
+          productAttachmentModel().createMany({
+            data: nextAttachments,
+          }),
+        ]
+      : []),
+  ]);
 }
 
 function revalidatePublicProductPaths(slug?: string) {
@@ -495,21 +719,23 @@ export async function getProductById(
             regulatoryInfo: true,
           },
         },
-        attachments: {
-          select: {
-            id: true,
-            name: true,
-            url: true,
-            type: true,
-            size: true,
-          },
-        },
       },
     });
 
     if (!product) {
       return { success: true, data: null };
     }
+
+    const [attachments, images] = await Promise.all([
+      productAttachmentModel().findMany({
+        where: { productId: id },
+        orderBy: { createdAt: "asc" },
+      }),
+      productImageModel().findMany({
+        where: { productId: id },
+        orderBy: { order: "asc" },
+      }),
+    ]);
 
     const detail: ProductDetail = {
       id: product.id,
@@ -532,7 +758,21 @@ export async function getProductById(
         fullDescription: t.fullDescription,
       })),
       advancedDetails: product.advancedDetails,
-      attachments: product.attachments,
+      attachments: attachments.map((attachment) => ({
+        id: attachment.id,
+        mediaId: attachment.mediaId,
+        name: attachment.name,
+        url: attachment.url,
+        type: attachment.type,
+        size: attachment.size,
+      })),
+      images: images.map((image) => ({
+        id: image.id,
+        mediaId: image.mediaId,
+        url: image.url,
+        alt: image.alt,
+        order: image.order,
+      })),
       createdAt: product.createdAt,
       updatedAt: product.updatedAt,
     };
@@ -580,6 +820,8 @@ export async function createProduct(
       therapeuticAreaId,
       manufacturerId,
       coverImageId,
+      imageIds,
+      attachmentIds,
       isPublished,
       shortDescription,
       fullDescription,
@@ -693,6 +935,13 @@ export async function createProduct(
     revalidatePath(ADMIN_PRODUCTS_PATH);
     revalidatePublicProductPaths(slug);
 
+    await syncProductMedia({
+      productId: product.id,
+      productName: normalizedEnglishName,
+      imageIds,
+      attachmentIds,
+    });
+
     await createAdminNotification({
       type: "PRODUCT_CREATED",
       title: "Product created",
@@ -750,6 +999,8 @@ export async function updateProduct(
       therapeuticAreaId,
       manufacturerId,
       coverImageId,
+      imageIds,
+      attachmentIds,
       isPublished,
       shortDescription,
       fullDescription,
@@ -967,6 +1218,14 @@ export async function updateProduct(
       name?.trim() ||
       existingProduct.translations[0]?.name ||
       "Untitled product";
+
+    await syncProductMedia({
+      productId: id,
+      productName,
+      imageIds,
+      attachmentIds,
+    });
+
     const statusChanged =
       (status !== undefined && status !== existingProduct.status) ||
       (isPublished !== undefined && isPublished !== existingProduct.isPublished);

@@ -37,7 +37,7 @@ export function StatsSection({ data, className, delay }: StatsSectionProps) {
             return (
               <article
                 key={item.id}
-                className="rounded-3xl border border-border/70 bg-card p-5 shadow-[var(--shadow-card)]"
+                className="public-card-hover rounded-3xl border border-border/70 bg-card p-5 shadow-[var(--shadow-card)]"
               >
                 <div className="flex items-center justify-between gap-3">
                   <p className="text-3xl font-semibold text-foreground">

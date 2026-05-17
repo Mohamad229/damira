@@ -78,6 +78,7 @@ export function ContentSection({
                     href={action.href}
                     className={cn(
                       "inline-flex rounded-full px-4 py-2 text-sm font-semibold transition",
+                      "public-button-hover",
                       action.variant === "secondary"
                         ? "bg-accent text-white hover:bg-accent/90"
                         : action.variant === "ghost"
@@ -103,7 +104,7 @@ export function ContentSection({
                 <div
                   key={image.src + image.alt}
                   className={cn(
-                    "relative min-h-52 overflow-hidden rounded-2xl border border-border/70 bg-muted",
+                    "group relative min-h-52 overflow-hidden rounded-2xl border border-border/70 bg-muted",
                     data.carousel && "overflow-x-auto scroll-smooth",
                   )}
                 >
@@ -112,7 +113,7 @@ export function ContentSection({
                     alt={image.alt}
                     fill
                     sizes="(max-width: 1024px) 100vw, 50vw"
-                    className="object-cover"
+                    className="public-image-hover object-cover"
                   />
                 </div>
               ))

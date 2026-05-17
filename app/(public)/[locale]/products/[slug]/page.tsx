@@ -47,7 +47,9 @@ type ProductCardLike = {
     storageConditions?: string | null;
     regulatoryInfo?: string | null;
   } | null;
+  coverImageUrl?: string | null;
   image?: ProductImageLike | null;
+  images?: ProductImageLike[] | null;
   featuredImage?: ProductImageLike | null;
   media?: ProductImageLike[] | null;
 };
@@ -73,9 +75,17 @@ function cleanString(value?: string | null): string | undefined {
 }
 
 function getProductImage(product: ProductCardLike) {
+  const coverImageUrl = cleanString(product.coverImageUrl);
   const image =
+    (coverImageUrl
+      ? {
+          src: coverImageUrl,
+          alt: product.name || "Product image",
+        }
+      : null) ||
     product.image ||
     product.featuredImage ||
+    product.images?.find((item) => item?.src || item?.url) ||
     product.media?.find((item) => item?.src || item?.url);
 
   const src = cleanString(image?.src) || cleanString(image?.url);
@@ -86,6 +96,29 @@ function getProductImage(product: ProductCardLike) {
     src,
     alt: cleanString(image?.alt) || product.name || "Product image",
   };
+}
+
+function getProductImages(product: ProductCardLike) {
+  const images = [
+    getProductImage(product),
+    ...(product.images || []),
+    ...(product.media || []),
+  ].filter(Boolean) as ProductImageLike[];
+  const uniqueImages = new Map<string, { src: string; alt: string }>();
+
+  for (const image of images) {
+    const src = cleanString(image.src) || cleanString(image.url);
+    if (!src || uniqueImages.has(src)) {
+      continue;
+    }
+
+    uniqueImages.set(src, {
+      src,
+      alt: cleanString(image.alt) || product.name || "Product image",
+    });
+  }
+
+  return Array.from(uniqueImages.values());
 }
 
 function getProductStatus(product: ProductCardLike, locale: PublicLocale) {
@@ -136,6 +169,7 @@ function buildProductDetailViewModel(
 ) {
   const isArabic = locale === "ar";
   const image = getProductImage(product);
+  const images = getProductImages(product);
 
   const shortDescription = cleanString(product.shortDescription);
   const fullDescription = cleanString(product.fullDescription);
@@ -216,7 +250,7 @@ function buildProductDetailViewModel(
       body,
       bullets: productBullets,
       image,
-      images: image ? [image] : [],
+      images,
     },
     specifications: {
       title: isArabic ? "المواصفات" : "Specifications",

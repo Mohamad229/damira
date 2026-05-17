@@ -57,11 +57,15 @@ export async function SiteFooterV2({ locale }: SiteFooterV2Props) {
   const contactEmail = siteSettings.contactEmail || "info@damirapharma.sy";
   const contactPhone = siteSettings.contactPhone || "+963 935 222 202";
   const contactPhoneHref = `tel:${contactPhone.replace(/[^\d+]/g, "")}`;
+  const footerDescription =
+    locale === "ar"
+      ? siteSettings.footerDescriptionAr || tFooter("description")
+      : siteSettings.footerDescriptionEn || tFooter("description");
 
   const contactAddress =
     locale === "ar"
-      ? tFooter("contactAddress")
-      : siteSettings.contactAddress || tFooter("contactAddress");
+      ? siteSettings.contactAddressAr || tFooter("contactAddress")
+      : siteSettings.contactAddressEn || tFooter("contactAddress");
 
   const companyLinks: FooterLink[] = [
     { href: "/about", label: tCommon("about") },
@@ -101,7 +105,7 @@ export async function SiteFooterV2({ locale }: SiteFooterV2Props) {
             </Link>
 
             <p className="mt-4 max-w-[340px] text-[14px] font-medium leading-[1.7] text-[#9aa8bc] sm:mt-5 sm:text-[15px]">
-              {tFooter("description")}
+              {footerDescription}
             </p>
           </section>
 

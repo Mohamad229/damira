@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ChevronDown, Search } from "lucide-react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
 import { Link } from "@/i18n/navigation";
 import { CmsImage } from "@/components/public/sections/base/CmsImage";
@@ -92,7 +92,7 @@ function ProductCatalogCard({ data }: { data: ProductCardData }) {
         "group relative flex h-full flex-col overflow-hidden",
         "rounded-[22px] border border-[#e5eef8] bg-white",
         "shadow-[0_22px_52px_-46px_rgba(15,23,42,0.58)]",
-        "transition-all duration-300",
+        "public-card-hover",
         "hover:-translate-y-1 hover:border-[#91caee]",
         "sm:rounded-[24px]",
         "xl:rounded-[28px]",
@@ -105,7 +105,7 @@ function ProductCatalogCard({ data }: { data: ProductCardData }) {
             alt={data.image.alt || data.name}
             fill
             sizes="(min-width: 1536px) 22vw, (min-width: 1280px) 25vw, (min-width: 768px) 45vw, 100vw"
-            className="object-cover transition-transform duration-700 group-hover:scale-105"
+            className="public-image-hover object-cover"
           />
         ) : (
           <div className="h-full w-full bg-[linear-gradient(135deg,#daecd4,#ffffff,#c5e1f5)]" />
@@ -173,6 +173,7 @@ export function ProductCatalogFilterSection({
 }: ProductCatalogFilterSectionProps) {
   const labels = LABELS[locale];
   const moreMenuRef = useRef<HTMLDivElement | null>(null);
+  const reduceMotion = useReducedMotion();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -307,9 +308,10 @@ export function ProductCatalogFilterSection({
 
         {/* Filter/search row */}
         <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          initial={reduceMotion ? false : { opacity: 0, y: 12 }}
+          whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
           className={cn(
             "mb-[34px] flex flex-col gap-5",
             "sm:mb-[38px]",
@@ -450,10 +452,10 @@ export function ProductCatalogFilterSection({
         </motion.div>
 
         {/* Product cards */}
-        <AnimatePresence mode="popLayout">
+        <AnimatePresence mode={reduceMotion ? "sync" : "popLayout"}>
           {filteredItems.length > 0 ? (
             <motion.div
-              layout
+              layout={!reduceMotion}
               className={cn(
                 "grid",
                 "gap-[18px]",
@@ -466,10 +468,10 @@ export function ProductCatalogFilterSection({
               {filteredItems.map((item, index) => (
                 <motion.div
                   key={item.id}
-                  layout
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 10 }}
+                  layout={!reduceMotion}
+                  initial={reduceMotion ? false : { opacity: 0, y: 10 }}
+                  animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+                  exit={reduceMotion ? undefined : { opacity: 0, y: 10 }}
                   transition={{
                     duration: 0.28,
                     delay: Math.min(index * 0.04, 0.3),
@@ -481,9 +483,9 @@ export function ProductCatalogFilterSection({
             </motion.div>
           ) : (
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+              initial={reduceMotion ? false : { opacity: 0 }}
+              animate={reduceMotion ? undefined : { opacity: 1 }}
+              exit={reduceMotion ? undefined : { opacity: 0 }}
               className="rounded-[24px] border border-[#e2ebf7] bg-white px-6 py-14 text-center shadow-[0_16px_40px_-34px_rgba(15,23,42,0.35)]"
             >
               <p className="text-[18px] font-black tracking-[-0.02em] text-slate-900">

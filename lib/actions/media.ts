@@ -75,6 +75,24 @@ export type GetMediaListParams = {
   sortOrder?: "asc" | "desc";
 };
 
+type ProductAttachmentDelegate = {
+  findFirst(args: unknown): Promise<{ id: string } | null>;
+};
+
+type ProductImageDelegate = {
+  findFirst(args: unknown): Promise<{ id: string } | null>;
+};
+
+function productAttachmentModel(): ProductAttachmentDelegate {
+  return (db as unknown as { productAttachment: ProductAttachmentDelegate })
+    .productAttachment;
+}
+
+function productImageModel(): ProductImageDelegate {
+  return (db as unknown as { productImage: ProductImageDelegate })
+    .productImage;
+}
+
 /**
  * Get paginated list of media files with filtering and search
  *
@@ -279,11 +297,16 @@ export async function updateMediaName(
 /**
  * Check if media is being used in any content
  */
-async function isMediaInUse(mediaUrl: string): Promise<boolean> {
+async function isMediaInUse(media: {
+  id: string;
+  url: string;
+}): Promise<boolean> {
   try {
     // Check if media is used as product cover image
     const productWithMedia = await db.product.findFirst({
-      where: { coverImage: mediaUrl },
+      where: {
+        OR: [{ coverImage: media.id }, { coverImage: media.url }],
+      },
       select: { id: true },
     });
 
@@ -291,9 +314,22 @@ async function isMediaInUse(mediaUrl: string): Promise<boolean> {
       return true;
     }
 
+    const productImage = await productImageModel().findFirst({
+      where: {
+        OR: [{ mediaId: media.id }, { url: media.url }],
+      },
+      select: { id: true },
+    });
+
+    if (productImage) {
+      return true;
+    }
+
     // Check if media is used in product attachments
-    const productAttachment = await db.productAttachment.findFirst({
-      where: { url: mediaUrl },
+    const productAttachment = await productAttachmentModel().findFirst({
+      where: {
+        OR: [{ mediaId: media.id }, { url: media.url }],
+      },
       select: { id: true },
     });
 
@@ -304,7 +340,7 @@ async function isMediaInUse(mediaUrl: string): Promise<boolean> {
     const pageContentField = await db.pageContentField.findFirst({
       where: {
         value: {
-          contains: mediaUrl,
+          contains: media.url,
         },
       },
       select: { id: true },
@@ -375,7 +411,7 @@ export async function deleteMedia(id: string): Promise<ActionState> {
     }
 
     // Check if media is used in any content
-    const inUse = await isMediaInUse(media.url);
+    const inUse = await isMediaInUse(media);
 
     if (inUse) {
       return {

@@ -49,6 +49,7 @@ model Product {
   translations    ProductTranslation[]
   advancedDetails ProductAdvancedDetails?
   attachments     ProductAttachment[]
+  images          ProductImage[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -87,16 +88,35 @@ model ProductAdvancedDetails {
 }
 
 model ProductAttachment {
-  id   String @id @default(cuid())
-  name String
-  url  String
-  type String // 'pdf', 'doc', etc.
-  size Int?
+  id      String  @id @default(cuid())
+  mediaId String?
+  name    String
+  url     String
+  type    String // 'pdf', 'doc', etc.
+  size    Int?
 
   productId String
   product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
+
+  @@index([mediaId])
+}
+
+model ProductImage {
+  id        String  @id @default(cuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  mediaId String?
+  url     String
+  alt     String?
+  order   Int     @default(0)
+
+  createdAt DateTime @default(now())
+
+  @@index([productId])
+  @@index([mediaId])
 }
 
 // Lookup Tables
