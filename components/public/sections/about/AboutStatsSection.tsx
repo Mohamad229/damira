@@ -34,14 +34,14 @@ export function AboutStatsSection({ data }: AboutStatsSectionProps) {
             "grid grid-cols-1",
             "gap-y-12",
             "sm:grid-cols-2 sm:gap-x-8 sm:gap-y-14",
-            "lg:grid-cols-4 lg:gap-x-6 lg:gap-y-0",
-            "xl:gap-x-8",
+            "lg:grid-cols-4 lg:gap-x-8 lg:gap-y-0",
+            "xl:gap-x-10",
           )}
         >
           {items.map((item, index) => (
             <article
               key={item.id || `${item.label}-${index}`}
-              className="relative flex flex-col items-center px-3 text-center"
+              className="group relative flex min-h-[168px] flex-col items-center rounded-[28px] px-4 py-4 text-center transition-all duration-300 ease-out hover:-translate-y-1 hover:bg-white/[0.035] hover:shadow-[0_24px_55px_-42px_rgba(0,159,227,0.75)] lg:px-3 lg:py-3"
             >
               {/* Desktop divider */}
               {index > 0 ? (
@@ -50,7 +50,7 @@ export function AboutStatsSection({ data }: AboutStatsSectionProps) {
 
               <p
                 className={cn(
-                  "font-black leading-none tracking-[-0.055em] text-white",
+                  "font-black leading-none tracking-[-0.04em] text-white transition-colors duration-300 group-hover:text-[#91d8ff]",
                   "text-[42px]",
                   "sm:text-[46px]",
                   "lg:text-[46px]",
@@ -60,11 +60,11 @@ export function AboutStatsSection({ data }: AboutStatsSectionProps) {
                 {item.value}
               </p>
 
-              <span className="mt-[14px] block h-[4px] w-[44px] rounded-full bg-[#009fe3] sm:w-[48px]" />
+              <span className="mt-[14px] block h-[4px] w-[44px] rounded-full bg-[#009fe3] transition-all duration-300 group-hover:w-[62px] group-hover:bg-[#4cb748] sm:w-[48px]" />
 
               <h3
                 className={cn(
-                  "mt-[19px] font-extrabold leading-[1.2] tracking-[-0.015em] text-[#8b9ab1]",
+                  "mt-[19px] font-extrabold leading-[1.25] tracking-[-0.01em] text-[#8b9ab1] transition-colors duration-300 group-hover:text-white",
                   "text-[15px]",
                   "sm:text-[16px]",
                   "xl:mt-[21px]",

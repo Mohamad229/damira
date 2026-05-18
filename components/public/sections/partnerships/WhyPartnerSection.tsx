@@ -295,9 +295,9 @@ function PartnerCard({
         "px-[24px] py-[26px]",
         "sm:min-h-[232px] sm:px-[28px] sm:py-[30px]",
         "xl:min-h-[246px] xl:px-[32px] xl:pb-[32px] xl:pt-[31px]",
-        "transition-all duration-300",
-        "hover:-translate-y-1 hover:border-[#dce8f4] hover:bg-white",
-        "hover:shadow-[0_24px_50px_-42px_rgba(15,23,42,0.45)]",
+        "transition-all duration-300 ease-out",
+        "hover:-translate-y-1.5 hover:scale-[1.01] hover:border-[#dce8f4] hover:bg-white",
+        "hover:shadow-[0_30px_64px_-44px_rgba(15,23,42,0.55)]",
       )}
     >
       <div
@@ -308,7 +308,7 @@ function PartnerCard({
           "sm:mb-[24px] sm:h-[44px] sm:w-[44px]",
           "xl:mb-[27px] xl:h-[46px] xl:w-[46px]",
           "shadow-[0_8px_18px_-16px_rgba(15,23,42,0.65)]",
-          "transition-all duration-300",
+          "transition-all duration-300 ease-out group-hover:scale-110",
           theme.iconWrap,
           theme.border,
         )}
@@ -318,16 +318,16 @@ function PartnerCard({
             icon={item.icon}
             width={22}
             height={22}
-            className="h-[19px] w-[19px] object-contain sm:h-[20px] sm:w-[20px] xl:h-[21px] xl:w-[21px]"
+            className="h-[19px] w-[19px] object-contain transition-transform duration-300 ease-out group-hover:scale-105 sm:h-[20px] sm:w-[20px] xl:h-[21px] xl:w-[21px]"
           />
         ) : (
-          <Icon className="h-[19px] w-[19px] stroke-[2.25] sm:h-[20px] sm:w-[20px] xl:h-[21px] xl:w-[21px]" />
+          <Icon className="h-[19px] w-[19px] stroke-[2.25] transition-transform duration-300 ease-out group-hover:scale-105 sm:h-[20px] sm:w-[20px] xl:h-[21px] xl:w-[21px]" />
         )}
       </div>
 
       <h3
         className={cn(
-          "font-black leading-[1.2] tracking-[-0.025em] text-[#071329]",
+          "font-black leading-[1.2] tracking-[-0.025em] text-[#071329] transition-colors duration-300 group-hover:text-[#009fe3]",
           "text-[18px]",
           "sm:text-[19px]",
           "xl:text-[20px]",
@@ -340,7 +340,7 @@ function PartnerCard({
         <p
           className={cn(
             "mt-[13px] max-w-[390px]",
-            "text-[14px] font-medium leading-[1.6] tracking-[-0.01em] text-[#263b59]",
+            "text-[14px] font-medium leading-[1.6] tracking-[-0.01em] text-[#263b59] transition-colors duration-300 group-hover:text-[#1f334f]",
             "sm:mt-[15px] sm:text-[15px]",
             "xl:mt-[16px] xl:text-[16px] xl:leading-[1.55]",
           )}
@@ -352,10 +352,10 @@ function PartnerCard({
       {item.features?.length ? (
         <ul className="mt-4 space-y-2 text-[14px] font-medium leading-6 tracking-[-0.01em] text-[#52627a]">
           {item.features.slice(0, 3).map((feature) => (
-            <li key={feature} className="flex gap-2">
+            <li key={feature} className="group/feature flex gap-2 transition-transform duration-300 ease-out hover:translate-x-1 rtl:hover:-translate-x-1">
               <span
                 className={cn(
-                  "mt-[10px] h-1.5 w-1.5 shrink-0 rounded-full",
+                  "mt-[10px] h-1.5 w-1.5 shrink-0 rounded-full transition-transform duration-300 ease-out group-hover/feature:scale-125",
                   theme.bullet,
                 )}
               />
@@ -382,7 +382,7 @@ export function WhyPartnerSection({ data, className }: WhyPartnerSectionProps) {
     <SectionReveal>
       <section
         className={cn(
-          "relative overflow-hidden bg-white",
+          "group/why-partner relative overflow-hidden bg-white",
           "py-[72px] sm:py-[82px] lg:py-[90px] xl:py-[96px]",
           className,
         )}
@@ -406,7 +406,7 @@ export function WhyPartnerSection({ data, className }: WhyPartnerSectionProps) {
             )}
           >
             {eyebrow ? (
-              <span className="mb-[18px] inline-flex rounded-full bg-[#e5f3ec] px-[16px] py-[7px] text-[11px] font-black uppercase leading-none tracking-[0.18em] text-[#2f8f54] sm:text-[12px]">
+              <span className="mb-[18px] inline-flex rounded-full bg-[#e5f3ec] px-[16px] py-[7px] text-[11px] font-black uppercase leading-none tracking-[0.18em] text-[#2f8f54] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-[#dff0e7] sm:text-[12px]">
                 {eyebrow}
               </span>
             ) : null}

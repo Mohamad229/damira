@@ -31,8 +31,8 @@ function OverviewImageFrame({
   return (
     <div
       className={cn(
-        "relative overflow-hidden bg-[#eef6fb]",
-        "shadow-[0_20px_35px_-30px_rgba(15,23,42,0.65)]",
+        "group relative overflow-hidden bg-[#eef6fb]",
+        "shadow-[0_20px_35px_-30px_rgba(15,23,42,0.65)] transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_28px_55px_-36px_rgba(15,23,42,0.72)]",
         className,
       )}
     >
@@ -41,7 +41,7 @@ function OverviewImageFrame({
         alt={image.alt}
         fill
         sizes={sizes}
-        className="object-cover"
+        className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
       />
     </div>
   );
@@ -147,7 +147,7 @@ export function CompanyOverviewSection({ data }: CompanyOverviewSectionProps) {
                       key={bullet}
                       className={cn(
                         "rounded-[14px] bg-[#f3faff]",
-                        "px-4 py-3",
+                        "px-4 py-3 transition-all duration-300 hover:-translate-y-0.5 hover:bg-white hover:shadow-[0_16px_35px_-30px_rgba(15,23,42,0.6)]",
                         "text-[13px] font-bold leading-5 tracking-[-0.01em] text-[#263b59]",
                         "sm:text-[14px]",
                         "xl:rounded-[16px]",

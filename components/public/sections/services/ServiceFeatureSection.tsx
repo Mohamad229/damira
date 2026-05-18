@@ -38,7 +38,7 @@ export function ServiceFeatureSection({
       <section
         id={sectionId}
         className={cn(
-          "relative overflow-hidden",
+          "group/service-feature relative overflow-hidden",
           index % 2 === 0 ? "bg-white" : "bg-[#f8fbff]",
           "py-[72px] sm:py-[82px] lg:py-[90px] xl:py-[96px]",
         )}
@@ -75,17 +75,17 @@ export function ServiceFeatureSection({
               {/* Number and divider */}
               <div className="mb-[24px] flex items-center gap-[15px] sm:mb-[27px] xl:mb-[31px] xl:gap-[17px]">
                 <span
-                  className="text-[19px] font-black leading-none tracking-[-0.025em] sm:text-[20px] xl:text-[22px]"
+                  className="text-[19px] font-black leading-none tracking-[-0.025em] transition-transform duration-300 ease-out group-hover/service-feature:scale-105 sm:text-[20px] xl:text-[22px]"
                   style={{ color: accentColor }}
                 >
                   {String(index + 1).padStart(2, "0")}
                 </span>
 
-                <span className="h-px flex-1 bg-[#d8e3ee]" />
+                <span className="h-px flex-1 bg-[#d8e3ee] transition-colors duration-300 group-hover/service-feature:bg-[#b9d4e8]" />
               </div>
 
               {data.eyebrow ? (
-                <p className="mb-[16px] text-[12px] font-extrabold uppercase leading-none tracking-[0.14em] text-[#65748d] sm:text-[13px]">
+                <p className="mb-[16px] text-[12px] font-extrabold uppercase leading-none tracking-[0.14em] text-[#65748d] transition-colors duration-300 group-hover/service-feature:text-[#009fe3] sm:text-[13px]">
                   {data.eyebrow}
                 </p>
               ) : null}
@@ -94,7 +94,7 @@ export function ServiceFeatureSection({
                 className={cn(
                   "max-w-[720px]",
                   "font-black leading-[1.12] tracking-[-0.045em]",
-                  "text-[#071329]",
+                  "text-[#071329] transition-colors duration-300 group-hover/service-feature:text-[#06172f]",
                   "text-[31px]",
                   "sm:text-[34px]",
                   "md:text-[36px]",
@@ -140,14 +140,15 @@ export function ServiceFeatureSection({
                     <li
                       key={bullet}
                       className={cn(
-                        "flex items-start gap-[12px]",
+                        "group/bullet flex items-start gap-[12px]",
                         "text-[15px] font-medium leading-[1.45] tracking-[-0.012em] text-[#071329]",
+                        "transition-transform duration-300 ease-out hover:translate-x-1 rtl:hover:-translate-x-1",
                         "sm:text-[16px]",
                         "xl:gap-[13px] xl:text-[18px] xl:leading-[1.25]",
                       )}
                     >
                       <CheckCircle2
-                        className="mt-[1px] h-[19px] w-[19px] shrink-0 stroke-[2.2] sm:h-[20px] sm:w-[20px] xl:mt-[-1px] xl:h-[22px] xl:w-[22px]"
+                        className="mt-[1px] h-[19px] w-[19px] shrink-0 stroke-[2.2] transition-transform duration-300 ease-out group-hover/bullet:scale-110 sm:h-[20px] sm:w-[20px] xl:mt-[-1px] xl:h-[22px] xl:w-[22px]"
                         style={{ color: accentColor }}
                       />
                       <span>{bullet}</span>
@@ -165,13 +166,13 @@ export function ServiceFeatureSection({
                       className={cn(
                         "inline-flex h-[48px] items-center justify-center rounded-full px-7",
                         "text-[14px] font-extrabold leading-none tracking-[-0.01em]",
-                        "transition-all duration-300",
+                        "transition-all duration-300 ease-out hover:scale-[1.02] active:scale-[0.99]",
                         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#009fe3] focus-visible:ring-offset-2",
                         "sm:h-[52px] sm:px-8 sm:text-[15px]",
                         "xl:h-[54px] xl:text-[16px]",
                         actionIndex === 0
-                          ? "bg-[#009fe3] text-white shadow-[0_18px_35px_-20px_rgba(0,159,227,0.9)] hover:-translate-y-0.5 hover:bg-[#0092d3]"
-                          : "border border-[#d8e3ec] bg-white text-[#31405a] hover:-translate-y-0.5 hover:border-[#009fe3]/45 hover:text-[#009fe3]",
+                          ? "bg-[#009fe3] text-white shadow-[0_18px_35px_-20px_rgba(0,159,227,0.9)] hover:-translate-y-1 hover:bg-[#0092d3] hover:shadow-[0_22px_42px_-22px_rgba(0,159,227,0.95)]"
+                          : "border border-[#d8e3ec] bg-white text-[#31405a] hover:-translate-y-1 hover:border-[#009fe3]/45 hover:text-[#009fe3] hover:shadow-[0_16px_30px_-24px_rgba(15,23,42,0.55)]",
                       )}
                     >
                       {action.label}
@@ -192,15 +193,16 @@ export function ServiceFeatureSection({
             >
               <div
                 className={cn(
-                  "relative overflow-hidden",
+                  "group/image relative overflow-hidden",
                   "rounded-[18px] sm:rounded-[20px] xl:rounded-[24px]",
+                  "transition-all duration-500 ease-out hover:-translate-y-1 hover:scale-[1.01]",
                   "bg-[#edf8ff]",
                   "h-[300px]",
                   "sm:h-[390px]",
                   "md:h-[460px]",
                   "lg:h-[480px]",
                   "xl:h-[500px]",
-                  "shadow-[0_28px_55px_-38px_rgba(15,23,42,0.75)]",
+                  "shadow-[0_28px_55px_-38px_rgba(15,23,42,0.75)] hover:shadow-[0_34px_70px_-40px_rgba(15,23,42,0.85)]",
                 )}
               >
                 {image ? (
@@ -209,7 +211,7 @@ export function ServiceFeatureSection({
                     alt={image.alt || data.title || "Service feature image"}
                     fill
                     sizes="(min-width: 1536px) 38vw, (min-width: 1024px) 44vw, 100vw"
-                    className="object-cover"
+                    className="object-cover transition-transform duration-700 ease-out group-hover/image:scale-[1.035]"
                   />
                 ) : (
                   <div className="h-full w-full bg-[linear-gradient(135deg,#dceffb,#ffffff,#eef8f1)]" />
@@ -219,6 +221,7 @@ export function ServiceFeatureSection({
                 <div
                   className={cn(
                     "absolute flex items-center justify-center bg-white shadow-[0_16px_35px_-28px_rgba(15,23,42,0.75)]",
+                    "transition-all duration-500 ease-out group-hover/image:-translate-y-0.5 group-hover/image:scale-105",
                     "left-[20px] top-[20px] h-[52px] w-[52px] rounded-[14px] rtl:left-auto rtl:right-[20px]",
                     "sm:left-[24px] sm:top-[24px] sm:h-[58px] sm:w-[58px] rtl:sm:left-auto rtl:sm:right-[24px]",
                     "xl:left-[32px] xl:top-[32px] xl:h-[64px] xl:w-[64px] xl:rounded-[16px] rtl:xl:left-auto rtl:xl:right-[32px]",
@@ -230,10 +233,10 @@ export function ServiceFeatureSection({
                       icon={data.icon}
                       width={34}
                       height={34}
-                      className="h-[25px] w-[25px] object-contain sm:h-[29px] sm:w-[29px] xl:h-[32px] xl:w-[32px]"
+                      className="h-[25px] w-[25px] object-contain transition-transform duration-500 ease-out group-hover/image:scale-105 sm:h-[29px] sm:w-[29px] xl:h-[32px] xl:w-[32px]"
                     />
                   ) : (
-                    <Package className="h-[25px] w-[25px] stroke-[2.2] sm:h-[29px] sm:w-[29px] xl:h-[32px] xl:w-[32px]" />
+                    <Package className="h-[25px] w-[25px] stroke-[2.2] transition-transform duration-500 ease-out group-hover/image:scale-105 sm:h-[29px] sm:w-[29px] xl:h-[32px] xl:w-[32px]" />
                   )}
                 </div>
 

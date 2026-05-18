@@ -23,23 +23,23 @@ export function ContactHeroSection({
     <SectionReveal>
       <section
         className={cn(
-          "relative isolate overflow-hidden bg-white",
+          "group/contact-hero relative isolate overflow-hidden bg-white",
           "border-b border-[#eef3f8]",
           "py-[72px] sm:py-[84px] lg:py-[96px] xl:py-[108px]",
           className,
         )}
       >
         {/* Background accents */}
-        <div className="pointer-events-none absolute left-[-180px] top-[-180px] h-[360px] w-[360px] rounded-full bg-[#e2f4ff] blur-3xl" />
-        <div className="pointer-events-none absolute bottom-[-210px] right-[-170px] h-[430px] w-[430px] rounded-full bg-[#edfbee] blur-3xl" />
+        <div className="pointer-events-none absolute left-[-180px] top-[-180px] h-[360px] w-[360px] rounded-full bg-[#e2f4ff] blur-3xl transition-transform duration-700 ease-out group-hover/contact-hero:scale-110" />
+        <div className="pointer-events-none absolute bottom-[-210px] right-[-170px] h-[430px] w-[430px] rounded-full bg-[#edfbee] blur-3xl transition-transform duration-700 ease-out group-hover/contact-hero:scale-110" />
 
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(0,159,227,0.08),transparent_42%)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(0,159,227,0.08),transparent_42%)] transition-transform duration-700 ease-out group-hover/contact-hero:scale-[1.025]" />
 
         {/* Content */}
         <div className="relative z-10 mx-auto flex w-full max-w-[1440px] items-center justify-center px-4 sm:px-6 md:px-8 lg:px-[72px] xl:px-[120px] 2xl:px-[210px]">
           <div className="mx-auto w-full max-w-[920px] text-center">
             {eyebrow ? (
-              <span className="inline-flex rounded-full bg-[#e2f4ff] px-[16px] py-[7px] text-[11px] font-black uppercase leading-none tracking-[0.18em] text-[#009fe3] sm:text-[12px]">
+              <span className="inline-flex rounded-full bg-[#e2f4ff] px-[16px] py-[7px] text-[11px] font-black uppercase leading-none tracking-[0.18em] text-[#009fe3] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-[#d6efff] sm:text-[12px]">
                 {eyebrow}
               </span>
             ) : null}
@@ -51,7 +51,7 @@ export function ContactHeroSection({
                 "sm:text-[44px] sm:leading-[1.06]",
                 "md:text-[52px]",
                 "lg:text-[60px]",
-                "xl:text-[64px]",
+                "transition-colors duration-300 group-hover/contact-hero:text-[#06172f] xl:text-[64px]",
               )}
             >
               {title}
@@ -71,7 +71,7 @@ export function ContactHeroSection({
               </p>
             ) : null}
 
-            <div className="mx-auto mt-[30px] h-[4px] w-[70px] rounded-full bg-[#4cb748] sm:mt-[36px]" />
+            <div className="mx-auto mt-[30px] h-[4px] w-[70px] rounded-full bg-[#4cb748] transition-all duration-300 ease-out group-hover/contact-hero:w-[92px] sm:mt-[36px]" />
           </div>
         </div>
       </section>

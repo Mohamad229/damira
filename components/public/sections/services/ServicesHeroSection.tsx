@@ -22,7 +22,9 @@ function renderServicesTitle(title: string) {
   return (
     <>
       {before}
-      <span className="text-[#009fe3]">{highlighted}</span>
+      <span className="text-[#009fe3] transition-colors duration-300 group-hover/services-hero:text-[#008fd0]">
+        {highlighted}
+      </span>
       {after}
     </>
   );
@@ -43,7 +45,7 @@ export function ServicesHeroSection({
     <SectionReveal>
       <section
         className={cn(
-          "relative isolate overflow-hidden bg-[#f8fbff]",
+          "group/services-hero relative isolate overflow-hidden bg-[#f8fbff]",
           "min-h-[390px] sm:min-h-[410px] lg:min-h-[430px]",
           className,
         )}
@@ -52,19 +54,19 @@ export function ServicesHeroSection({
         <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,#f8fbff_0%,#ffffff_100%)]" />
 
         {/* Mobile/tablet soft decoration */}
-        <div className="pointer-events-none absolute -right-[90px] top-0 h-[230px] w-[230px] rounded-bl-[72px] rounded-tl-[72px] bg-[#eaf6fd] rtl:-left-[90px] rtl:right-auto rtl:rounded-br-[72px] rtl:rounded-tl-none rtl:rounded-tr-[72px] sm:-right-[70px] sm:h-[280px] sm:w-[280px] rtl:sm:-left-[70px] md:-right-[40px] md:h-[330px] md:w-[330px] rtl:md:-left-[40px] lg:hidden" />
+        <div className="pointer-events-none absolute -right-[90px] top-0 h-[230px] w-[230px] rounded-bl-[72px] rounded-tl-[72px] bg-[#eaf6fd] transition-transform duration-700 ease-out group-hover/services-hero:scale-105 rtl:-left-[90px] rtl:right-auto rtl:rounded-br-[72px] rtl:rounded-tl-none rtl:rounded-tr-[72px] sm:-right-[70px] sm:h-[280px] sm:w-[280px] rtl:sm:-left-[70px] md:-right-[40px] md:h-[330px] md:w-[330px] rtl:md:-left-[40px] lg:hidden" />
 
         {/* Desktop rounded block */}
         <div
           className={cn(
-            "pointer-events-none absolute right-0 top-0 hidden h-full bg-[#eaf6fd] rtl:left-0 rtl:right-auto",
+            "pointer-events-none absolute right-0 top-0 hidden h-full bg-[#eaf6fd] transition-transform duration-700 ease-out group-hover/services-hero:scale-[1.015] rtl:left-0 rtl:right-auto",
             "lg:block lg:w-[30vw] lg:rounded-bl-[76px] rtl:lg:rounded-bl-none rtl:lg:rounded-br-[76px]",
             "xl:w-[33.5vw] xl:rounded-bl-[96px] rtl:xl:rounded-bl-none rtl:xl:rounded-br-[96px]",
           )}
         />
 
         {/* Subtle accent circle */}
-        <div className="pointer-events-none absolute bottom-[-90px] left-[-90px] h-[220px] w-[220px] rounded-full bg-[#daecd4]/45 blur-2xl" />
+        <div className="pointer-events-none absolute bottom-[-90px] left-[-90px] h-[220px] w-[220px] rounded-full bg-[#daecd4]/45 blur-2xl transition-transform duration-700 ease-out group-hover/services-hero:scale-110" />
 
         {/* Content */}
         <div
@@ -91,6 +93,7 @@ export function ServicesHeroSection({
                   "border border-[#9ed8f8] bg-[#eaf7ff]/90",
                   "h-[28px] px-[12px]",
                   "text-[12px] font-extrabold uppercase leading-none tracking-[0.12em] text-[#009fe3]",
+                  "transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-[#009fe3]/40 hover:bg-white",
                   "sm:h-[30px] sm:px-[13px] sm:text-[13px]",
                   "lg:mb-[22px]",
                 )}
@@ -152,13 +155,13 @@ export function ServicesHeroSection({
                         "inline-flex items-center justify-center rounded-full",
                         "h-[48px] px-7",
                         "text-[14px] font-extrabold leading-none tracking-[-0.01em]",
-                        "transition-all duration-300",
+                        "transition-all duration-300 ease-out hover:scale-[1.02] active:scale-[0.99]",
                         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#009fe3] focus-visible:ring-offset-2",
                         "sm:h-[52px] sm:px-8 sm:text-[15px]",
                         "lg:h-[54px] lg:text-[16px]",
                         isPrimary
-                          ? "min-w-[190px] bg-[#009fe3] text-white shadow-[0_18px_35px_-20px_rgba(0,159,227,0.9)] hover:-translate-y-0.5 hover:bg-[#0092d3] sm:min-w-[210px] lg:min-w-[220px]"
-                          : "min-w-[170px] border border-[#d8e3ec] bg-white/85 text-[#31405a] hover:-translate-y-0.5 hover:border-[#009fe3]/45 hover:text-[#009fe3] sm:min-w-[180px] lg:min-w-[190px]",
+                          ? "min-w-[190px] bg-[#009fe3] text-white shadow-[0_18px_35px_-20px_rgba(0,159,227,0.9)] hover:-translate-y-1 hover:bg-[#0092d3] hover:shadow-[0_24px_45px_-24px_rgba(0,159,227,0.95)] sm:min-w-[210px] lg:min-w-[220px]"
+                          : "min-w-[170px] border border-[#d8e3ec] bg-white/85 text-[#31405a] hover:-translate-y-1 hover:border-[#009fe3]/45 hover:text-[#009fe3] hover:shadow-[0_16px_30px_-24px_rgba(15,23,42,0.55)] sm:min-w-[180px] lg:min-w-[190px]",
                       )}
                     >
                       {action.label}

@@ -14,7 +14,7 @@ export function ProductDetailCtaSection({
     <SectionReveal>
       <section
         className={cn(
-          "relative overflow-hidden bg-white",
+          "group/product-cta relative overflow-hidden bg-white",
           "py-[72px] sm:py-[82px] lg:py-[90px] xl:py-[96px]",
         )}
       >
@@ -29,7 +29,7 @@ export function ProductDetailCtaSection({
         >
           <div
             className={cn(
-              "relative overflow-hidden",
+              "relative overflow-hidden transition-all duration-500 ease-out hover:-translate-y-1 hover:shadow-[0_28px_64px_-46px_rgba(15,23,42,0.35)]",
               "rounded-[24px] sm:rounded-[28px] lg:rounded-[32px] xl:rounded-[36px]",
               "border border-[#d7efd2] bg-[#eaf7e8]",
               "px-5 py-8",
@@ -40,8 +40,8 @@ export function ProductDetailCtaSection({
             )}
           >
             {/* Soft decorative shapes */}
-            <div className="pointer-events-none absolute -right-[64px] -top-[72px] h-[150px] w-[150px] rounded-full bg-[#4cb748]/15 sm:h-[164px] sm:w-[164px]" />
-            <div className="pointer-events-none absolute -bottom-[90px] -left-[90px] h-[190px] w-[190px] rounded-full bg-[#009fe3]/10 blur-xl" />
+            <div className="pointer-events-none absolute -right-[64px] -top-[72px] h-[150px] w-[150px] rounded-full bg-[#4cb748]/15 transition-transform duration-700 ease-out group-hover/product-cta:scale-110 sm:h-[164px] sm:w-[164px]" />
+            <div className="pointer-events-none absolute -bottom-[90px] -left-[90px] h-[190px] w-[190px] rounded-full bg-[#009fe3]/10 blur-xl transition-transform duration-700 ease-out group-hover/product-cta:scale-110" />
 
             <div
               className={cn(
@@ -59,7 +59,7 @@ export function ProductDetailCtaSection({
                       "mb-[18px] inline-flex items-center rounded-full bg-white",
                       "h-[24px] px-[12px]",
                       "text-[11px] font-black uppercase leading-none tracking-[0.2em] text-[#2a8d33]",
-                      "sm:mb-[20px] sm:px-[13px] sm:text-[12px] sm:tracking-[0.24em]",
+                      "transition-all duration-300 ease-out group-hover/product-cta:-translate-y-0.5 sm:mb-[20px] sm:px-[13px] sm:text-[12px] sm:tracking-[0.24em]",
                     )}
                   >
                     {data.eyebrow}
@@ -112,7 +112,7 @@ export function ProductDetailCtaSection({
                         "h-[46px] px-6",
                         "text-[14px] font-black leading-none tracking-[-0.01em]",
                         "bg-[#009fe3] text-white",
-                        "transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#0092d3]",
+                        "transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.02] hover:bg-[#0092d3] hover:shadow-[0_18px_38px_-24px_rgba(0,159,227,0.95)] active:scale-[0.99]",
                         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#009fe3] focus-visible:ring-offset-2",
                         "sm:h-[48px]",
                         "lg:min-w-[118px]",
@@ -130,7 +130,7 @@ export function ProductDetailCtaSection({
                         "h-[46px] px-6",
                         "text-[14px] font-black leading-none tracking-[-0.01em]",
                         "border border-[#91caee] bg-white text-[#009fe3]",
-                        "transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#f8fbff]",
+                        "transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.02] hover:bg-[#f8fbff] hover:shadow-[0_16px_34px_-26px_rgba(15,23,42,0.45)] active:scale-[0.99]",
                         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#009fe3] focus-visible:ring-offset-2",
                         "sm:h-[48px]",
                         "lg:min-w-[184px]",

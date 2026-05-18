@@ -205,9 +205,9 @@ function AdvantageCard({
         getCardPlacementClass(index, total),
         "group relative overflow-hidden rounded-[18px] border border-[#e8eef6] bg-[#f8fbff]",
         "px-[20px] py-[22px]",
-        "transition-all duration-300",
-        "hover:-translate-y-1 hover:bg-white",
-        "hover:shadow-[0_22px_46px_-38px_rgba(15,23,42,0.5)]",
+        "transition-all duration-300 ease-out",
+        "hover:-translate-y-1.5 hover:scale-[1.01] hover:bg-white",
+        "hover:shadow-[0_26px_58px_-40px_rgba(15,23,42,0.58)]",
         "sm:px-[22px] sm:py-[24px]",
         "xl:px-[24px] xl:py-[25px]",
         theme.border,
@@ -216,7 +216,7 @@ function AdvantageCard({
       <div
         className={cn(
           "mb-[16px] flex h-[42px] w-[42px] items-center justify-center rounded-full",
-          "transition-transform duration-300 group-hover:scale-105",
+          "transition-transform duration-300 ease-out group-hover:scale-110",
           theme.iconBg,
           theme.icon,
         )}
@@ -226,19 +226,19 @@ function AdvantageCard({
             icon={item.icon}
             width={24}
             height={24}
-            className="h-[21px] w-[21px] object-contain"
+            className="h-[21px] w-[21px] object-contain transition-transform duration-300 ease-out group-hover:scale-105"
           />
         ) : (
-          <CheckCircle2 className="h-[21px] w-[21px] stroke-[2.35]" />
+          <CheckCircle2 className="h-[21px] w-[21px] stroke-[2.35] transition-transform duration-300 ease-out group-hover:scale-105" />
         )}
       </div>
 
-      <h3 className="text-[17px] font-black leading-[1.22] tracking-[-0.025em] text-[#071329] sm:text-[18px]">
+      <h3 className="text-[17px] font-black leading-[1.22] tracking-[-0.025em] text-[#071329] transition-colors duration-300 group-hover:text-[#009fe3] sm:text-[18px]">
         {item.title}
       </h3>
 
       {item.description ? (
-        <p className="mt-[10px] text-[14px] font-medium leading-[1.55] tracking-[-0.01em] text-[#263b59] sm:text-[15px]">
+        <p className="mt-[10px] text-[14px] font-medium leading-[1.55] tracking-[-0.01em] text-[#263b59] transition-colors duration-300 group-hover:text-[#1f334f] sm:text-[15px]">
           {item.description}
         </p>
       ) : null}
@@ -277,13 +277,13 @@ export function PartnershipAdvantageSection({
     <SectionReveal>
       <section
         className={cn(
-          "relative overflow-hidden bg-white",
+          "group/advantage-section relative overflow-hidden bg-white",
           "py-[72px] sm:py-[82px] lg:py-[90px] xl:py-[96px]",
           className,
         )}
       >
-        <div className="pointer-events-none absolute left-[-190px] top-[-180px] h-[380px] w-[380px] rounded-full bg-[#e2f4ff] blur-3xl" />
-        <div className="pointer-events-none absolute bottom-[-220px] right-[-180px] h-[440px] w-[440px] rounded-full bg-[#edfbee] blur-3xl" />
+        <div className="pointer-events-none absolute left-[-190px] top-[-180px] h-[380px] w-[380px] rounded-full bg-[#e2f4ff] blur-3xl transition-transform duration-700 ease-out group-hover/advantage-section:scale-110" />
+        <div className="pointer-events-none absolute bottom-[-220px] right-[-180px] h-[440px] w-[440px] rounded-full bg-[#edfbee] blur-3xl transition-transform duration-700 ease-out group-hover/advantage-section:scale-110" />
 
         <div
           className={cn(
@@ -305,7 +305,7 @@ export function PartnershipAdvantageSection({
             )}
           >
             {eyebrow ? (
-              <span className="mb-[18px] inline-flex rounded-full bg-[#e5f3ec] px-[16px] py-[7px] text-[11px] font-black uppercase leading-none tracking-[0.18em] text-[#2f8f54] sm:text-[12px]">
+              <span className="mb-[18px] inline-flex rounded-full bg-[#e5f3ec] px-[16px] py-[7px] text-[11px] font-black uppercase leading-none tracking-[0.18em] text-[#2f8f54] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-[#dff0e7] sm:text-[12px]">
                 {eyebrow}
               </span>
             ) : null}
@@ -369,9 +369,9 @@ export function PartnershipAdvantageSection({
             <div className="order-1 lg:order-2">
               <div
                 className={cn(
-                  "relative h-full overflow-hidden rounded-[22px]",
+                  "group/advantage-image relative h-full overflow-hidden rounded-[22px]",
                   "border border-[#e8eef6] bg-[#f8fbff]",
-                  "shadow-[0_24px_50px_-42px_rgba(15,23,42,0.45)]",
+                  "shadow-[0_24px_50px_-42px_rgba(15,23,42,0.45)] transition-all duration-500 ease-out hover:-translate-y-1 hover:shadow-[0_32px_70px_-46px_rgba(15,23,42,0.6)]",
                   "sm:rounded-[24px]",
                 )}
               >
@@ -391,7 +391,7 @@ export function PartnershipAdvantageSection({
                       alt={image.alt || title || "Damira Pharma partnership"}
                       fill
                       sizes="(min-width: 1280px) 430px, (min-width: 1024px) 40vw, 100vw"
-                      className="object-cover"
+                      className="object-cover transition-transform duration-700 ease-out group-hover/advantage-image:scale-[1.035]"
                     />
                   ) : (
                     <div className="h-full w-full bg-[linear-gradient(135deg,#dceffb_0%,#ffffff_52%,#eef8f1_100%)]" />
@@ -402,14 +402,14 @@ export function PartnershipAdvantageSection({
 
                 <div
                   className={cn(
-                    "absolute bottom-4 left-4 right-4",
+                    "absolute bottom-4 left-4 right-4 transition-all duration-300 ease-out group-hover/advantage-image:-translate-y-0.5",
                     "rounded-[18px] border border-white/55 bg-white/90",
                     "p-4 shadow-[0_18px_40px_-32px_rgba(15,23,42,0.75)] backdrop-blur-md",
                     "sm:bottom-6 sm:left-6 sm:right-6 sm:rounded-[20px] sm:p-5",
                   )}
                 >
                   <div className="flex items-center gap-3 rtl:text-right">
-                    <div className="flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-full bg-[#edfbee] text-[#2f8f54]">
+                    <div className="flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-full bg-[#edfbee] text-[#2f8f54] transition-transform duration-300 ease-out group-hover/advantage-image:scale-110">
                       <ShieldCheck className="h-[22px] w-[22px] stroke-[2.35]" />
                     </div>
 

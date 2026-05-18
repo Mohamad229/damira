@@ -98,8 +98,9 @@ export function HomeCoverageReachSection({
                 <article
                   key={item.id || `${item.label}-${index}`}
                   className={cn(
-                    "relative flex flex-col items-center text-center",
-                    "px-3",
+                    "group relative flex flex-col items-center text-center",
+                    "rounded-[28px] px-4 py-5",
+                    "transition-all duration-300 ease-out hover:-translate-y-1 hover:bg-white/[0.035] hover:shadow-[0_20px_46px_-34px_rgba(0,0,0,0.55)]",
                   )}
                 >
                   {/* Optional divider on larger desktop only */}
@@ -109,7 +110,7 @@ export function HomeCoverageReachSection({
 
                   <p
                     className={cn(
-                      "font-black leading-none tracking-[-0.055em] text-white",
+                      "font-black leading-none tracking-[-0.055em] text-white transition-colors duration-300 group-hover:text-[#7bd6ff]",
                       "text-[42px]",
                       "sm:text-[46px]",
                       "lg:text-[46px]",
@@ -119,7 +120,7 @@ export function HomeCoverageReachSection({
                     {item.value}
                   </p>
 
-                  <span className="mt-[14px] block h-[4px] w-[44px] rounded-full bg-[#009fe3] sm:w-[48px]" />
+                  <span className="mt-[14px] block h-[4px] w-[44px] rounded-full bg-[#009fe3] transition-all duration-300 group-hover:w-[58px] group-hover:bg-[#4cb748] sm:w-[48px]" />
 
                   <h3
                     className={cn(

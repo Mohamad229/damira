@@ -187,13 +187,15 @@ export function HomeStatsSection({ data }: HomeStatsSectionProps) {
                 <article
                   key={item.id || index}
                   className={cn(
-                    "relative flex shrink-0 snap-start flex-col items-center justify-start text-center",
-                    "w-full",
+                    "group relative flex shrink-0 snap-start flex-col items-center justify-start text-center",
+                    "w-full rounded-[26px]",
                     "md:w-[calc((100%-22px)/2)]",
                     "lg:w-[calc((100%-44px)/3)]",
                     "xl:w-[calc((100%-72px)/4)]",
-                    "min-h-[82px]",
-                    "px-4",
+                    "min-h-[104px]",
+                    "px-4 py-5",
+                    "transition-all duration-300 ease-out",
+                    "hover:-translate-y-1 hover:bg-[#f8fbff] hover:shadow-[0_18px_36px_-28px_rgba(15,23,42,0.28)]",
                   )}
                 >
                   {/* Vertical divider only between visible desktop stats */}
@@ -201,11 +203,11 @@ export function HomeStatsSection({ data }: HomeStatsSectionProps) {
                     <div className="absolute left-0 top-0 hidden h-[68px] w-px bg-[#edf2f7] rtl:left-auto rtl:right-0 xl:block" />
                   ) : null}
 
-                  <p className="text-[34px] font-black leading-none tracking-[-0.045em] text-[#11182d] sm:text-[38px] lg:text-[40px]">
+                  <p className="text-[34px] font-black leading-none tracking-[-0.045em] text-[#11182d] transition-colors duration-300 group-hover:text-[#009fe3] sm:text-[38px] lg:text-[40px]">
                     {renderStatValue(item.value)}
                   </p>
 
-                  <h3 className="mt-[12px] text-[14px] font-bold leading-none tracking-[-0.01em] text-[#64748b]">
+                  <h3 className="mt-[12px] text-[14px] font-bold leading-none tracking-[-0.01em] text-[#64748b] transition-colors duration-300 group-hover:text-[#33445f]">
                     {item.label}
                   </h3>
 
@@ -233,7 +235,7 @@ export function HomeStatsSection({ data }: HomeStatsSectionProps) {
                         "flex h-[40px] w-[40px] items-center justify-center rounded-full",
                         "border border-[#c8d9e8] bg-white text-[#11182d]",
                         "shadow-[0_12px_26px_-22px_rgba(15,23,42,0.55)]",
-                        "transition-all duration-300 hover:-translate-y-0.5 hover:border-[#009fe3] hover:text-[#009fe3]",
+                        "transition-all duration-300 hover:-translate-y-1 hover:scale-[1.04] hover:border-[#009fe3] hover:text-[#009fe3]",
                         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#009fe3] focus-visible:ring-offset-2",
                       )}
                     >
@@ -248,7 +250,7 @@ export function HomeStatsSection({ data }: HomeStatsSectionProps) {
                         "flex h-[40px] w-[40px] items-center justify-center rounded-full",
                         "border border-[#c8d9e8] bg-white text-[#11182d]",
                         "shadow-[0_12px_26px_-22px_rgba(15,23,42,0.55)]",
-                        "transition-all duration-300 hover:-translate-y-0.5 hover:border-[#009fe3] hover:text-[#009fe3]",
+                        "transition-all duration-300 hover:-translate-y-1 hover:scale-[1.04] hover:border-[#009fe3] hover:text-[#009fe3]",
                         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#009fe3] focus-visible:ring-offset-2",
                       )}
                     >
@@ -272,7 +274,7 @@ export function HomeStatsSection({ data }: HomeStatsSectionProps) {
                             disabled={isDisabledDot}
                             aria-label={`Show stat ${index + 1}`}
                             className={cn(
-                              "h-[8px] rounded-full transition-all duration-300",
+                              "h-[8px] rounded-full transition-all duration-300 hover:scale-110",
                               isActive
                                 ? "w-[30px] bg-[#009fe3]"
                                 : "w-[8px] bg-[#c8d9e8] hover:bg-[#91caee]",

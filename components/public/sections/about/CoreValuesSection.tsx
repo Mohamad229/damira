@@ -173,7 +173,7 @@ export function CoreValuesSection({ data }: CoreValuesSectionProps) {
                     "sm:min-h-[232px] sm:px-[28px] sm:py-[30px]",
                     "xl:min-h-[246px] xl:px-[32px] xl:pb-[32px] xl:pt-[31px]",
                     "transition-all duration-300",
-                    "hover:-translate-y-1 hover:border-[#dce8f4] hover:bg-white",
+                    "hover:-translate-y-1 hover:scale-[1.01] hover:border-[#dce8f4] hover:bg-white",
                     "hover:shadow-[0_24px_50px_-42px_rgba(15,23,42,0.45)]",
                   )}
                 >
@@ -186,7 +186,7 @@ export function CoreValuesSection({ data }: CoreValuesSectionProps) {
                       "sm:mb-[24px] sm:h-[44px] sm:w-[44px]",
                       "xl:mb-[27px] xl:h-[46px] xl:w-[46px]",
                       "shadow-[0_8px_18px_-16px_rgba(15,23,42,0.65)]",
-                      "transition-all duration-300 group-hover:border-[#9ed8f8]",
+                      "transition-all duration-300 group-hover:scale-105 group-hover:border-[#9ed8f8] group-hover:text-[#4cb748]",
                     )}
                   >
                     {isSectionMediaIcon(item.icon) ? (
@@ -204,7 +204,7 @@ export function CoreValuesSection({ data }: CoreValuesSectionProps) {
                   {/* Title */}
                   <h3
                     className={cn(
-                      "font-black leading-[1.2] tracking-[-0.025em] text-[#071329]",
+                      "font-black leading-[1.2] tracking-[-0.025em] text-[#071329] transition-colors duration-300 group-hover:text-[#009fe3]",
                       "text-[18px]",
                       "sm:text-[19px]",
                       "xl:text-[20px]",
@@ -230,7 +230,7 @@ export function CoreValuesSection({ data }: CoreValuesSectionProps) {
                   {item.features?.length ? (
                     <ul className="mt-4 space-y-2 text-[14px] font-medium leading-6 tracking-[-0.01em] text-[#52627a]">
                       {item.features.slice(0, 3).map((feature) => (
-                        <li key={feature} className="flex gap-2">
+                        <li key={feature} className="flex gap-2 transition-transform duration-300 group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5">
                           <span className="mt-[10px] h-1.5 w-1.5 shrink-0 rounded-full bg-[#009fe3]" />
                           <span>{feature}</span>
                         </li>

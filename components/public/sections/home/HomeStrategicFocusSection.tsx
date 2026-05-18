@@ -184,10 +184,10 @@ export function HomeStrategicFocusSection({
 
             <Link
               href="/products"
-              className="inline-flex w-fit items-center gap-4 text-[14px] font-semibold leading-none tracking-[-0.01em] text-[#009fe3] transition-colors hover:text-[#008ccc] md:gap-5 md:text-[15px]"
+              className="group inline-flex w-fit items-center gap-4 text-[14px] font-semibold leading-none tracking-[-0.01em] text-[#009fe3] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:text-[#008ccc] md:gap-5 md:text-[15px]"
             >
               <span>View full portfolio</span>
-              <ArrowRight className="h-4 w-4 stroke-[2.4]" />
+              <ArrowRight className="h-4 w-4 stroke-[2.4] transition-transform duration-300 ease-out group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
             </Link>
           </div>
 
@@ -220,12 +220,12 @@ export function HomeStrategicFocusSection({
                       "md:px-[26px] md:py-[30px]",
                       "xl:px-[31px] xl:pb-[34px] xl:pt-[32px]",
                       "shadow-[0_22px_46px_-38px_rgba(15,23,42,0.55)]",
-                      "transition-all duration-300",
-                      "hover:-translate-y-1 hover:shadow-[0_26px_55px_-38px_rgba(15,23,42,0.65)]",
+                      "transition-all duration-300 ease-out",
+                      "hover:-translate-y-2 hover:scale-[1.015] hover:shadow-[0_28px_60px_-36px_rgba(15,23,42,0.68)]",
                     )}
                   >
                     <div className="flex h-full flex-col">
-                      <div className="mb-[22px] flex h-[44px] w-[44px] items-center justify-center rounded-[13px] bg-[#e2f4ff] text-[#009fe3] md:mb-[24px] md:h-[46px] md:w-[46px] xl:mb-[27px] xl:h-[48px] xl:w-[48px]">
+                      <div className="mb-[22px] flex h-[44px] w-[44px] items-center justify-center rounded-[13px] bg-[#e2f4ff] text-[#009fe3] transition-all duration-300 group-hover:scale-105 group-hover:bg-[#d7f0fb] md:mb-[24px] md:h-[46px] md:w-[46px] xl:mb-[27px] xl:h-[48px] xl:w-[48px]">
                         {isSectionMediaIcon(item.icon) ? (
                           <SectionIconImage
                             icon={item.icon}
@@ -238,7 +238,7 @@ export function HomeStrategicFocusSection({
                         )}
                       </div>
 
-                      <h3 className="text-[18px] font-black leading-[1.25] tracking-[-0.018em] text-[#11182d] md:text-[19px] xl:text-[20px]">
+                      <h3 className="text-[18px] font-black leading-[1.25] tracking-[-0.018em] text-[#11182d] transition-colors duration-300 group-hover:text-[#009fe3] md:text-[19px] xl:text-[20px]">
                         {item.title}
                       </h3>
 
@@ -267,7 +267,7 @@ export function HomeStrategicFocusSection({
                       "flex h-[40px] w-[40px] items-center justify-center rounded-full md:h-[42px] md:w-[42px]",
                       "border border-[#c8d9e8] bg-white text-[#11182d]",
                       "shadow-[0_12px_26px_-22px_rgba(15,23,42,0.55)]",
-                      "transition-all duration-300 hover:-translate-y-0.5 hover:border-[#009fe3] hover:text-[#009fe3]",
+                      "transition-all duration-300 hover:-translate-y-1 hover:scale-[1.04] hover:border-[#009fe3] hover:text-[#009fe3]",
                       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#009fe3] focus-visible:ring-offset-2",
                     )}
                   >
@@ -282,7 +282,7 @@ export function HomeStrategicFocusSection({
                       "flex h-[40px] w-[40px] items-center justify-center rounded-full md:h-[42px] md:w-[42px]",
                       "border border-[#c8d9e8] bg-white text-[#11182d]",
                       "shadow-[0_12px_26px_-22px_rgba(15,23,42,0.55)]",
-                      "transition-all duration-300 hover:-translate-y-0.5 hover:border-[#009fe3] hover:text-[#009fe3]",
+                      "transition-all duration-300 hover:-translate-y-1 hover:scale-[1.04] hover:border-[#009fe3] hover:text-[#009fe3]",
                       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#009fe3] focus-visible:ring-offset-2",
                     )}
                   >
@@ -306,7 +306,7 @@ export function HomeStrategicFocusSection({
                           disabled={isDisabledDot}
                           aria-label={`Show focus area ${index + 1}`}
                           className={cn(
-                            "h-[8px] rounded-full transition-all duration-300",
+                            "h-[8px] rounded-full transition-all duration-300 hover:scale-110",
                             isActive
                               ? "w-[30px] bg-[#009fe3]"
                               : "w-[8px] bg-[#c8d9e8] hover:bg-[#91caee]",

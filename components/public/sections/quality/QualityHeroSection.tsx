@@ -25,7 +25,7 @@ export function QualityHeroSection({
     <SectionReveal>
       <section
         className={cn(
-          "relative isolate overflow-hidden bg-[#10182b] text-white",
+          "group/quality-hero relative isolate overflow-hidden bg-[#10182b] text-white",
           "min-h-[360px] sm:min-h-[410px] lg:min-h-[480px]",
           className,
         )}
@@ -33,11 +33,11 @@ export function QualityHeroSection({
         {/* Background */}
         <div className="pointer-events-none absolute inset-0 bg-[#10182b]" />
 
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(0,159,227,0.14),transparent_38%)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(0,159,227,0.14),transparent_38%)] transition-transform duration-700 ease-out group-hover/quality-hero:scale-[1.025]" />
 
-        <div className="pointer-events-none absolute left-1/2 top-[-180px] h-[360px] w-[360px] -translate-x-1/2 rounded-full bg-[#009fe3]/10 blur-3xl sm:h-[460px] sm:w-[460px]" />
+        <div className="pointer-events-none absolute left-1/2 top-[-180px] h-[360px] w-[360px] -translate-x-1/2 rounded-full bg-[#009fe3]/10 blur-3xl transition-transform duration-700 ease-out group-hover/quality-hero:scale-110 sm:h-[460px] sm:w-[460px]" />
 
-        <div className="pointer-events-none absolute bottom-[-220px] right-[-160px] h-[360px] w-[360px] rounded-full bg-[#4cb748]/10 blur-3xl sm:h-[460px] sm:w-[460px]" />
+        <div className="pointer-events-none absolute bottom-[-220px] right-[-160px] h-[360px] w-[360px] rounded-full bg-[#4cb748]/10 blur-3xl transition-transform duration-700 ease-out group-hover/quality-hero:scale-110 sm:h-[460px] sm:w-[460px]" />
 
         {/* Content */}
         <div

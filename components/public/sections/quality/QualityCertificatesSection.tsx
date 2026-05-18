@@ -98,7 +98,9 @@ export function QualityCertificatesSection({
   const currentIndex = Math.min(activeIndex, certificates.length - 1);
   const activeCertificate = certificates[currentIndex] || certificates[0];
   const hasMultipleCertificates = certificates.length > 1;
-  const canViewCertificate = Boolean(activeCertificate.fileUrl);
+  const canViewCertificate = Boolean(
+    activeCertificate.fileUrl || activeCertificate.image?.src,
+  );
   const externalUrl = activeCertificate.openUrl || activeCertificate.fileUrl;
 
   const labels =
@@ -148,12 +150,12 @@ export function QualityCertificatesSection({
   return (
     <SectionReveal>
       <section
-        className="relative overflow-hidden bg-[linear-gradient(180deg,#f8fbff_0%,#ffffff_56%,#f6fbf7_100%)] py-[84px] sm:py-[96px] lg:py-[108px]"
+        className="group/certificates relative overflow-hidden bg-[linear-gradient(180deg,#f8fbff_0%,#ffffff_56%,#f6fbf7_100%)] py-[84px] sm:py-[96px] lg:py-[108px]"
         dir={isRtl ? "rtl" : "ltr"}
       >
         <div className="relative z-10 mx-auto w-full max-w-[1420px] px-4 sm:px-6 md:px-8 lg:px-[96px] 2xl:px-[150px]">
           <div className="mx-auto max-w-[850px] text-center">
-            <span className="inline-flex rounded-full border border-[#bfe8c7] bg-[#edfbee] px-[16px] py-[7px] text-[11px] font-black uppercase leading-none tracking-[0.18em] text-[#2f8f54] sm:text-[12px]">
+            <span className="inline-flex rounded-full border border-[#bfe8c7] bg-[#edfbee] px-[16px] py-[7px] text-[11px] font-black uppercase leading-none tracking-[0.18em] text-[#2f8f54] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-[#e4f7e7] sm:text-[12px]">
               {data?.eyebrow || "Certifications"}
             </span>
 
@@ -169,9 +171,9 @@ export function QualityCertificatesSection({
           </div>
 
           <div className="mx-auto mt-[46px] max-w-[1040px] sm:mt-[58px]">
-            <div className="relative rounded-[30px] border border-[#dcebf6] bg-white p-3 shadow-[0_34px_92px_-68px_rgba(15,35,70,0.85)] sm:rounded-[34px] sm:p-4 lg:p-5">
+            <div className="group/certificate-card relative rounded-[30px] border border-[#dcebf6] bg-white p-3 shadow-[0_34px_92px_-68px_rgba(15,35,70,0.85)] transition-all duration-500 ease-out hover:-translate-y-1 hover:shadow-[0_42px_104px_-70px_rgba(15,35,70,0.95)] sm:rounded-[34px] sm:p-4 lg:p-5">
               <div className="relative overflow-hidden rounded-[24px] border border-[#e5eef8] bg-[#f8fbff] sm:rounded-[28px]">
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(0,159,227,0.12),transparent_42%)]" />
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(0,159,227,0.12),transparent_42%)] transition-transform duration-700 ease-out group-hover/certificate-card:scale-[1.025]" />
                 <div className="relative mx-auto flex min-h-[360px] max-w-[760px] items-center justify-center px-5 py-8 sm:min-h-[500px] sm:px-8 lg:min-h-[570px]">
                   {activeCertificate.image?.src ? (
                     <CmsImage
@@ -181,7 +183,7 @@ export function QualityCertificatesSection({
                         activeCertificate.title ||
                         labels.certificatePreview
                       }
-                      className="max-h-[300px] w-auto max-w-full rounded-[12px] border border-[#d7e5f2] bg-white object-contain shadow-[0_24px_72px_-48px_rgba(15,23,42,0.75)] sm:max-h-[430px] lg:max-h-[500px]"
+                      className="max-h-[300px] w-auto max-w-full rounded-[12px] border border-[#d7e5f2] bg-white object-contain shadow-[0_24px_72px_-48px_rgba(15,23,42,0.75)] transition-transform duration-700 ease-out group-hover/certificate-card:scale-[1.015] sm:max-h-[430px] lg:max-h-[500px]"
                     />
                   ) : (
                     <div className="flex aspect-[4/5] w-full max-w-[430px] flex-col items-center justify-center rounded-[18px] border border-dashed border-[#bdd4e8] bg-white px-8 text-center shadow-inner">
@@ -194,9 +196,9 @@ export function QualityCertificatesSection({
                 </div>
               </div>
 
-              <div className="relative mx-auto -mt-6 w-[calc(100%-18px)] rounded-[24px] border border-[#dcebf6] bg-white p-4 shadow-[0_26px_74px_-52px_rgba(15,23,42,0.9)] sm:-mt-8 sm:w-[calc(100%-48px)] sm:p-5 lg:flex lg:items-center lg:justify-between lg:gap-6 lg:rounded-[28px] lg:px-6 lg:py-5">
+              <div className="relative mx-auto -mt-6 w-[calc(100%-18px)] rounded-[24px] border border-[#dcebf6] bg-white p-4 shadow-[0_26px_74px_-52px_rgba(15,23,42,0.9)] transition-all duration-300 ease-out group-hover/certificate-card:-translate-y-0.5 group-hover/certificate-card:shadow-[0_30px_84px_-54px_rgba(15,23,42,0.95)] sm:-mt-8 sm:w-[calc(100%-48px)] sm:p-5 lg:flex lg:items-center lg:justify-between lg:gap-6 lg:rounded-[28px] lg:px-6 lg:py-5">
                 <div className="flex min-w-0 items-start gap-4">
-                  <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#edfbee] text-[#2f8f54] ring-1 ring-[#bfe8c7]">
+                  <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#edfbee] text-[#2f8f54] ring-1 ring-[#bfe8c7] transition-transform duration-300 ease-out group-hover/certificate-card:scale-110">
                     {activeCertificate.icon?.src ? (
                       <CmsImage
                         src={activeCertificate.icon.src}
@@ -239,12 +241,12 @@ export function QualityCertificatesSection({
                   </span>
 
                   {hasMultipleCertificates ? (
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2" dir="ltr">
                       <button
                         type="button"
                         onClick={handleLeftControl}
                         aria-label={leftControlLabel}
-                        className="flex h-10 w-10 items-center justify-center rounded-full border border-[#d9eadf] bg-white text-[#263b59] shadow-sm transition hover:border-[#4cb748] hover:text-[#2f8f54] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4cb748]/40"
+                        className="flex h-10 w-10 items-center justify-center rounded-full border border-[#d9eadf] bg-white text-[#263b59] shadow-sm transition-all duration-300 ease-out hover:-translate-y-0.5 hover:scale-105 hover:border-[#4cb748] hover:text-[#2f8f54] hover:shadow-[0_12px_28px_-22px_rgba(47,143,84,0.6)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4cb748]/40"
                       >
                         <ChevronLeft className="h-5 w-5" />
                       </button>
@@ -252,7 +254,7 @@ export function QualityCertificatesSection({
                         type="button"
                         onClick={handleRightControl}
                         aria-label={rightControlLabel}
-                        className="flex h-10 w-10 items-center justify-center rounded-full border border-[#d9eadf] bg-white text-[#263b59] shadow-sm transition hover:border-[#4cb748] hover:text-[#2f8f54] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4cb748]/40"
+                        className="flex h-10 w-10 items-center justify-center rounded-full border border-[#d9eadf] bg-white text-[#263b59] shadow-sm transition-all duration-300 ease-out hover:-translate-y-0.5 hover:scale-105 hover:border-[#4cb748] hover:text-[#2f8f54] hover:shadow-[0_12px_28px_-22px_rgba(47,143,84,0.6)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4cb748]/40"
                       >
                         <ChevronRight className="h-5 w-5" />
                       </button>
@@ -264,9 +266,9 @@ export function QualityCertificatesSection({
                     disabled={!canViewCertificate}
                     onClick={() => setIsPreviewOpen(true)}
                     className={cn(
-                      "inline-flex min-h-10 items-center justify-center rounded-full px-5 text-sm font-black transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#009fe3]/35",
+                      "inline-flex min-h-10 items-center justify-center rounded-full px-5 text-sm font-black transition-all duration-300 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#009fe3]/35",
                       canViewCertificate
-                        ? "bg-[#009fe3] text-white shadow-[0_16px_30px_-20px_rgba(0,159,227,0.9)] hover:bg-[#0878ad]"
+                        ? "bg-[#009fe3] text-white shadow-[0_16px_30px_-20px_rgba(0,159,227,0.9)] hover:-translate-y-0.5 hover:scale-[1.02] hover:bg-[#0878ad] hover:shadow-[0_18px_36px_-22px_rgba(0,159,227,0.95)]"
                         : "cursor-not-allowed bg-[#e8eef6] text-[#7a8da4]",
                     )}
                   >
@@ -298,7 +300,7 @@ export function QualityCertificatesSection({
         </div>
 
         <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
-          <DialogContent className="w-[calc(100vw-24px)] max-w-[1060px] rounded-[28px] border-[#dcebf6] bg-white p-4 sm:p-6">
+          <DialogContent className="w-[calc(100vw-24px)] max-w-[1060px] rounded-[28px] border-[#dcebf6] bg-white p-4 shadow-[0_34px_110px_-58px_rgba(15,23,42,0.9)] sm:p-6">
             <DialogHeader>
               <DialogTitle className="text-[22px] font-black leading-tight text-[#071329] sm:text-[26px]">
                 {activeCertificate.title || labels.preview}
@@ -320,7 +322,7 @@ export function QualityCertificatesSection({
                       activeCertificate.title ||
                       labels.certificatePreview
                     }
-                    className="max-h-[58vh] w-auto max-w-full rounded-[12px] border border-[#d7e5f2] bg-white object-contain shadow-[0_22px_70px_-50px_rgba(15,23,42,0.85)]"
+                    className="max-h-[58vh] w-auto max-w-full rounded-[12px] border border-[#d7e5f2] bg-white object-contain shadow-[0_22px_70px_-50px_rgba(15,23,42,0.85)] transition-transform duration-500 ease-out hover:scale-[1.01]"
                   />
                 ) : (
                   <div className="text-center">
@@ -339,7 +341,7 @@ export function QualityCertificatesSection({
                   href={externalUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex h-10 items-center justify-center gap-2 rounded-full bg-[#009fe3] px-5 text-sm font-black text-white transition hover:bg-[#0878ad] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#009fe3]/35"
+                  className="inline-flex h-10 items-center justify-center gap-2 rounded-full bg-[#009fe3] px-5 text-sm font-black text-white transition-all duration-300 ease-out hover:-translate-y-0.5 hover:scale-[1.02] hover:bg-[#0878ad] hover:shadow-[0_18px_36px_-24px_rgba(0,159,227,0.95)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#009fe3]/35"
                 >
                   {labels.open}
                   <ExternalLink className="h-4 w-4" />

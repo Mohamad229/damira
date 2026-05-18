@@ -105,14 +105,14 @@ function ContactLinkRow({
 }) {
   const content = (
     <>
-      <span className="flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-full bg-[#e2f4ff] text-[#009fe3] transition-colors group-hover:bg-[#009fe3] group-hover:text-white sm:h-[46px] sm:w-[46px]">
+      <span className="flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-full bg-[#e2f4ff] text-[#009fe3] transition-all duration-300 ease-out group-hover:-translate-y-0.5 group-hover:scale-110 group-hover:bg-[#009fe3] group-hover:text-white sm:h-[46px] sm:w-[46px]">
         {iconImage?.src ? (
           <CmsImage
             src={iconImage.src}
             alt={iconImage.alt || ""}
             width={24}
             height={24}
-            className="h-[21px] w-[21px] object-contain"
+            className="h-[21px] w-[21px] object-contain transition-transform duration-300 ease-out group-hover:scale-105"
           />
         ) : (
           icon
@@ -120,7 +120,7 @@ function ContactLinkRow({
       </span>
 
       <span className="min-w-0">
-        <span className="block text-[15px] font-black leading-[1.2] tracking-[-0.025em] text-[#071329] sm:text-[16px] lg:text-[17px]">
+        <span className="block text-[15px] font-black leading-[1.2] tracking-[-0.025em] text-[#071329] transition-colors duration-300 group-hover:text-[#009fe3] sm:text-[16px] lg:text-[17px]">
           {label}
         </span>
 
@@ -150,7 +150,7 @@ function ContactLinkRow({
   return (
     <a
       href={href}
-      className="group grid grid-cols-[42px_1fr] items-start gap-[14px] rounded-[18px] transition-transform duration-300 hover:-translate-y-0.5 sm:grid-cols-[46px_1fr] sm:gap-[16px]"
+      className="group grid grid-cols-[42px_1fr] items-start gap-[14px] rounded-[18px] transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.01] sm:grid-cols-[46px_1fr] sm:gap-[16px]"
     >
       {content}
     </a>
@@ -169,19 +169,19 @@ export function ContactInfoSection({
     <SectionReveal>
       <section
         className={cn(
-          "relative overflow-hidden bg-[#f8fbff] py-[72px]",
+          "group/contact-info relative overflow-hidden bg-[#f8fbff] py-[72px]",
           "sm:py-[84px] lg:py-[96px] xl:py-[104px]",
           className,
         )}
       >
-        <div className="pointer-events-none absolute left-[-180px] top-[-180px] h-[360px] w-[360px] rounded-full bg-[#e2f4ff] blur-3xl" />
-        <div className="pointer-events-none absolute bottom-[-210px] right-[-170px] h-[430px] w-[430px] rounded-full bg-[#edfbee] blur-3xl" />
+        <div className="pointer-events-none absolute left-[-180px] top-[-180px] h-[360px] w-[360px] rounded-full bg-[#e2f4ff] blur-3xl transition-transform duration-700 ease-out group-hover/contact-info:scale-110" />
+        <div className="pointer-events-none absolute bottom-[-210px] right-[-170px] h-[430px] w-[430px] rounded-full bg-[#edfbee] blur-3xl transition-transform duration-700 ease-out group-hover/contact-info:scale-110" />
 
         <div className="relative z-10 mx-auto w-full max-w-[1440px] px-4 sm:px-6 md:px-8 lg:px-[72px] xl:px-[120px] 2xl:px-[210px]">
           {title || description ? (
             <div className="mx-auto mb-[44px] max-w-[820px] text-center sm:mb-[54px] lg:mb-[62px]">
               {title ? (
-                <h2 className="text-[30px] font-black leading-[1.1] tracking-[-0.045em] text-[#071329] sm:text-[38px] lg:text-[44px]">
+                <h2 className="text-[30px] font-black leading-[1.1] tracking-[-0.045em] text-[#071329] transition-colors duration-300 group-hover/contact-info:text-[#06172f] sm:text-[38px] lg:text-[44px]">
                   {title}
                 </h2>
               ) : null}
@@ -201,30 +201,30 @@ export function ContactInfoSection({
                 className={cn(
                   "group relative overflow-hidden rounded-[26px] border border-[#e4ecf5] bg-white",
                   "px-5 py-6 shadow-[0_20px_54px_-44px_rgba(15,23,42,0.55)]",
-                  "transition-all duration-300 hover:-translate-y-1 hover:border-[#009fe3]/35",
+                  "transition-all duration-300 ease-out hover:-translate-y-1.5 hover:scale-[1.01] hover:border-[#009fe3]/35",
                   "hover:shadow-[0_32px_76px_-54px_rgba(15,23,42,0.78)]",
                   "sm:rounded-[30px] sm:px-6 sm:py-7",
                   "lg:px-8 lg:py-8",
                 )}
               >
-                <div className="pointer-events-none absolute right-[-70px] top-[-70px] h-[170px] w-[170px] rounded-full bg-[#e2f4ff] opacity-70 blur-2xl" />
+                <div className="pointer-events-none absolute right-[-70px] top-[-70px] h-[170px] w-[170px] rounded-full bg-[#e2f4ff] opacity-70 blur-2xl transition-transform duration-700 ease-out group-hover:scale-110" />
 
                 <div className="relative z-10 mb-[24px] flex items-start gap-4 sm:mb-[28px]">
-                  <div className="flex h-[50px] w-[50px] shrink-0 items-center justify-center rounded-full bg-[#edfbee] text-[#2f8f54] transition-transform duration-300 group-hover:scale-110">
+                  <div className="flex h-[50px] w-[50px] shrink-0 items-center justify-center rounded-full bg-[#edfbee] text-[#2f8f54] transition-all duration-300 ease-out group-hover:-translate-y-0.5 group-hover:scale-110">
                     {department.icon?.src ? (
                       <CmsImage
                         src={department.icon.src}
                         alt={department.icon.alt || ""}
                         width={28}
                         height={28}
-                        className="h-[24px] w-[24px] object-contain"
+                        className="h-[24px] w-[24px] object-contain transition-transform duration-300 ease-out group-hover:scale-105"
                       />
                     ) : (
-                      <Building2 className="h-[24px] w-[24px] stroke-[2.35]" />
+                      <Building2 className="h-[24px] w-[24px] stroke-[2.35] transition-transform duration-300 ease-out group-hover:scale-105" />
                     )}
                   </div>
 
-                  <h3 className="pt-[3px] text-[21px] font-black leading-[1.18] tracking-[-0.035em] text-[#071329] sm:text-[22px] lg:text-[23px]">
+                  <h3 className="pt-[3px] text-[21px] font-black leading-[1.18] tracking-[-0.035em] text-[#071329] transition-colors duration-300 group-hover:text-[#009fe3] sm:text-[22px] lg:text-[23px]">
                     {department.title}
                   </h3>
                 </div>

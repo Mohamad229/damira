@@ -203,15 +203,15 @@ export function ContactFormSection({
     <SectionReveal>
       <section
         className={cn(
-          "relative overflow-hidden border-y border-[#e8eff7] bg-[#f8fbff]",
+          "group/contact-form-section relative overflow-hidden border-y border-[#e8eff7] bg-[#f8fbff]",
           "py-[72px] sm:py-[82px] lg:py-[90px] xl:py-[96px]",
           className,
         )}
         dir={isArabic ? "rtl" : "ltr"}
       >
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_8%_12%,rgba(254,226,205,0.58),transparent_30%),radial-gradient(circle_at_90%_82%,rgba(197,225,245,0.62),transparent_32%)]" />
-        <div className="pointer-events-none absolute left-[-190px] top-[-180px] h-[380px] w-[380px] rounded-full bg-[#fff0e4] blur-3xl" />
-        <div className="pointer-events-none absolute bottom-[-220px] right-[-180px] h-[440px] w-[440px] rounded-full bg-[#e2f4ff] blur-3xl" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_8%_12%,rgba(254,226,205,0.58),transparent_30%),radial-gradient(circle_at_90%_82%,rgba(197,225,245,0.62),transparent_32%)] transition-transform duration-700 ease-out group-hover/contact-form-section:scale-[1.02]" />
+        <div className="pointer-events-none absolute left-[-190px] top-[-180px] h-[380px] w-[380px] rounded-full bg-[#fff0e4] blur-3xl transition-transform duration-700 ease-out group-hover/contact-form-section:scale-110" />
+        <div className="pointer-events-none absolute bottom-[-220px] right-[-180px] h-[440px] w-[440px] rounded-full bg-[#e2f4ff] blur-3xl transition-transform duration-700 ease-out group-hover/contact-form-section:scale-110" />
 
         <div
           className={cn(
@@ -241,10 +241,11 @@ export function ContactFormSection({
                 "lg:px-[32px] lg:py-[38px]",
                 "xl:flex xl:min-h-[620px] xl:flex-col xl:justify-center",
                 "shadow-[0_24px_50px_-42px_rgba(15,23,42,0.45)]",
+                "transition-all duration-500 ease-out hover:-translate-y-1 hover:shadow-[0_32px_72px_-50px_rgba(15,23,42,0.56)]",
               )}
             >
-              <div className="pointer-events-none absolute right-[-95px] top-[-95px] h-[230px] w-[230px] rounded-full bg-[#e2f4ff] blur-2xl" />
-              <div className="pointer-events-none absolute bottom-[-130px] left-[-130px] h-[280px] w-[280px] rounded-full bg-[#edfbee] blur-3xl" />
+              <div className="pointer-events-none absolute right-[-95px] top-[-95px] h-[230px] w-[230px] rounded-full bg-[#e2f4ff] blur-2xl transition-transform duration-700 ease-out group-hover/contact-form-section:scale-110" />
+              <div className="pointer-events-none absolute bottom-[-130px] left-[-130px] h-[280px] w-[280px] rounded-full bg-[#edfbee] blur-3xl transition-transform duration-700 ease-out group-hover/contact-form-section:scale-110" />
 
               <div
                 className={cn(
@@ -254,7 +255,7 @@ export function ContactFormSection({
                 )}
               >
                 {eyebrow ? (
-                  <span className="mb-[18px] inline-flex rounded-full bg-[#e2f4ff] px-[16px] py-[7px] text-[11px] font-black uppercase leading-none tracking-[0.18em] text-[#009fe3] sm:text-[12px]">
+                  <span className="mb-[18px] inline-flex rounded-full bg-[#e2f4ff] px-[16px] py-[7px] text-[11px] font-black uppercase leading-none tracking-[0.18em] text-[#009fe3] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-[#d6efff] sm:text-[12px]">
                     {eyebrow}
                   </span>
                 ) : null}
@@ -303,26 +304,26 @@ export function ContactFormSection({
                           "rounded-[16px] border border-[#edf2f7] bg-white",
                           "px-[18px] py-[16px]",
                           "shadow-[0_18px_40px_-36px_rgba(15,23,42,0.45)]",
-                          "transition-all duration-300 hover:-translate-y-0.5 hover:border-[#c7e7fb]",
+                          "transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.01] hover:border-[#c7e7fb] hover:shadow-[0_16px_36px_-32px_rgba(15,23,42,0.5)]",
                           "sm:flex-col sm:text-center",
                           "xl:flex-row",
                           isArabic ? "xl:text-right" : "xl:text-left",
                         )}
                       >
-                        <div className="flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-full bg-[#edfbee] text-[#2f8f54] transition-transform duration-300 group-hover:scale-105">
+                        <div className="flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-full bg-[#edfbee] text-[#2f8f54] transition-all duration-300 ease-out group-hover:-translate-y-0.5 group-hover:scale-110">
                           {isSectionMediaIcon(feature.icon) ? (
                             <SectionIconImage
                               icon={feature.icon}
                               width={24}
                               height={24}
-                              className="h-[22px] w-[22px] object-contain"
+                              className="h-[22px] w-[22px] object-contain transition-transform duration-300 ease-out group-hover:scale-105"
                             />
                           ) : (
-                            <Icon className="h-[22px] w-[22px] stroke-[2.35]" />
+                            <Icon className="h-[22px] w-[22px] stroke-[2.35] transition-transform duration-300 ease-out group-hover:scale-105" />
                           )}
                         </div>
 
-                        <p className="text-[14px] font-black leading-[1.25] tracking-[-0.02em] text-[#071329] sm:text-[15px]">
+                        <p className="text-[14px] font-black leading-[1.25] tracking-[-0.02em] text-[#071329] transition-colors duration-300 group-hover:text-[#009fe3] sm:text-[15px]">
                           {feature.title}
                         </p>
                       </div>
@@ -343,6 +344,7 @@ export function ContactFormSection({
                 "lg:p-[30px]",
                 "xl:p-[32px]",
                 "shadow-[0_24px_50px_-42px_rgba(15,23,42,0.45)]",
+                "transition-all duration-500 ease-out hover:-translate-y-1 hover:border-[#c5e1f5] hover:shadow-[0_32px_72px_-50px_rgba(15,23,42,0.56)]",
               )}
             >
               <PublicInquiryForm

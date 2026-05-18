@@ -27,7 +27,7 @@ export function ProductsHeroSection({
     <SectionReveal>
       <section
         className={cn(
-          "relative isolate overflow-hidden bg-white",
+          "group/products-hero relative isolate overflow-hidden bg-white",
           "min-h-[500px] sm:min-h-[540px] lg:min-h-[570px] xl:min-h-[600px]",
           className,
         )}
@@ -41,7 +41,7 @@ export function ProductsHeroSection({
             loading="eager"
             fetchPriority="high"
             sizes="100vw"
-            className="z-0 object-cover"
+            className="z-0 object-cover transition-transform duration-[1200ms] ease-out group-hover/products-hero:scale-[1.025]"
           />
         ) : (
           <div className="absolute inset-0 z-0 bg-[linear-gradient(180deg,#f8fbff_0%,#ffffff_100%)]" />
@@ -65,8 +65,8 @@ export function ProductsHeroSection({
         />
 
         {/* Soft decoration for small screens */}
-        <div className="pointer-events-none absolute -right-[90px] top-[80px] z-[4] h-[220px] w-[220px] rounded-full bg-[#e2f4ff]/55 blur-2xl sm:h-[280px] sm:w-[280px] lg:hidden" />
-        <div className="pointer-events-none absolute -left-[100px] bottom-[-80px] z-[4] h-[240px] w-[240px] rounded-full bg-[#daecd4]/40 blur-2xl sm:h-[300px] sm:w-[300px]" />
+        <div className="pointer-events-none absolute -right-[90px] top-[80px] z-[4] h-[220px] w-[220px] rounded-full bg-[#e2f4ff]/55 blur-2xl transition-transform duration-700 ease-out group-hover/products-hero:scale-110 sm:h-[280px] sm:w-[280px] lg:hidden" />
+        <div className="pointer-events-none absolute -left-[100px] bottom-[-80px] z-[4] h-[240px] w-[240px] rounded-full bg-[#daecd4]/40 blur-2xl transition-transform duration-700 ease-out group-hover/products-hero:scale-110 sm:h-[300px] sm:w-[300px]" />
 
         {/* Content */}
         <div
@@ -88,7 +88,7 @@ export function ProductsHeroSection({
                 "border border-[#9ed8f8] bg-[#eaf7ff]/95",
                 "h-[29px] px-[12px]",
                 "text-[13px] font-semibold leading-none tracking-[-0.01em] text-[#009fe3]",
-                "shadow-sm",
+                "shadow-sm transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-[#009fe3]/45 hover:bg-white hover:shadow-[0_12px_28px_-24px_rgba(15,23,42,0.45)]",
                 "sm:mb-[24px] sm:h-[30px] sm:px-[13px]",
                 "xl:mb-[27px] xl:h-[31px] xl:text-[14px]",
               )}
@@ -144,13 +144,13 @@ export function ProductsHeroSection({
                         "inline-flex items-center justify-center rounded-full",
                         "h-[48px] px-7",
                         "text-[14px] font-extrabold leading-none tracking-[-0.01em]",
-                        "transition-all duration-300",
+                        "transition-all duration-300 ease-out hover:scale-[1.02] active:scale-[0.99]",
                         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#009fe3] focus-visible:ring-offset-2",
                         "sm:h-[52px] sm:px-8 sm:text-[15px]",
                         "lg:h-[54px] lg:text-[16px]",
                         isPrimary
-                          ? "min-w-[190px] bg-[#009fe3] text-white shadow-[0_18px_35px_-20px_rgba(0,159,227,0.9)] hover:-translate-y-0.5 hover:bg-[#0092d3] sm:min-w-[210px]"
-                          : "min-w-[170px] border border-[#d8e3ec] bg-white/85 text-[#31405a] hover:-translate-y-0.5 hover:border-[#009fe3]/45 hover:text-[#009fe3] sm:min-w-[180px]",
+                          ? "min-w-[190px] bg-[#009fe3] text-white shadow-[0_18px_35px_-20px_rgba(0,159,227,0.9)] hover:-translate-y-1 hover:bg-[#0092d3] hover:shadow-[0_24px_46px_-24px_rgba(0,159,227,0.95)] sm:min-w-[210px]"
+                          : "min-w-[170px] border border-[#d8e3ec] bg-white/85 text-[#31405a] hover:-translate-y-1 hover:border-[#009fe3]/45 hover:text-[#009fe3] hover:shadow-[0_16px_34px_-26px_rgba(15,23,42,0.55)] sm:min-w-[180px]",
                       )}
                     >
                       {action.label}

@@ -29,7 +29,7 @@ export function PartnershipsHeroSection({
     <SectionReveal>
       <section
         className={cn(
-          "relative isolate overflow-hidden bg-[#009fe3] text-white",
+          "group/partnerships-hero relative isolate overflow-hidden bg-[#009fe3] text-white",
           "min-h-[390px] sm:min-h-[430px] md:min-h-[470px] lg:min-h-[520px]",
           className,
         )}
@@ -42,15 +42,16 @@ export function PartnershipsHeroSection({
           className={cn(
             "pointer-events-none absolute inset-0",
             "bg-[linear-gradient(78deg,rgba(0,132,197,0)_0%,rgba(0,132,197,0)_42%,rgba(0,126,190,0.2)_42.1%,rgba(0,126,190,0.2)_48%,rgba(255,255,255,0.07)_48.1%,rgba(255,255,255,0.07)_54%,rgba(0,132,197,0)_54.1%,rgba(0,132,197,0)_100%)]",
+            "transition-transform duration-700 ease-out group-hover/partnerships-hero:scale-[1.015]",
           )}
         />
 
         {/* Soft light glows */}
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_-18%,rgba(255,255,255,0.18),transparent_38%)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_-18%,rgba(255,255,255,0.18),transparent_38%)] transition-transform duration-700 ease-out group-hover/partnerships-hero:scale-[1.025]" />
 
-        <div className="pointer-events-none absolute left-[-160px] top-[-160px] h-[340px] w-[340px] rounded-full bg-white/10 blur-3xl sm:h-[420px] sm:w-[420px]" />
+        <div className="pointer-events-none absolute left-[-160px] top-[-160px] h-[340px] w-[340px] rounded-full bg-white/10 blur-3xl transition-transform duration-700 ease-out group-hover/partnerships-hero:scale-110 sm:h-[420px] sm:w-[420px]" />
 
-        <div className="pointer-events-none absolute bottom-[-200px] right-[-160px] h-[390px] w-[390px] rounded-full bg-[#4cb748]/20 blur-3xl sm:h-[500px] sm:w-[500px]" />
+        <div className="pointer-events-none absolute bottom-[-200px] right-[-160px] h-[390px] w-[390px] rounded-full bg-[#4cb748]/20 blur-3xl transition-transform duration-700 ease-out group-hover/partnerships-hero:scale-110 sm:h-[500px] sm:w-[500px]" />
 
         {/* Content */}
         <div
@@ -70,6 +71,7 @@ export function PartnershipsHeroSection({
                 className={cn(
                   "mb-[20px] text-[11px] font-black uppercase leading-none tracking-[0.18em]",
                   "text-white/80",
+                  "transition-all duration-300 ease-out hover:-translate-y-0.5 hover:text-white",
                   "sm:mb-[24px] sm:text-[12px]",
                   "lg:mb-[27px] lg:text-[13px]",
                 )}
@@ -114,8 +116,8 @@ export function PartnershipsHeroSection({
                     "bg-white px-7 text-center",
                     "text-[14px] font-black leading-none tracking-[-0.015em] text-[#009fe3]",
                     "shadow-[0_20px_38px_-28px_rgba(15,23,42,0.7)]",
-                    "transition-all duration-300",
-                    "hover:-translate-y-0.5 hover:bg-[#f7fbff] hover:shadow-[0_24px_45px_-30px_rgba(15,23,42,0.85)]",
+                    "transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.02]",
+                    "hover:bg-[#f7fbff] hover:shadow-[0_24px_45px_-30px_rgba(15,23,42,0.85)] active:scale-[0.99]",
                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#009fe3]",
                     "sm:h-[48px] sm:max-w-none sm:w-auto sm:min-w-[268px]",
                   )}

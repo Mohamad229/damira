@@ -24,7 +24,7 @@ function RelatedProductCard({ data }: { data: ProductCardData }) {
         "rounded-[22px] border border-[#e5eef8] bg-white",
         "shadow-[0_22px_52px_-46px_rgba(15,23,42,0.58)]",
         "public-card-hover",
-        "hover:-translate-y-1 hover:border-[#91caee]",
+        "transition-all duration-300 ease-out hover:-translate-y-1.5 hover:scale-[1.01] hover:border-[#91caee] hover:shadow-[0_28px_62px_-44px_rgba(15,23,42,0.68)]",
         "sm:rounded-[24px]",
         "xl:rounded-[28px]",
       )}
@@ -36,7 +36,7 @@ function RelatedProductCard({ data }: { data: ProductCardData }) {
             alt={data.image.alt || data.name}
             fill
             sizes="(min-width: 1536px) 22vw, (min-width: 1280px) 25vw, (min-width: 768px) 45vw, 100vw"
-            className="public-image-hover object-cover"
+            className="public-image-hover object-cover transition-transform duration-700 ease-out group-hover:scale-[1.035]"
           />
         ) : (
           <div className="h-full w-full bg-[linear-gradient(135deg,#daecd4,#ffffff,#c5e1f5)]" />
@@ -50,7 +50,7 @@ function RelatedProductCard({ data }: { data: ProductCardData }) {
               "absolute left-[14px] top-[14px] rounded-full bg-white/92 rtl:left-auto rtl:right-[14px]",
               "px-[11px] py-[5px]",
               "text-[11px] font-black uppercase leading-none tracking-[0.16em] text-[#0097dc]",
-              "shadow-sm backdrop-blur",
+              "shadow-sm backdrop-blur transition-transform duration-300 ease-out group-hover:-translate-y-0.5",
               "xl:left-4 xl:top-4 xl:px-3 xl:py-1.5 xl:text-xs rtl:xl:left-auto rtl:xl:right-4",
             )}
           >
@@ -65,14 +65,14 @@ function RelatedProductCard({ data }: { data: ProductCardData }) {
             {data.category}
           </span>
 
-          <span className="h-2 w-2 shrink-0 rounded-full bg-[#f58238]" />
+          <span className="h-2 w-2 shrink-0 rounded-full bg-[#f58238] transition-transform duration-300 ease-out group-hover:scale-125" />
         </div>
 
-        <h3 className="text-[19px] font-black leading-[1.15] tracking-[-0.035em] text-slate-950 xl:text-xl">
+        <h3 className="text-[19px] font-black leading-[1.15] tracking-[-0.035em] text-slate-950 transition-colors duration-300 group-hover:text-[#009fe3] xl:text-xl">
           {data.name}
         </h3>
 
-        <p className="mt-[10px] line-clamp-3 text-[14px] font-medium leading-[1.55] tracking-[-0.01em] text-slate-600 xl:mt-3 xl:text-sm xl:leading-relaxed">
+        <p className="mt-[10px] line-clamp-3 text-[14px] font-medium leading-[1.55] tracking-[-0.01em] text-slate-600 transition-colors duration-300 group-hover:text-slate-700 xl:mt-3 xl:text-sm xl:leading-relaxed">
           {data.description}
         </p>
 
@@ -115,7 +115,7 @@ export function RelatedProductsSection({ data }: RelatedProductsSectionProps) {
         )}
       >
         {/* Soft background depth */}
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(226,244,255,0.5),transparent_34%)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(226,244,255,0.5),transparent_34%)] transition-transform duration-700 ease-out hover:scale-[1.015]" />
 
         <div
           className={cn(

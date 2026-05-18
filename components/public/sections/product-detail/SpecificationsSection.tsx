@@ -21,12 +21,12 @@ export function SpecificationsSection({ data }: SpecificationsSectionProps) {
     <SectionReveal>
       <section
         className={cn(
-          "relative overflow-hidden bg-white",
+          "group/specifications relative overflow-hidden bg-white",
           "py-[72px] sm:py-[82px] lg:py-[90px] xl:py-[96px]",
         )}
       >
         {/* Soft background depth */}
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(226,244,255,0.42),transparent_34%)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(226,244,255,0.42),transparent_34%)] transition-transform duration-700 ease-out group-hover/specifications:scale-[1.015]" />
 
         <div
           className={cn(
@@ -105,14 +105,14 @@ export function SpecificationsSection({ data }: SpecificationsSectionProps) {
                   "px-[18px] py-[18px]",
                   "sm:px-[20px] sm:py-[20px]",
                   "xl:px-[22px] xl:py-[22px]",
-                  "transition-all duration-300",
-                  "hover:border-[#c5e1f5] hover:bg-white",
-                  "hover:shadow-[0_20px_44px_-38px_rgba(15,23,42,0.45)]",
+                  "group/spec-item transition-all duration-300 ease-out",
+                  "hover:-translate-y-1 hover:scale-[1.01] hover:border-[#c5e1f5] hover:bg-white",
+                  "hover:shadow-[0_22px_48px_-36px_rgba(15,23,42,0.52)]",
                 )}
               >
                 <dt
                   className={cn(
-                    "font-black uppercase leading-none tracking-[0.2em] text-[#f58238]",
+                    "font-black uppercase leading-none tracking-[0.2em] text-[#f58238] transition-colors duration-300 group-hover/spec-item:text-[#009fe3]",
                     "text-[11px]",
                     "sm:text-[12px] sm:tracking-[0.24em]",
                   )}
@@ -122,7 +122,7 @@ export function SpecificationsSection({ data }: SpecificationsSectionProps) {
 
                 <dd
                   className={cn(
-                    "break-words font-medium tracking-[-0.01em] text-[#071329]",
+                    "break-words font-medium tracking-[-0.01em] text-[#071329] transition-colors duration-300 group-hover/spec-item:text-[#0b203d]",
                     "mt-[14px]",
                     "text-[15px] leading-[1.6]",
                     "sm:mt-[16px] sm:text-[16px] sm:leading-[1.55]",

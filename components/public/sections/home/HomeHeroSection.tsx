@@ -57,7 +57,7 @@ export function HomeHeroSection({ data, className }: HomeHeroSectionProps) {
         <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,#f2f9ff_0%,#ffffff_100%)]" />
 
         {/* Right image area - visible on xl and larger screens */}
-        <div className="absolute inset-y-0 right-0 hidden w-1/2 overflow-hidden rtl:left-0 rtl:right-auto xl:block">
+        <div className="group/hero-image absolute inset-y-0 right-0 hidden w-1/2 overflow-hidden rtl:left-0 rtl:right-auto xl:block">
           {data.backgroundImage?.src ? (
             <CmsImage
               src={data.backgroundImage.src}
@@ -66,7 +66,7 @@ export function HomeHeroSection({ data, className }: HomeHeroSectionProps) {
               loading="eager"
               fetchPriority="high"
               sizes="50vw"
-              className="object-cover"
+              className="object-cover transition-transform duration-700 ease-out group-hover/hero-image:scale-[1.035]"
             />
           ) : (
             <div className="h-full w-full bg-[linear-gradient(135deg,#dceffb,#ffffff,#eef8f1)]" />
@@ -78,7 +78,7 @@ export function HomeHeroSection({ data, className }: HomeHeroSectionProps) {
         </div>
 
         {/* Mobile / tablet / smaller than xl background image */}
-        <div className="absolute inset-0 overflow-hidden xl:hidden">
+        <div className="group/hero-image-mobile absolute inset-0 overflow-hidden xl:hidden">
           {data.backgroundImage?.src ? (
             <CmsImage
               src={data.backgroundImage.src}
@@ -87,7 +87,7 @@ export function HomeHeroSection({ data, className }: HomeHeroSectionProps) {
               loading="eager"
               fetchPriority="high"
               sizes="100vw"
-              className="object-cover"
+              className="object-cover transition-transform duration-700 ease-out group-hover/hero-image-mobile:scale-[1.03]"
             />
           ) : (
             <div className="h-full w-full bg-[linear-gradient(135deg,#dceffb,#ffffff,#eef8f1)]" />
@@ -121,7 +121,7 @@ export function HomeHeroSection({ data, className }: HomeHeroSectionProps) {
                 "border border-[#9ed8f8] bg-[#eaf7ff]/95",
                 "px-[13px]",
                 "text-[14px] font-semibold leading-none text-[#009fe3]",
-                "shadow-sm",
+                "shadow-sm transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-md",
               )}
             >
               <span className="h-2 w-2 rounded-full bg-[#009fe3]" />
@@ -175,7 +175,7 @@ export function HomeHeroSection({ data, className }: HomeHeroSectionProps) {
                       key={`${action.href}-${action.label}`}
                       href={action.href}
                       className={cn(
-                        "inline-flex h-[56px] items-center justify-center rounded-full",
+                        "group inline-flex h-[56px] items-center justify-center rounded-full",
                         "text-[16px] font-bold transition-all duration-300",
                         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#009fe3] focus-visible:ring-offset-2",
                         isPrimary
@@ -183,20 +183,20 @@ export function HomeHeroSection({ data, className }: HomeHeroSectionProps) {
                               "min-w-[228px] gap-[32px] px-8",
                               "bg-[#009fe3] text-white",
                               "shadow-[0_18px_35px_-18px_rgba(0,159,227,0.9)]",
-                              "hover:-translate-y-0.5 hover:bg-[#0092d3]",
+                              "hover:-translate-y-1 hover:scale-[1.01] hover:bg-[#0092d3] active:scale-[0.99]",
                             )
                           : cn(
                               "min-w-[203px] px-8",
                               "border border-[#d8e3ec] bg-white/85 text-[#31405a]",
                               "shadow-[0_8px_22px_-18px_rgba(15,23,42,0.35)]",
-                              "hover:-translate-y-0.5 hover:border-[#009fe3]/45 hover:text-[#009fe3]",
+                              "hover:-translate-y-1 hover:scale-[1.01] hover:border-[#009fe3]/45 hover:text-[#009fe3] active:scale-[0.99]",
                             ),
                       )}
                     >
                       <span>{action.label}</span>
 
                       {isPrimary ? (
-                        <ArrowRight className="h-4 w-4 stroke-[2.5]" />
+                        <ArrowRight className="h-4 w-4 stroke-[2.5] transition-transform duration-300 ease-out group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
                       ) : null}
                     </Link>
                   );

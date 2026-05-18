@@ -105,11 +105,11 @@ export function ComplianceDetailsSection({
 
   return (
     <SectionReveal>
-      <section className="relative overflow-hidden bg-white py-[78px]">
+      <section className="group/compliance-details relative overflow-hidden bg-white py-[78px]">
         <div className="relative z-10 w-full px-4 sm:px-6 md:px-8 lg:px-[210px]">
           {/* Header */}
           <div className="mx-auto max-w-[760px] text-center">
-            <h2 className="text-[30px] font-black leading-[1.12] tracking-[-0.04em] text-[#071329] sm:text-[32px]">
+            <h2 className="text-[30px] font-black leading-[1.12] tracking-[-0.04em] text-[#071329] transition-colors duration-300 group-hover/compliance-details:text-[#06172f] sm:text-[32px]">
               {title}
             </h2>
 
@@ -130,10 +130,12 @@ export function ComplianceDetailsSection({
                 <article
                   key={item.id || `${item.title}-${index}`}
                   className={cn(
-                    "relative overflow-hidden rounded-[24px]",
+                    "group/compliance-card relative overflow-hidden rounded-[24px]",
                     "border border-[#e8eef6] bg-[#f8fbff]",
                     "min-h-[216px]",
                     "px-[32px] py-[35px]",
+                    "transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.01] hover:border-[#c5e1f5] hover:bg-white",
+                    "hover:shadow-[0_26px_62px_-44px_rgba(15,23,42,0.55)]",
                   )}
                 >
                   <div className="mb-[26px]">
@@ -142,24 +144,24 @@ export function ComplianceDetailsSection({
                         icon={item.icon}
                         width={44}
                         height={44}
-                        className="h-[43px] w-[43px] object-contain"
+                        className="h-[43px] w-[43px] object-contain transition-transform duration-300 ease-out group-hover/compliance-card:scale-110"
                       />
                     ) : (
                       <Icon
                         className={cn(
-                          "h-[43px] w-[43px] stroke-[2.25]",
+                          "h-[43px] w-[43px] stroke-[2.25] transition-transform duration-300 ease-out group-hover/compliance-card:scale-110",
                           isGreen ? "text-[#2f8f54]" : "text-[#009fe3]",
                         )}
                       />
                     )}
                   </div>
 
-                  <h3 className="text-[24px] font-black leading-[1.18] tracking-[-0.035em] text-[#071329]">
+                  <h3 className="text-[24px] font-black leading-[1.18] tracking-[-0.035em] text-[#071329] transition-colors duration-300 group-hover/compliance-card:text-[#009fe3]">
                     {item.title}
                   </h3>
 
                   {item.description ? (
-                    <p className="mt-[18px] max-w-[620px] text-[15px] font-medium leading-[1.45] tracking-[-0.01em] text-[#263b59] sm:text-[16px]">
+                    <p className="mt-[18px] max-w-[620px] text-[15px] font-medium leading-[1.45] tracking-[-0.01em] text-[#263b59] transition-colors duration-300 group-hover/compliance-card:text-[#1f334f] sm:text-[16px]">
                       {item.description}
                     </p>
                   ) : null}

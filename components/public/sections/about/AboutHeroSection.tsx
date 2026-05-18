@@ -20,7 +20,7 @@ export function AboutHeroSection({ data, className }: AboutHeroSectionProps) {
     <SectionReveal>
       <section
         className={cn(
-          "relative isolate overflow-hidden bg-[#10182b] text-white",
+          "group relative isolate overflow-hidden bg-[#10182b] text-white",
           "min-h-[380px] sm:min-h-[410px] lg:min-h-[455px]",
           className,
         )}
@@ -34,7 +34,7 @@ export function AboutHeroSection({ data, className }: AboutHeroSectionProps) {
             loading="eager"
             fetchPriority="high"
             sizes="100vw"
-            className="object-cover "
+            className="object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.03]"
           />
         ) : (
           <div className="absolute inset-0 bg-[linear-gradient(135deg,#10182b_0%,#18233a_52%,#10182b_100%)]" />
@@ -62,7 +62,7 @@ export function AboutHeroSection({ data, className }: AboutHeroSectionProps) {
                 "border border-white/18 bg-white/12 px-[13px]",
                 "text-[14px] font-extrabold leading-none text-white",
                 "shadow-[0_10px_28px_-20px_rgba(0,0,0,0.75)]",
-                "backdrop-blur-sm",
+                "backdrop-blur-sm transition-all duration-300 group-hover:-translate-y-0.5 group-hover:border-white/28 group-hover:bg-white/16",
               )}
             >
               {eyebrow}

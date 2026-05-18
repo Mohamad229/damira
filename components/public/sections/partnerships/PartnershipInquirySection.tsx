@@ -196,14 +196,14 @@ export function PartnershipInquirySection({
     <SectionReveal>
       <section
         className={cn(
-          "relative overflow-hidden bg-white",
+          "group/inquiry-section relative overflow-hidden bg-white",
           "py-[72px] sm:py-[82px] lg:py-[90px] xl:py-[96px]",
           className,
         )}
         dir={isArabic ? "rtl" : "ltr"}
       >
-        <div className="pointer-events-none absolute left-[-190px] top-[-180px] h-[380px] w-[380px] rounded-full bg-[#fff0e4] blur-3xl" />
-        <div className="pointer-events-none absolute bottom-[-220px] right-[-180px] h-[440px] w-[440px] rounded-full bg-[#e2f4ff] blur-3xl" />
+        <div className="pointer-events-none absolute left-[-190px] top-[-180px] h-[380px] w-[380px] rounded-full bg-[#fff0e4] blur-3xl transition-transform duration-700 ease-out group-hover/inquiry-section:scale-110" />
+        <div className="pointer-events-none absolute bottom-[-220px] right-[-180px] h-[440px] w-[440px] rounded-full bg-[#e2f4ff] blur-3xl transition-transform duration-700 ease-out group-hover/inquiry-section:scale-110" />
 
         <div
           className={cn(
@@ -232,11 +232,11 @@ export function PartnershipInquirySection({
                 "sm:px-[28px] sm:py-[34px]",
                 "lg:px-[32px] lg:py-[38px]",
                 "xl:flex xl:min-h-[620px] xl:flex-col xl:justify-center",
-                "shadow-[0_24px_50px_-42px_rgba(15,23,42,0.45)]",
+                "shadow-[0_24px_50px_-42px_rgba(15,23,42,0.45)] transition-all duration-500 ease-out hover:-translate-y-1 hover:shadow-[0_32px_70px_-46px_rgba(15,23,42,0.55)]",
               )}
             >
-              <div className="pointer-events-none absolute right-[-95px] top-[-95px] h-[230px] w-[230px] rounded-full bg-[#fff0e4] blur-2xl" />
-              <div className="pointer-events-none absolute bottom-[-130px] left-[-130px] h-[280px] w-[280px] rounded-full bg-[#edfbee] blur-3xl" />
+              <div className="pointer-events-none absolute right-[-95px] top-[-95px] h-[230px] w-[230px] rounded-full bg-[#fff0e4] blur-2xl transition-transform duration-700 ease-out group-hover/inquiry-section:scale-110" />
+              <div className="pointer-events-none absolute bottom-[-130px] left-[-130px] h-[280px] w-[280px] rounded-full bg-[#edfbee] blur-3xl transition-transform duration-700 ease-out group-hover/inquiry-section:scale-110" />
 
               <div
                 className={cn(
@@ -246,7 +246,7 @@ export function PartnershipInquirySection({
                 )}
               >
                 {eyebrow ? (
-                  <span className="mb-[18px] inline-flex rounded-full bg-[#fff0e4] px-[16px] py-[7px] text-[11px] font-black uppercase leading-none tracking-[0.18em] text-[#f58238] sm:text-[12px]">
+                  <span className="mb-[18px] inline-flex rounded-full bg-[#fff0e4] px-[16px] py-[7px] text-[11px] font-black uppercase leading-none tracking-[0.18em] text-[#f58238] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-[#ffe8d6] sm:text-[12px]">
                     {eyebrow}
                   </span>
                 ) : null}
@@ -295,26 +295,26 @@ export function PartnershipInquirySection({
                           "rounded-[16px] border border-[#edf2f7] bg-white",
                           "px-[18px] py-[16px]",
                           "shadow-[0_18px_40px_-36px_rgba(15,23,42,0.45)]",
-                          "transition-all duration-300 hover:-translate-y-0.5 hover:border-[#f9d7bf]",
+                          "transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.01] hover:border-[#f9d7bf] hover:shadow-[0_18px_40px_-34px_rgba(15,23,42,0.5)]",
                           "sm:flex-col sm:text-center",
                           "xl:flex-row",
                           isArabic ? "xl:text-right" : "xl:text-left",
                         )}
                       >
-                        <div className="flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-full bg-[#fff0e4] text-[#f58238] transition-transform duration-300 group-hover:scale-105">
+                        <div className="flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-full bg-[#fff0e4] text-[#f58238] transition-transform duration-300 ease-out group-hover:scale-110">
                           {isSectionMediaIcon(feature.icon) ? (
                             <SectionIconImage
                               icon={feature.icon}
                               width={24}
                               height={24}
-                              className="h-[22px] w-[22px] object-contain"
+                              className="h-[22px] w-[22px] object-contain transition-transform duration-300 ease-out group-hover:scale-105"
                             />
                           ) : (
-                            <Icon className="h-[22px] w-[22px] stroke-[2.35]" />
+                            <Icon className="h-[22px] w-[22px] stroke-[2.35] transition-transform duration-300 ease-out group-hover:scale-105" />
                           )}
                         </div>
 
-                        <p className="text-[14px] font-black leading-[1.25] tracking-[-0.02em] text-[#071329] sm:text-[15px]">
+                        <p className="text-[14px] font-black leading-[1.25] tracking-[-0.02em] text-[#071329] transition-colors duration-300 group-hover:text-[#f58238] sm:text-[15px]">
                           {feature.title}
                         </p>
                       </div>
@@ -334,7 +334,7 @@ export function PartnershipInquirySection({
                 "md:p-[26px]",
                 "lg:p-[30px]",
                 "xl:p-[32px]",
-                "shadow-[0_24px_50px_-42px_rgba(15,23,42,0.45)]",
+                "shadow-[0_24px_50px_-42px_rgba(15,23,42,0.45)] transition-all duration-500 ease-out hover:-translate-y-1 hover:shadow-[0_32px_70px_-46px_rgba(15,23,42,0.55)]",
               )}
             >
               <PublicInquiryForm

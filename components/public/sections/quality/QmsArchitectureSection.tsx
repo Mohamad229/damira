@@ -184,8 +184,9 @@ function QmsHubCard({
   return (
     <div
       className={cn(
-        "relative z-20 mx-auto flex flex-col items-center justify-center border-2 border-[#4cb748] bg-white text-center",
+        "group/qms-hub relative z-20 mx-auto flex flex-col items-center justify-center border-2 border-[#4cb748] bg-white text-center",
         "shadow-[0_34px_78px_-52px_rgba(47,143,84,0.95)]",
+        "transition-all duration-300 ease-outhover:scale-[1.02] hover:shadow-[0_38px_86px_-50px_rgba(47,143,84,0.98)]",
         compact
           ? "h-[126px] w-[196px] rounded-full px-6 py-5"
           : "w-full rounded-[28px] px-6 py-7 sm:rounded-[32px] sm:px-8 sm:py-8",
@@ -193,7 +194,7 @@ function QmsHubCard({
       )}
     >
       {!compact ? (
-        <div className="mb-[14px] flex h-[58px] w-[58px] items-center justify-center rounded-full bg-[#edfbee] text-[#2f8f54]">
+        <div className="mb-[14px] flex h-[58px] w-[58px] items-center justify-center rounded-full bg-[#edfbee] text-[#2f8f54] transition-transform duration-300 ease-out group-hover/qms-hub:scale-110">
           <ShieldCheck className="h-[30px] w-[30px] stroke-[2.35]" />
         </div>
       ) : null}
@@ -235,7 +236,7 @@ function QmsNodeCard({
       className={cn(
         "group relative w-full overflow-hidden border border-[#d9eadf] bg-white/95 backdrop-blur",
         "shadow-[0_22px_50px_-40px_rgba(15,23,42,0.55)]",
-        "transition-all duration-300 hover:-translate-y-1 hover:bg-white",
+        "transition-all duration-300 ease-out hover:-translate-y-1.5 hover:scale-[1.015] hover:bg-white",
         "hover:shadow-[0_34px_74px_-50px_rgba(15,23,42,0.75)]",
         theme.hoverBorder,
         theme.glow,
@@ -283,11 +284,11 @@ function QmsNodeCard({
         </div>
 
         <div>
-          <h4 className="text-[15px] font-black leading-[1.35] tracking-[-0.03em] text-[#071329] sm:text-[16px]">
+          <h4 className="text-[15px] font-black leading-[1.35] tracking-[-0.03em] text-[#071329] transition-colors duration-300 group-hover:text-[#009fe3] sm:text-[16px]">
             {item.title}
           </h4>
 
-          <p className="mt-[8px] text-[13px] font-semibold leading-[1.55] tracking-[-0.01em] text-[#58708d] sm:text-[14px]">
+          <p className="mt-[8px] text-[13px] font-semibold leading-[1.55] tracking-[-0.01em] text-[#58708d] transition-colors duration-300 group-hover:text-[#425c78] sm:text-[14px]">
             {item.description}
           </p>
         </div>
@@ -309,13 +310,13 @@ export function QmsArchitectureSection({ data }: QmsArchitectureSectionProps) {
 
   return (
     <SectionReveal>
-      <section className="relative overflow-hidden bg-[#f8fbff] py-[76px] sm:py-[88px] lg:py-[96px] xl:py-[104px]">
-        <div className="pointer-events-none absolute left-[-180px] top-[-170px] h-[360px] w-[360px] rounded-full bg-[#e8f8ed] blur-3xl" />
-        <div className="pointer-events-none absolute bottom-[-190px] right-[-160px] h-[430px] w-[430px] rounded-full bg-[#e2f4ff] blur-3xl" />
+      <section className="group/qms-section relative overflow-hidden bg-[#f8fbff] py-[76px] sm:py-[88px] lg:py-[96px] xl:py-[104px]">
+        <div className="pointer-events-none absolute left-[-180px] top-[-170px] h-[360px] w-[360px] rounded-full bg-[#e8f8ed] blur-3xl transition-transform duration-700 ease-out group-hover/qms-section:scale-110" />
+        <div className="pointer-events-none absolute bottom-[-190px] right-[-160px] h-[430px] w-[430px] rounded-full bg-[#e2f4ff] blur-3xl transition-transform duration-700 ease-out group-hover/qms-section:scale-110" />
 
         <div className="relative z-10 mx-auto w-full max-w-[1420px] px-4 sm:px-6 md:px-8 lg:px-[72px] 2xl:px-[120px]">
           <div className="mx-auto max-w-[880px] text-center">
-            <span className="inline-flex rounded-full bg-[#e5f3ec] px-[16px] py-[7px] text-[11px] font-black uppercase leading-none tracking-[0.18em] text-[#2f8f54] sm:text-[12px]">
+            <span className="inline-flex rounded-full bg-[#e5f3ec] px-[16px] py-[7px] text-[11px] font-black uppercase leading-none tracking-[0.18em] text-[#2f8f54] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-[#dff0e7] sm:text-[12px]">
               {eyebrow}
             </span>
 

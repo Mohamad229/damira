@@ -119,7 +119,7 @@ export function HomeKeyStrengthsSection({
 
             {/* Image - under title on small screens, left side on large screens */}
             <div className="order-2 lg:order-1 lg:col-start-1 lg:row-span-2 lg:row-start-1 lg:self-center rtl:lg:col-start-2">
-              <div className="relative">
+              <div className="group/key-image relative">
                 <div
                   className={cn(
                     "relative overflow-hidden bg-[#eef6fb]",
@@ -134,7 +134,7 @@ export function HomeKeyStrengthsSection({
                     alt={sectionImageAlt}
                     fill
                     sizes="(min-width: 1536px) 42vw, (min-width: 1024px) 46vw, 100vw"
-                    className="object-cover"
+                    className="object-cover transition-transform duration-700 ease-out group-hover/key-image:scale-[1.035]"
                   />
                 </div>
 
@@ -176,15 +176,17 @@ export function HomeKeyStrengthsSection({
                     <article
                       key={item.id || `${item.title}-${index}`}
                       className={cn(
-                        "grid items-start",
+                        "group/key-item grid items-start rounded-[22px]",
                         "grid-cols-[38px_1fr] gap-[14px]",
                         "sm:grid-cols-[40px_1fr] sm:gap-[16px]",
+                        "px-3 py-3 -mx-3",
+                        "transition-all duration-300 ease-out hover:-translate-y-1 hover:bg-[#f8fbff] hover:shadow-[0_18px_38px_-32px_rgba(15,23,42,0.22)]",
                       )}
                     >
                       <div
                         className={cn(
                           "flex shrink-0 items-center justify-center rounded-full",
-                          "border border-[#e4edf6] bg-[#f8fbff] text-[#8ca4c2]",
+                          "border border-[#e4edf6] bg-[#f8fbff] text-[#8ca4c2] transition-all duration-300 group-hover/key-item:border-[#b9e3f8] group-hover/key-item:bg-[#eaf7ff] group-hover/key-item:text-[#009fe3] group-hover/key-item:scale-105",
                           "h-[38px] w-[38px]",
                           "sm:h-[40px] sm:w-[40px]",
                         )}
@@ -204,7 +206,7 @@ export function HomeKeyStrengthsSection({
                       <div className="pt-[1px]">
                         <h3
                           className={cn(
-                            "font-black leading-[1.2] tracking-[-0.02em] text-[#11182d]",
+                            "font-black leading-[1.2] tracking-[-0.02em] text-[#11182d] transition-colors duration-300 group-hover/key-item:text-[#009fe3]",
                             "text-[17px] sm:text-[18px]",
                           )}
                         >

@@ -22,12 +22,12 @@ export function PipelineSegmentsSection({
     <SectionReveal>
       <section
         className={cn(
-          "relative overflow-hidden bg-white",
+          "group/pipeline relative overflow-hidden bg-white",
           "py-[72px] sm:py-[82px] lg:py-[90px] xl:py-[96px]",
         )}
       >
         {/* Soft background depth */}
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(226,244,255,0.45),transparent_34%)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(226,244,255,0.45),transparent_34%)] transition-transform duration-700 ease-out group-hover/pipeline:scale-[1.015]" />
 
         <div
           className={cn(
@@ -82,8 +82,8 @@ export function PipelineSegmentsSection({
                 className={cn(
                   "inline-flex items-center justify-center rounded-full",
                   "border border-[#d9e4ef] bg-[#f8fbff]",
-                  "shadow-none transition-all duration-300",
-                  "hover:-translate-y-0.5 hover:border-[#9ed8f8] hover:bg-white hover:text-[#009fe3]",
+                  "shadow-none transition-all duration-300 ease-out",
+                  "hover:-translate-y-1 hover:scale-[1.015] hover:border-[#9ed8f8] hover:bg-white hover:text-[#009fe3] hover:shadow-[0_16px_34px_-28px_rgba(15,23,42,0.45)]",
 
                   // Mobile pill
                   "min-h-[42px] px-[17px]",
@@ -97,7 +97,7 @@ export function PipelineSegmentsSection({
                   "xl:min-h-[50px] xl:px-[24px] xl:text-[16px]",
                 )}
               >
-                <span className="max-w-[220px] truncate sm:max-w-[260px] md:max-w-none">
+                <span className="max-w-[220px] truncate transition-colors duration-300 sm:max-w-[260px] md:max-w-none">
                   {item.title}
                 </span>
               </div>

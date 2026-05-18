@@ -159,13 +159,13 @@ export function EthicsComplianceSection({
 
   return (
     <SectionReveal>
-      <section className="relative overflow-hidden bg-white py-[88px] sm:py-[96px] lg:py-[104px]">
-        <div className="pointer-events-none absolute left-[-180px] top-[-140px] h-[380px] w-[380px] rounded-full bg-[#edfbee] opacity-80 blur-3xl" />
-        <div className="pointer-events-none absolute bottom-[-170px] right-[-160px] h-[420px] w-[420px] rounded-full bg-[#e2f4ff] opacity-80 blur-3xl" />
+      <section className="group/ethics relative overflow-hidden bg-white py-[88px] sm:py-[96px] lg:py-[104px]">
+        <div className="pointer-events-none absolute left-[-180px] top-[-140px] h-[380px] w-[380px] rounded-full bg-[#edfbee] opacity-80 blur-3xl transition-transform duration-700 ease-out group-hover/ethics:scale-110" />
+        <div className="pointer-events-none absolute bottom-[-170px] right-[-160px] h-[420px] w-[420px] rounded-full bg-[#e2f4ff] opacity-80 blur-3xl transition-transform duration-700 ease-out group-hover/ethics:scale-110" />
 
         <div className="relative z-10 w-full px-4 sm:px-6 md:px-8 lg:px-[120px] 2xl:px-[210px]">
           <div className="mx-auto max-w-[860px] text-center">
-            <span className="inline-flex rounded-full bg-[#e5f3ec] px-[16px] py-[7px] text-[12px] font-black uppercase leading-none tracking-[0.18em] text-[#2f8f54]">
+            <span className="inline-flex rounded-full bg-[#e5f3ec] px-[16px] py-[7px] text-[12px] font-black uppercase leading-none tracking-[0.18em] text-[#2f8f54] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-[#dff0e7]">
               {eyebrow}
             </span>
 
@@ -190,8 +190,8 @@ export function EthicsComplianceSection({
                   key={item.id}
                   className={cn(
                     "group relative flex min-h-[310px] flex-col overflow-hidden rounded-[34px] border border-[#e5eef8] bg-white px-[30px] py-[34px]",
-                    "shadow-[0_22px_55px_-48px_rgba(15,23,42,0.55)] transition-all duration-300",
-                    "hover:-translate-y-1 hover:shadow-[0_32px_70px_-48px_rgba(15,23,42,0.75)]",
+                    "shadow-[0_22px_55px_-48px_rgba(15,23,42,0.55)] transition-all duration-300 ease-out",
+                    "hover:-translate-y-1.5 hover:scale-[1.01] hover:shadow-[0_34px_76px_-48px_rgba(15,23,42,0.78)]",
                     theme.border,
                   )}
                 >
@@ -223,19 +223,19 @@ export function EthicsComplianceSection({
                     )}
                   </div>
 
-                  <h3 className="relative z-10 text-[21px] font-black leading-[1.2] tracking-[-0.035em] text-[#071329]">
+                  <h3 className="relative z-10 text-[21px] font-black leading-[1.2] tracking-[-0.035em] text-[#071329] transition-colors duration-300 group-hover:text-[#009fe3]">
                     {item.title}
                   </h3>
 
-                  <p className="relative z-10 mt-[18px] text-[15px] font-medium leading-[1.58] tracking-[-0.01em] text-[#263b59] sm:text-[16px]">
+                  <p className="relative z-10 mt-[18px] text-[15px] font-medium leading-[1.58] tracking-[-0.01em] text-[#263b59] transition-colors duration-300 group-hover:text-[#1f334f] sm:text-[16px]">
                     {item.description}
                   </p>
 
                   <div className="mt-auto pt-[28px]">
                     <div className="h-px w-full bg-[#e8eef6]" />
 
-                    <div className="mt-[18px] inline-flex items-center gap-[9px] text-[13px] font-black uppercase tracking-[0.11em] text-[#2f8f54]">
-                      <ShieldCheck className="h-[16px] w-[16px] stroke-[2.3]" />
+                    <div className="mt-[18px] inline-flex items-center gap-[9px] text-[13px] font-black uppercase tracking-[0.11em] text-[#2f8f54] transition-transform duration-300 ease-out group-hover:translate-x-1 rtl:group-hover:-translate-x-1">
+                      <ShieldCheck className="h-[16px] w-[16px] stroke-[2.3] transition-transform duration-300 ease-out group-hover:scale-110" />
                       {item.statusLabel || "Compliant"}
                     </div>
                   </div>

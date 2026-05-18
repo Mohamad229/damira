@@ -108,7 +108,10 @@ export function AboutVisionMissionSection({
                     "rounded-[44px]",
                     "px-[28px] py-[34px]",
                     "shadow-[0_24px_50px_-42px_rgba(15,23,42,0.55)]",
-                    "transition-all duration-300 hover:-translate-y-1",
+                    "transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.01]",
+                    isMission
+                      ? "hover:shadow-[0_30px_70px_-48px_rgba(0,159,227,0.8)]"
+                      : "hover:border-[#cfe4f5] hover:shadow-[0_30px_70px_-48px_rgba(15,23,42,0.55)]",
                     "sm:min-h-[300px] sm:rounded-[56px] sm:px-[36px] sm:py-[40px]",
                     "md:min-h-[315px] md:rounded-[72px] md:px-[42px] md:py-[44px]",
                     "lg:min-h-[330px] lg:rounded-[82px] lg:px-[42px] lg:py-[46px]",
@@ -132,7 +135,7 @@ export function AboutVisionMissionSection({
                     {/* Icon placeholder */}
                     <div
                       className={cn(
-                        "flex items-center justify-center",
+                        "flex items-center justify-center transition-transform duration-300 group-hover:scale-105",
                         "mb-[26px] h-[50px] w-[50px] rounded-[15px]",
                         "sm:mb-[30px] sm:h-[54px] sm:w-[54px] sm:rounded-[16px]",
                         "xl:mb-[36px] xl:h-[56px] xl:w-[56px]",

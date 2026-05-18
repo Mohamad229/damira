@@ -31,7 +31,7 @@ export function HomeCtaSection({ data }: HomeCtaSectionProps) {
         <div className="relative z-10 w-full px-4 sm:px-6 md:px-8 lg:px-[210px]">
           <div className="mx-auto max-w-[1120px] text-center">
             {data.eyebrow ? (
-              <p className="mb-5 text-[13px] font-extrabold uppercase leading-none text-white/75">
+              <p className="mb-5 inline-flex rounded-full bg-white/10 px-4 py-2 text-[13px] font-extrabold uppercase leading-none text-white/75 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/15">
                 {data.eyebrow}
               </p>
             ) : null}
@@ -55,7 +55,7 @@ export function HomeCtaSection({ data }: HomeCtaSectionProps) {
                       "inline-flex h-[54px] min-w-[304px] items-center justify-center rounded-full",
                       "bg-white px-8 text-[16px] font-extrabold leading-none text-[#009bd8]",
                       "shadow-[0_18px_35px_-24px_rgba(15,23,42,0.65)]",
-                      "transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#f7fbff]",
+                      "transition-all duration-300 hover:-translate-y-1 hover:scale-[1.01] hover:bg-[#f7fbff] active:scale-[0.99]",
                       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#009bd8]",
                     )}
                   >
@@ -69,7 +69,7 @@ export function HomeCtaSection({ data }: HomeCtaSectionProps) {
                     className={cn(
                       "inline-flex h-[54px] min-w-[227px] items-center justify-center rounded-full",
                       "border border-white/28 bg-transparent px-8 text-[16px] font-extrabold leading-none text-white",
-                      "transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/10",
+                      "transition-all duration-300 hover:-translate-y-1 hover:scale-[1.01] hover:bg-white/10 active:scale-[0.99]",
                       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#009bd8]",
                     )}
                   >

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useLocale } from "next-intl";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { Link } from "@/i18n/navigation";
@@ -39,6 +40,8 @@ function getProductImages(data: ContentSectionData): ProductImage[] {
 }
 
 export function ProductInfoSection({ data }: ProductInfoSectionProps) {
+  const locale = useLocale();
+  const isRtl = locale === "ar";
   const images = useMemo(() => getProductImages(data), [data]);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
 
@@ -57,11 +60,14 @@ export function ProductInfoSection({ data }: ProductInfoSectionProps) {
     );
   }
 
+  const handleLeftControl = isRtl ? goToNextImage : goToPreviousImage;
+  const handleRightControl = isRtl ? goToPreviousImage : goToNextImage;
+
   return (
     <SectionReveal>
       <section
         className={cn(
-          "relative overflow-hidden bg-[#f8fbff]",
+          "group/product-info relative overflow-hidden bg-[#f8fbff]",
           "py-[72px] sm:py-[82px] lg:py-[90px] xl:py-[96px]",
         )}
       >
@@ -89,6 +95,7 @@ export function ProductInfoSection({ data }: ProductInfoSectionProps) {
                 "lg:h-[520px]",
                 "xl:h-[560px]",
                 "shadow-[0_30px_70px_-52px_rgba(15,23,42,0.65)]",
+                "transition-all duration-500 ease-out hover:-translate-y-1 hover:shadow-[0_36px_84px_-52px_rgba(15,23,42,0.78)]",
               )}
             >
               {activeImage?.src ? (
@@ -100,7 +107,7 @@ export function ProductInfoSection({ data }: ProductInfoSectionProps) {
                   loading={activeImageIndex === 0 ? "eager" : "lazy"}
                   fetchPriority={activeImageIndex === 0 ? "high" : "auto"}
                   sizes="(min-width: 1536px) 38vw, (min-width: 1024px) 42vw, 100vw"
-                  className="public-image-hover object-cover"
+                  className="public-image-hover object-cover transition-transform duration-700 ease-out group-hover:scale-[1.025]"
                 />
               ) : (
                 <div className="h-full w-full bg-[linear-gradient(135deg,#daecd4,#ffffff,#c5e1f5)]" />
@@ -110,16 +117,16 @@ export function ProductInfoSection({ data }: ProductInfoSectionProps) {
                 <>
                   <button
                     type="button"
-                    onClick={goToPreviousImage}
-                    aria-label="Previous product image"
+                    onClick={handleLeftControl}
+                    aria-label={isRtl ? "Next product image" : "Previous product image"}
                     className={cn(
-                    "absolute left-[12px] top-1/2 flex -translate-y-1/2 items-center justify-center rounded-full rtl:left-auto rtl:right-[12px]",
+                      "absolute left-[12px] top-1/2 flex -translate-y-1/2 items-center justify-center rounded-full",
                       "h-[38px] w-[38px] sm:h-[40px] sm:w-[40px] xl:h-[42px] xl:w-[42px]",
                       "border border-[#dce9f6] bg-white/90 text-[#071329]",
                       "shadow-[0_14px_28px_-22px_rgba(15,23,42,0.7)] backdrop-blur",
                       "transition-all duration-300 hover:-translate-y-[calc(50%+2px)] hover:bg-white hover:text-[#009fe3]",
                       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#009fe3] focus-visible:ring-offset-2",
-                      "sm:left-[16px] xl:left-[18px] rtl:sm:left-auto rtl:sm:right-[16px] rtl:xl:left-auto rtl:xl:right-[18px]",
+                      "sm:left-[16px] xl:left-[18px]",
                     )}
                   >
                     <ChevronLeft className="h-[19px] w-[19px] stroke-[2.5] xl:h-[21px] xl:w-[21px]" />
@@ -127,16 +134,16 @@ export function ProductInfoSection({ data }: ProductInfoSectionProps) {
 
                   <button
                     type="button"
-                    onClick={goToNextImage}
-                    aria-label="Next product image"
+                    onClick={handleRightControl}
+                    aria-label={isRtl ? "Previous product image" : "Next product image"}
                     className={cn(
-                      "absolute right-[12px] top-1/2 flex -translate-y-1/2 items-center justify-center rounded-full rtl:left-[12px] rtl:right-auto",
+                      "absolute right-[12px] top-1/2 flex -translate-y-1/2 items-center justify-center rounded-full",
                       "h-[38px] w-[38px] sm:h-[40px] sm:w-[40px] xl:h-[42px] xl:w-[42px]",
                       "border border-[#dce9f6] bg-white/90 text-[#071329]",
                       "shadow-[0_14px_28px_-22px_rgba(15,23,42,0.7)] backdrop-blur",
                       "transition-all duration-300 hover:-translate-y-[calc(50%+2px)] hover:bg-white hover:text-[#009fe3]",
                       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#009fe3] focus-visible:ring-offset-2",
-                      "sm:right-[16px] xl:right-[18px] rtl:sm:left-[16px] rtl:sm:right-auto rtl:xl:left-[18px] rtl:xl:right-auto",
+                      "sm:right-[16px] xl:right-[18px]",
                     )}
                   >
                     <ChevronRight className="h-[19px] w-[19px] stroke-[2.5] xl:h-[21px] xl:w-[21px]" />
@@ -188,10 +195,10 @@ export function ProductInfoSection({ data }: ProductInfoSectionProps) {
                       "h-[62px] w-[78px] rounded-[12px]",
                       "sm:h-[70px] sm:w-[88px] sm:rounded-[14px]",
                       "xl:h-[74px] xl:w-[92px] xl:rounded-[16px]",
-                      "border bg-white transition-all duration-300",
+                      "border bg-white transition-all duration-300 ease-out hover:-translate-y-0.5 hover:scale-[1.03]",
                       index === activeImageIndex
-                        ? "border-[#009fe3] ring-2 ring-[#009fe3]/20"
-                        : "border-[#dce9f6] hover:border-[#91caee]",
+                        ? "border-[#009fe3] ring-2 ring-[#009fe3]/20 shadow-[0_12px_24px_-20px_rgba(0,159,227,0.85)]"
+                        : "border-[#dce9f6] hover:border-[#91caee] hover:shadow-[0_12px_24px_-22px_rgba(15,23,42,0.45)]",
                     )}
                   >
                     <CmsImage
@@ -199,7 +206,7 @@ export function ProductInfoSection({ data }: ProductInfoSectionProps) {
                       alt={image.alt || data.title || "Product thumbnail"}
                       fill
                       sizes="92px"
-                      className="object-cover"
+                      className="object-cover transition-transform duration-500 ease-out hover:scale-[1.04]"
                     />
                   </button>
                 ))}
@@ -216,7 +223,7 @@ export function ProductInfoSection({ data }: ProductInfoSectionProps) {
                   "h-[24px] px-[12px]",
                   "text-[11px] font-black uppercase leading-none tracking-[0.2em] text-[#2a8d33]",
                   "sm:mb-[22px] sm:px-[14px] sm:text-[12px] sm:tracking-[0.24em]",
-                  "xl:mb-[24px]",
+                  "transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-[#daecd4] xl:mb-[24px]",
                 )}
               >
                 {data.eyebrow}
@@ -278,14 +285,14 @@ export function ProductInfoSection({ data }: ProductInfoSectionProps) {
                   <div
                     key={bullet}
                     className={cn(
-                      "flex min-h-[42px] items-center rounded-full",
+                      "group/bullet flex min-h-[42px] items-center rounded-full",
                       "border border-[#dce9f6] bg-white px-[16px]",
                       "text-[13px] font-black leading-[1.2] tracking-[-0.012em] text-[#071329]",
                       "sm:min-h-[44px] sm:px-[17px] sm:text-[14px]",
-                      "xl:min-h-[46px] xl:px-[18px]",
+                      "transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-[#91caee] hover:bg-white hover:shadow-[0_14px_28px_-24px_rgba(15,23,42,0.45)] xl:min-h-[46px] xl:px-[18px]",
                     )}
                   >
-                    <span className="mr-[10px] inline-block h-[8px] w-[8px] shrink-0 rounded-full bg-[#4cb748] rtl:ml-[10px] rtl:mr-0" />
+                    <span className="mr-[10px] inline-block h-[8px] w-[8px] shrink-0 rounded-full bg-[#4cb748] transition-transform duration-300 ease-out group-hover/bullet:scale-125 rtl:ml-[10px] rtl:mr-0" />
                     <span>{bullet}</span>
                   </div>
                 ))}
@@ -302,11 +309,11 @@ export function ProductInfoSection({ data }: ProductInfoSectionProps) {
                       "inline-flex items-center justify-center rounded-full",
                       "h-[48px] px-6",
                       "text-[14px] font-black leading-none tracking-[-0.01em]",
-                      "transition-all duration-300 hover:-translate-y-0.5",
+                      "transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.02] active:scale-[0.99]",
                       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#009fe3] focus-visible:ring-offset-2",
                       index === 0
-                        ? "bg-[#009fe3] text-white hover:bg-[#0092d3]"
-                        : "border border-[#91caee] bg-white text-[#009fe3] hover:bg-[#f7fbff]",
+                        ? "bg-[#009fe3] text-white hover:bg-[#0092d3] hover:shadow-[0_18px_38px_-24px_rgba(0,159,227,0.95)]"
+                        : "border border-[#91caee] bg-white text-[#009fe3] hover:bg-[#f7fbff] hover:shadow-[0_16px_34px_-26px_rgba(15,23,42,0.45)]",
                     )}
                   >
                     {action.label}
