@@ -13,6 +13,7 @@ import type {
   PageData,
   SectionData,
   GetPageContentResponse,
+  SectionSettings,
 } from "@/lib/content/types";
 import type { Locale } from "@/i18n/config";
 
@@ -24,7 +25,20 @@ interface PageContentFieldRecord {
 
 interface PageContentSectionWithFields {
   sectionKey: string;
+  isVisible?: boolean | null;
+  navigationLabel?: string | null;
   fields: PageContentFieldRecord[];
+}
+
+function normalizeSectionSettings(
+  section: PageContentSectionWithFields,
+): SectionSettings {
+  const navigationLabel = section.navigationLabel?.trim();
+
+  return {
+    isVisible: section.isVisible !== false,
+    navigationLabel: navigationLabel || "",
+  };
 }
 
 /**
@@ -73,11 +87,15 @@ export async function getPageContent(
     }
 
     const sections: Record<string, SectionData> = {};
-    for (const section of content.sections) {
+    const sectionSettings: Record<string, SectionSettings> = {};
+    for (const section of content.sections as PageContentSectionWithFields[]) {
       const data = extractSectionData([section], section.sectionKey);
       if (data) {
         sections[section.sectionKey] = data;
       }
+      sectionSettings[section.sectionKey] = normalizeSectionSettings(
+        section,
+      );
     }
 
     return {
@@ -87,6 +105,7 @@ export async function getPageContent(
       metaTitle: content.metaTitle,
       metaDescription: content.metaDescription,
       sections,
+      sectionSettings,
     };
   } catch (error) {
     console.error(`Error loading page content: ${pageKey}/${locale}`, error);
@@ -105,6 +124,18 @@ async function getStructuredPageData(
     title: content.title,
     metaTitle: content.metaTitle,
     metaDescription: content.metaDescription,
+    visibility: Object.fromEntries(
+      Object.entries(content.sectionSettings).map(([sectionKey, settings]) => [
+        sectionKey,
+        settings.isVisible,
+      ]),
+    ),
+    navigationLabels: Object.fromEntries(
+      Object.entries(content.sectionSettings).map(([sectionKey, settings]) => [
+        sectionKey,
+        settings.navigationLabel,
+      ]),
+    ),
     ...content.sections,
   };
 }
@@ -162,11 +193,15 @@ export async function getAllPageContents(
 
     return contents.map((content) => {
       const sections: Record<string, SectionData> = {};
-      for (const section of content.sections) {
+      const sectionSettings: Record<string, SectionSettings> = {};
+      for (const section of content.sections as PageContentSectionWithFields[]) {
         const data = extractSectionData([section], section.sectionKey);
         if (data) {
           sections[section.sectionKey] = data;
         }
+        sectionSettings[section.sectionKey] = normalizeSectionSettings(
+          section,
+        );
       }
 
       return {
@@ -176,6 +211,7 @@ export async function getAllPageContents(
         metaTitle: content.metaTitle,
         metaDescription: content.metaDescription,
         sections,
+        sectionSettings,
       };
     });
   } catch (error) {
@@ -203,7 +239,7 @@ export async function getPageContentSections(
       },
     });
 
-    return content?.sections || [];
+    return (content?.sections || []) as PageContentSectionWithFields[];
   } catch (error) {
     console.error(`Error loading page sections: ${pageKey}/${locale}`, error);
     return [];

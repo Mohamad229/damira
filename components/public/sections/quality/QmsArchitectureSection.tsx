@@ -240,7 +240,7 @@ function QmsNodeCard({
         theme.hoverBorder,
         theme.glow,
         variant === "diagram"
-          ? "rounded-[22px] px-5 py-5 text-center"
+          ? "rounded-[24px] px-5 py-5 text-center md:px-5 lg:px-6 lg:py-6"
           : "rounded-[24px] px-5 py-5 sm:rounded-[26px] sm:px-6 sm:py-6",
         className,
       )}
@@ -328,131 +328,120 @@ export function QmsArchitectureSection({ data }: QmsArchitectureSectionProps) {
             </p>
           </div>
 
-          <div className="relative mx-auto mt-[48px] max-w-[1220px] sm:mt-[56px]">
-            <div className="pointer-events-none absolute left-1/2 top-1/2 hidden h-[540px] w-[760px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(76,183,72,0.13),transparent_67%)] blur-[2px] xl:block" />
+          <div className="relative mx-auto mt-[42px] w-full max-w-[1360px] sm:mt-[52px] lg:mt-[62px] xl:max-w-[1480px]">
+            <div className="pointer-events-none absolute left-1/2 top-1/2 hidden h-[520px] w-[920px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(76,183,72,0.16),transparent_68%)] blur-[2px] md:block xl:h-[600px] xl:w-[1040px]" />
 
-            {/* Small / tablet / medium layout: stacked free cards */}
-            <div className="relative z-10 xl:hidden">
-              <QmsHubCard label={hubLabel} className="max-w-[340px]" />
+            {/* Mobile layout: vertical cards only on small screens */}
+            <div className="relative z-10 md:hidden">
+              <QmsHubCard label={hubLabel} className="max-w-[320px]" />
 
-              <div className="mx-auto mt-7 grid max-w-[980px] grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:gap-6">
+              <div className="mx-auto mt-7 grid max-w-[520px] grid-cols-1 gap-4">
                 {items.map((item, index) => (
                   <QmsNodeCard
                     key={item.id}
                     item={item}
                     index={index}
                     variant="grid"
-                    className={cn(
-                      "min-h-[150px]",
-                      index === 4 && "sm:col-span-2",
-                    )}
+                    className="min-h-[150px]"
                   />
                 ))}
               </div>
             </div>
 
-            {/* Desktop layout: free pentagon around the QMS hub */}
-            <div className="relative hidden min-h-[620px] xl:block">
+            {/* Tablet / laptop / desktop layout: pentagon diagram stays visible until mobile */}
+            <div className="relative hidden min-h-[610px] md:block lg:min-h-[650px] xl:min-h-[680px]">
               <svg
                 className="pointer-events-none absolute inset-0 z-0 h-full w-full"
-                viewBox="0 0 1220 620"
+                viewBox="0 0 1280 680"
                 preserveAspectRatio="none"
                 aria-hidden="true"
               >
-                {/* Pentagon outline */}
                 <path
-                  d="M610 76 L1003 200 L897 505 L323 505 L217 200 Z"
+                  d="M640 70 L1112 224 L972 590 L308 590 L168 224 Z"
                   fill="none"
                   stroke="#bfe8c7"
                   strokeWidth="2"
-                  strokeDasharray="9 12"
+                  strokeDasharray="9 13"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 />
 
-                {/* Hub spokes */}
                 <path
-                  d="M610 310 L610 76"
+                  d="M640 340 L640 70"
                   stroke="#bfe8c7"
                   strokeWidth="2"
-                  strokeDasharray="8 11"
+                  strokeDasharray="8 12"
                   strokeLinecap="round"
                 />
                 <path
-                  d="M610 310 L1003 200"
+                  d="M640 340 L1112 224"
                   stroke="#bfe8c7"
                   strokeWidth="2"
-                  strokeDasharray="8 11"
+                  strokeDasharray="8 12"
                   strokeLinecap="round"
                 />
                 <path
-                  d="M610 310 L897 505"
+                  d="M640 340 L972 590"
                   stroke="#bfe8c7"
                   strokeWidth="2"
-                  strokeDasharray="8 11"
+                  strokeDasharray="8 12"
                   strokeLinecap="round"
                 />
                 <path
-                  d="M610 310 L323 505"
+                  d="M640 340 L308 590"
                   stroke="#bfe8c7"
                   strokeWidth="2"
-                  strokeDasharray="8 11"
+                  strokeDasharray="8 12"
                   strokeLinecap="round"
                 />
                 <path
-                  d="M610 310 L217 200"
+                  d="M640 340 L168 224"
                   stroke="#bfe8c7"
                   strokeWidth="2"
-                  strokeDasharray="8 11"
+                  strokeDasharray="8 12"
                   strokeLinecap="round"
                 />
               </svg>
 
-              {/* info 1 - top */}
               <QmsNodeCard
                 item={items[0]}
                 index={0}
                 variant="diagram"
-                className="absolute left-1/2 top-0 z-10 min-h-[150px] w-[286px] -translate-x-1/2"
+                className="absolute left-1/2 top-0 z-10 min-h-[150px] w-[clamp(220px,23vw,318px)] -translate-x-1/2"
               />
 
-              {/* info 2 - upper right */}
               <QmsNodeCard
                 item={items[1]}
                 index={1}
                 variant="diagram"
-                className="absolute right-[74px] top-[122px] z-10 min-h-[150px] w-[286px] rtl:left-[74px] rtl:right-auto"
+                className="absolute right-0 top-[132px] z-10 min-h-[150px] w-[clamp(220px,23vw,318px)] lg:top-[150px] xl:right-[20px] xl:top-[158px]"
               />
 
-              {/* info 3 - lower right */}
               <QmsNodeCard
                 item={items[2]}
                 index={2}
                 variant="diagram"
-                className="absolute bottom-[38px] right-[180px] z-10 min-h-[150px] w-[286px] rtl:left-[180px] rtl:right-auto"
+                className="absolute bottom-0 right-[7%] z-10 min-h-[150px] w-[clamp(220px,23vw,318px)] lg:right-[10%] xl:bottom-[10px] xl:right-[12%]"
               />
 
-              {/* QMS - center */}
               <QmsHubCard
                 label={hubLabel}
                 compact
-                className="absolute left-1/2 top-1/2 z-20 -translate-x-1/2 -translate-y-1/2"
+                className="absolute left-1/2 top-1/2 z-20 h-[112px] w-[174px] -translate-x-1/2 -translate-y-1/2 md:h-[118px] md:w-[184px] lg:h-[126px] lg:w-[196px]"
               />
 
-              {/* info 4 - lower left */}
               <QmsNodeCard
                 item={items[3]}
                 index={3}
                 variant="diagram"
-                className="absolute bottom-[38px] left-[180px] z-10 min-h-[150px] w-[286px] rtl:left-auto rtl:right-[180px]"
+                className="absolute bottom-0 left-[7%] z-10 min-h-[150px] w-[clamp(220px,23vw,318px)] lg:left-[10%] xl:bottom-[10px] xl:left-[12%]"
               />
 
-              {/* info 5 - upper left */}
               <QmsNodeCard
                 item={items[4]}
                 index={4}
                 variant="diagram"
-                className="absolute left-[74px] top-[122px] z-10 min-h-[150px] w-[286px] rtl:left-auto rtl:right-[74px]"
+                className="absolute left-0 top-[132px] z-10 min-h-[150px] w-[clamp(220px,23vw,318px)] lg:top-[150px] xl:left-[20px] xl:top-[158px]"
               />
             </div>
           </div>

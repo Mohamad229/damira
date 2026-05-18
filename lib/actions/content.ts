@@ -23,6 +23,7 @@ import {
 } from "@/lib/content/validators";
 import {
   getPageDefinition,
+  getDefaultSectionNavigationLabel,
   getSectionDefinition,
 } from "@/lib/content/page-definitions";
 import { getPublicUiData } from "@/lib/content/public-ui";
@@ -74,11 +75,35 @@ function getPublicPagePath(pageKey: string, locale: Locale): string | null {
   return paths[pageKey] || null;
 }
 
-function revalidatePublicPage(pageKey: string, locale: Locale) {
+function getPublicPagePaths(locale: Locale): string[] {
+  const prefix = `/${locale}`;
+  return [
+    prefix,
+    `${prefix}/about`,
+    `${prefix}/services`,
+    `${prefix}/products`,
+    `${prefix}/quality`,
+    `${prefix}/partnerships`,
+    `${prefix}/contact`,
+  ];
+}
+
+function revalidatePublicContent(pageKey: string, locale: Locale) {
+  const paths = new Set(getPublicPagePaths(locale));
   const publicPath = getPublicPagePath(pageKey, locale);
+
   if (publicPath) {
-    revalidatePath(publicPath);
+    paths.add(publicPath);
   }
+
+  for (const path of paths) {
+    revalidatePath(path);
+  }
+}
+
+function normalizeNavigationLabel(value: string | null | undefined) {
+  const trimmed = value?.trim();
+  return trimmed ? trimmed : null;
 }
 
 /**
@@ -158,6 +183,12 @@ export async function updatePageContentField(
           contentId: content.id,
           sectionKey,
           order: content.sections.length + 1,
+          isVisible: true,
+          navigationLabel: getDefaultSectionNavigationLabel(
+            pageKey,
+            sectionKey,
+            locale,
+          ),
         },
         include: { fields: true },
       });
@@ -194,7 +225,7 @@ export async function updatePageContentField(
     });
 
     // Revalidate cache
-    revalidatePublicPage(pageKey, locale);
+    revalidatePublicContent(pageKey, locale);
     revalidatePath("/admin/pages");
 
     await createAdminNotification({
@@ -293,8 +324,33 @@ export async function updatePageContent(
             contentId: content.id,
             sectionKey,
             order: content.sections.length + 1,
+            isVisible: true,
+            navigationLabel: getDefaultSectionNavigationLabel(
+              validated.pageKey,
+              sectionKey,
+              validated.locale,
+            ),
           },
           include: { fields: true },
+        });
+      }
+
+      const sectionSettings = validated.sectionSettings?.[sectionKey];
+      if (sectionSettings) {
+        await db.pageContentSection.update({
+          where: { id: section.id },
+          data: {
+            ...(typeof sectionSettings.isVisible === "boolean"
+              ? { isVisible: sectionSettings.isVisible }
+              : {}),
+            ...(sectionSettings.navigationLabel !== undefined
+              ? {
+                  navigationLabel: normalizeNavigationLabel(
+                    sectionSettings.navigationLabel,
+                  ),
+                }
+              : {}),
+          },
         });
       }
 
@@ -343,7 +399,7 @@ export async function updatePageContent(
     }
 
     // Revalidate cache
-    revalidatePublicPage(validated.pageKey, validated.locale);
+    revalidatePublicContent(validated.pageKey, validated.locale);
     revalidatePath("/admin/pages");
 
     await createAdminNotification({
@@ -421,6 +477,12 @@ export async function initializePageContent(
           create: pagedef.sections.map((section, index) => ({
             sectionKey: section.sectionKey,
             order: index + 1,
+            isVisible: true,
+            navigationLabel: getDefaultSectionNavigationLabel(
+              pageKey,
+              section.sectionKey,
+              locale,
+            ),
             fields: {
               create: Object.entries(section.fields).map(([fieldKey, fieldDef]) => {
                 let value: string | null = null;
@@ -457,6 +519,7 @@ export async function initializePageContent(
       },
     });
 
+    revalidatePublicContent(pageKey, locale);
     revalidatePath("/admin/pages");
 
     return {

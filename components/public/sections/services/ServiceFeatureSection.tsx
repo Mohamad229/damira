@@ -14,6 +14,7 @@ interface ServiceFeatureSectionProps {
   data: ContentSectionData;
   index: number;
   accent?: "blue" | "green" | "orange";
+  sectionId?: string;
 }
 
 const accentMap = {
@@ -26,6 +27,7 @@ export function ServiceFeatureSection({
   data,
   index,
   accent = "blue",
+  sectionId,
 }: ServiceFeatureSectionProps) {
   const image = data.images?.[0] || data.image;
   const reversed = index % 2 === 1;
@@ -34,6 +36,7 @@ export function ServiceFeatureSection({
   return (
     <SectionReveal>
       <section
+        id={sectionId}
         className={cn(
           "relative overflow-hidden",
           index % 2 === 0 ? "bg-white" : "bg-[#f8fbff]",

@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
 
 import { ServicesHeroSection } from "@/components/public/sections/services/ServicesHeroSection";
-import { InfrastructureSection } from "@/components/public/sections/services/InfrastructureSection";
-import { RegulatoryServicesSection } from "@/components/public/sections/services/RegulatoryServicesSection";
-import { SafetyVigilanceSection } from "@/components/public/sections/services/SafetyVigilanceSection";
-import { LogisticsDistributionSection } from "@/components/public/sections/services/LogisticsDistributionSection";
-import { MarketAccessSection } from "@/components/public/sections/services/MarketAccessSection";
+import {
+  getVisibleServiceItems,
+  ServicesListSection,
+} from "@/components/public/sections/services/ServicesListSection";
 
 import { getManagedPublicPageData } from "@/lib/content/public-ui";
 import { buildOgImageUrl, createPublicMetadata } from "@/lib/seo";
@@ -40,27 +39,23 @@ export default async function ServicesPage({ params }: ServicesPageProps) {
   const { locale } = await params;
   const currentLocale: Locale = locale === "ar" ? "ar" : "en";
   const pageData = await getManagedPublicPageData("services", currentLocale);
+  const visibleServiceItems = getVisibleServiceItems(pageData.serviceItems.items);
 
   return (
     <>
-      <section id="services-overview" className="scroll-mt-32">
-        <ServicesHeroSection data={pageData.hero} />
-      </section>
-      <section id="services-regulatory" className="scroll-mt-32">
-        <RegulatoryServicesSection data={pageData.regulatory} />
-      </section>
-      <section id="services-infrastructure" className="scroll-mt-32">
-        <InfrastructureSection data={pageData.infrastructure} />
-      </section>
-      <section id="services-market-access" className="scroll-mt-32">
-        <MarketAccessSection data={pageData.marketAccess} />
-      </section>
-      <section id="services-logistics" className="scroll-mt-32">
-        <LogisticsDistributionSection data={pageData.logisticsDistribution} />
-      </section>
-      <section id="services-safety" className="scroll-mt-32">
-        <SafetyVigilanceSection data={pageData.safetyVigilance} />
-      </section>
+      {pageData.visibility.hero !== false && (
+        <section id="services-overview" className="scroll-mt-32">
+          <ServicesHeroSection data={pageData.hero} />
+        </section>
+      )}
+      {pageData.visibility.serviceItems !== false &&
+      visibleServiceItems.length > 0 ? (
+        <section id="services-list" className="scroll-mt-32">
+          <ServicesListSection
+            data={{ ...pageData.serviceItems, items: visibleServiceItems }}
+          />
+        </section>
+      ) : null}
     </>
   );
 }

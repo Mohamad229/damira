@@ -22,6 +22,36 @@ interface GridWithServices {
   };
   items: ServiceCardData[];
 }
+
+interface ServiceItemData {
+  id: string;
+  isVisible: boolean;
+  eyebrow?: string;
+  headerLabel: string;
+  anchorId: string;
+  href: string;
+  title: string;
+  subtitle?: string;
+  description?: string;
+  icon?: { src: string; alt: string };
+  image?: {
+    src: string;
+    alt: string;
+  };
+  features: string[];
+  cta?: {
+    label: string;
+    href: string;
+  };
+}
+
+interface ServicesListData {
+  eyebrow?: string;
+  title?: string;
+  description?: string;
+  items: ServiceItemData[];
+}
+
 interface GridWithProducts {
   title: string;
   description?: string;
@@ -105,6 +135,25 @@ interface EthicsComplianceData extends ContentSectionData {
   }>;
 }
 
+export interface QualityCertificatesData {
+  eyebrow?: string;
+  title?: string;
+  description?: string;
+  items: Array<{
+    id: string;
+    isVisible: boolean;
+    title: string;
+    subtitle: string;
+    issuer?: string;
+    date?: string;
+    icon: { src: string; alt: string };
+    image: { src: string; alt: string };
+    fileUrl?: string;
+    openUrl?: string;
+    order: number;
+  }>;
+}
+
 interface PartnershipAdvantageData extends ContentSectionData {
   overlayTitle: string;
   overlayDescription: string;
@@ -171,6 +220,7 @@ export interface ServicesPageData {
     description: string;
   };
   hero: HeroSectionData;
+  serviceItems: ServicesListData;
   infrastructure: ContentSectionData;
   regulatory: ContentSectionData;
   safetyVigilance: ContentSectionData;
@@ -204,6 +254,7 @@ export interface QualityPageData {
   hero: HeroSectionData;
   complianceDetails: ContentSectionData;
   qmsArchitecture: QmsArchitectureData;
+  certificates: QualityCertificatesData;
   ethicsCompliance: EthicsComplianceData;
 }
 
@@ -769,6 +820,128 @@ const PUBLIC_UI_EN: PublicUiData = {
         { label: "Explore Products", href: "/products", variant: "primary" },
       ],
     },
+    serviceItems: {
+      eyebrow: "Services",
+      title: "Integrated healthcare services",
+      description:
+        "End-to-end support for life science partners through one specialized operating platform.",
+      items: [
+        {
+          id: "regulatory",
+          isVisible: true,
+          eyebrow: "Regulatory Services",
+          headerLabel: "Regulatory Affairs & Compliance",
+          anchorId: "services-regulatory",
+          href: "/services#services-regulatory",
+          title: "Structured Regulatory Affairs Execution",
+          description:
+            "Registration and compliance support for healthcare products entering regulated markets.",
+          icon: editableIcon("Regulatory service icon"),
+          image: {
+            src: "",
+            alt: "Regulatory documentation",
+          },
+          features: [
+            "Dossier preparation and submission planning",
+            "Product registration and market authorization",
+            "Continuous regulatory monitoring and updates",
+          ],
+          cta: { label: "Request Service", href: "/contact" },
+        },
+        {
+          id: "infrastructure",
+          isVisible: true,
+          eyebrow: "Infrastructure",
+          headerLabel: "Infrastructure & Storage",
+          anchorId: "services-infrastructure",
+          href: "/services#services-infrastructure",
+          title: "Advanced Infrastructure & Storage",
+          subtitle:
+            "1,500 m2 facility with 9,000 m3 climate-controlled capacity.",
+          description:
+            "Validated storage and operating infrastructure for specialized healthcare portfolios.",
+          icon: editableIcon("Infrastructure service icon"),
+          image: {
+            src: "",
+            alt: "Storage infrastructure",
+          },
+          features: [
+            "Segregated zones for oncology, ambient, and sterile products",
+            "HVAC and HEPA environmental controls",
+            "24/7 monitored security and restricted access",
+          ],
+          cta: { label: "Request Service", href: "/contact" },
+        },
+        {
+          id: "market-access",
+          isVisible: true,
+          eyebrow: "Market Access",
+          headerLabel: "Market Access",
+          anchorId: "services-market-access",
+          href: "/services#services-market-access",
+          title: "Hospital Access and Commercial Acceleration",
+          description:
+            "Commercial execution support for hospital access, stakeholder engagement, and launch growth.",
+          icon: editableIcon("Market access service icon"),
+          image: {
+            src: "",
+            alt: "Market access strategy",
+          },
+          features: [
+            "Hospital relationship management",
+            "Decision-maker engagement",
+            "Tender and bid management support",
+            "Scientific events and symposia execution",
+          ],
+          cta: { label: "Request Service", href: "/contact" },
+        },
+        {
+          id: "logistics-distribution",
+          isVisible: true,
+          eyebrow: "Logistics & Distribution",
+          headerLabel: "Logistics & Distribution",
+          anchorId: "services-logistics-distribution",
+          href: "/services#services-logistics-distribution",
+          title: "Nationwide Delivery and Traceability",
+          description:
+            "Controlled logistics and delivery workflows with traceability across healthcare channels.",
+          icon: editableIcon("Logistics and distribution service icon"),
+          image: {
+            src: "",
+            alt: "Distribution fleet",
+          },
+          features: [
+            "Nationwide delivery network across Syria",
+            "Multi-zone temperature-controlled transport",
+            "End-to-end shipment traceability",
+            "Direct hospital and institutional delivery",
+          ],
+          cta: { label: "Request Service", href: "/contact" },
+        },
+        {
+          id: "safety-vigilance",
+          isVisible: true,
+          eyebrow: "Safety & Vigilance",
+          headerLabel: "Safety & Vigilance",
+          anchorId: "services-safety-vigilance",
+          href: "/services#services-safety-vigilance",
+          title: "Pharmacovigilance and Materiovigilance Readiness",
+          description:
+            "Safety monitoring frameworks that support compliant post-market oversight.",
+          icon: editableIcon("Safety and vigilance service icon"),
+          image: {
+            src: "",
+            alt: "Safety vigilance operations",
+          },
+          features: [
+            "PV and MV frameworks with SOP-guided workflows",
+            "24-hour serious event reporting model",
+            "Dedicated safety officer oversight",
+          ],
+          cta: { label: "Request Service", href: "/contact" },
+        },
+      ],
+    },
     infrastructure: {
       eyebrow: "Infrastructure",
       title: "Advanced Infrastructure & Storage",
@@ -975,6 +1148,62 @@ const PUBLIC_UI_EN: PublicUiData = {
           description:
             "Ongoing capability-building to keep teams aligned with quality standards.",
           icon: editableIcon("Continuous compliance training icon"),
+        },
+      ],
+    },
+    certificates: {
+      eyebrow: "Certifications",
+      title: "Certifications & Compliance Records",
+      description:
+        "Official certificates and quality records that validate our commitment to international standards, documented governance, and regulatory compliance.",
+      items: [
+        {
+          id: "iso-9001",
+          isVisible: true,
+          title: "ISO 9001:2015 Certification",
+          subtitle: "Quality Management System",
+          issuer: "International Quality Certification",
+          date: "Valid until 2027",
+          icon: editableIcon("ISO 9001 certificate icon"),
+          image: {
+            src: "",
+            alt: "ISO 9001 certificate preview",
+          },
+          fileUrl: "",
+          openUrl: "",
+          order: 1,
+        },
+        {
+          id: "gdp-compliance",
+          isVisible: true,
+          title: "GDP Compliance Record",
+          subtitle: "Good Distribution Practice",
+          issuer: "Quality Assurance Department",
+          date: "Annual review record",
+          icon: editableIcon("GDP compliance record icon"),
+          image: {
+            src: "",
+            alt: "GDP compliance record preview",
+          },
+          fileUrl: "",
+          openUrl: "",
+          order: 2,
+        },
+        {
+          id: "cold-chain-validation",
+          isVisible: true,
+          title: "Cold Chain Validation Record",
+          subtitle: "Temperature-controlled storage and distribution",
+          issuer: "Damira Pharma Quality Unit",
+          date: "Current validation cycle",
+          icon: editableIcon("Cold chain validation record icon"),
+          image: {
+            src: "",
+            alt: "Cold chain validation record preview",
+          },
+          fileUrl: "",
+          openUrl: "",
+          order: 3,
         },
       ],
     },
@@ -1702,6 +1931,127 @@ const PUBLIC_UI_AR: PublicUiData = {
         { label: "استكشف المنتجات", href: "/products", variant: "primary" },
       ],
     },
+    serviceItems: {
+      eyebrow: "الخدمات",
+      title: "خدمات رعاية صحية متكاملة",
+      description:
+        "دعم متكامل لشركاء علوم الحياة من خلال منصة تشغيل متخصصة واحدة.",
+      items: [
+        {
+          id: "regulatory",
+          isVisible: true,
+          eyebrow: "الخدمات التنظيمية",
+          headerLabel: "الشؤون التنظيمية والامتثال",
+          anchorId: "services-regulatory",
+          href: "/services#services-regulatory",
+          title: "تنفيذ منظم للشؤون التنظيمية",
+          description:
+            "دعم التسجيل والامتثال للمنتجات الصحية التي تدخل أسواقا منظمة.",
+          icon: editableIcon("أيقونة الخدمة التنظيمية"),
+          image: {
+            src: "",
+            alt: "إعداد ملفات تنظيمية",
+          },
+          features: [
+            "إعداد الملفات وتخطيط مسارات التقديم",
+            "تسجيل المنتجات وترخيصها للسوق",
+            "متابعة تنظيمية مستمرة وتحديثات دورية",
+          ],
+          cta: { label: "طلب الخدمة", href: "/contact" },
+        },
+        {
+          id: "infrastructure",
+          isVisible: true,
+          eyebrow: "البنية التحتية",
+          headerLabel: "البنية التحتية والتخزين",
+          anchorId: "services-infrastructure",
+          href: "/services#services-infrastructure",
+          title: "بنية تخزين متقدمة",
+          subtitle: "مرفق بمساحة 1,500 م2 وسعة تخزين مضبوطة 9,000 م3.",
+          description:
+            "بنية تشغيل وتخزين معتمدة لمحافظ الرعاية الصحية المتخصصة.",
+          icon: editableIcon("أيقونة خدمة البنية التحتية"),
+          image: {
+            src: "",
+            alt: "بنية تخزين دوائية",
+          },
+          features: [
+            "مناطق منفصلة للأورام والمنتجات المحيطية والمعقمة",
+            "أنظمة HVAC و HEPA للتحكم البيئي",
+            "أمن ومراقبة على مدار الساعة مع وصول مقيد",
+          ],
+          cta: { label: "طلب الخدمة", href: "/contact" },
+        },
+        {
+          id: "market-access",
+          isVisible: true,
+          eyebrow: "الوصول للسوق",
+          headerLabel: "الوصول للسوق",
+          anchorId: "services-market-access",
+          href: "/services#services-market-access",
+          title: "الوصول للمشافي وتسريع الأداء التجاري",
+          description:
+            "دعم التنفيذ التجاري للوصول للمشافي والتواصل مع أصحاب القرار ونمو الإطلاق.",
+          icon: editableIcon("أيقونة الوصول للسوق"),
+          image: {
+            src: "",
+            alt: "استراتيجية الوصول للسوق",
+          },
+          features: [
+            "إدارة علاقات المشافي",
+            "التواصل مع أصحاب القرار",
+            "دعم المناقصات والعطاءات",
+            "تنفيذ الفعاليات والندوات العلمية",
+          ],
+          cta: { label: "طلب الخدمة", href: "/contact" },
+        },
+        {
+          id: "logistics-distribution",
+          isVisible: true,
+          eyebrow: "اللوجستيات والتوزيع",
+          headerLabel: "اللوجستيات والتوزيع",
+          anchorId: "services-logistics-distribution",
+          href: "/services#services-logistics-distribution",
+          title: "تسليم وطني مع قابلية تتبع",
+          description:
+            "عمليات لوجستية وتوزيع مضبوطة مع قابلية تتبع عبر قنوات الرعاية الصحية.",
+          icon: editableIcon("أيقونة اللوجستيات والتوزيع"),
+          image: {
+            src: "",
+            alt: "أسطول توزيع دوائي",
+          },
+          features: [
+            "شبكة تسليم وطنية عبر سوريا",
+            "نقل متعدد المناطق مضبوط الحرارة",
+            "تتبع كامل للشحنات من البداية إلى النهاية",
+            "تسليم مباشر للمشافي والمؤسسات",
+          ],
+          cta: { label: "طلب الخدمة", href: "/contact" },
+        },
+        {
+          id: "safety-vigilance",
+          isVisible: true,
+          eyebrow: "السلامة والتيقظ",
+          headerLabel: "السلامة والتيقظ",
+          anchorId: "services-safety-vigilance",
+          href: "/services#services-safety-vigilance",
+          title: "جاهزية التيقظ الدوائي والمادي",
+          description:
+            "أطر مراقبة سلامة تدعم الإشراف المتوافق بعد طرح المنتجات في السوق.",
+          icon: editableIcon("أيقونة السلامة والتيقظ"),
+          image: {
+            src: "",
+            alt: "متابعة السلامة والتيقظ الدوائي",
+          },
+          features: [
+            "أطر PV و MV موجهة بإجراءات تشغيل قياسية",
+            "نموذج إبلاغ للحوادث الخطيرة خلال 24 ساعة",
+            "إشراف مخصص من مسؤول السلامة",
+          ],
+          cta: { label: "طلب الخدمة", href: "/contact" },
+        },
+      ],
+    },
     infrastructure: {
       eyebrow: "البنية التحتية",
       title: "بنية تخزين متقدمة",
@@ -1909,6 +2259,63 @@ const PUBLIC_UI_AR: PublicUiData = {
           description:
             "بناء قدرات متواصل للحفاظ على توافق الفرق مع معايير الجودة.",
           icon: editableIcon("أيقونة تدريب الامتثال"),
+        },
+      ],
+    },
+    certificates: {
+      ...PUBLIC_UI_EN.quality.certificates,
+      eyebrow: "الشهادات",
+      title: "الشهادات وسجلات الامتثال",
+      description:
+        "شهادات وسجلات جودة رسمية تؤكد التزامنا بالمعايير الدولية والحوكمة الموثقة والامتثال التنظيمي.",
+      items: [
+        {
+          id: "iso-9001",
+          isVisible: true,
+          title: "شهادة ISO 9001:2015",
+          subtitle: "نظام إدارة الجودة",
+          issuer: "جهة اعتماد جودة دولية",
+          date: "صالحة حتى 2027",
+          icon: editableIcon("أيقونة شهادة ISO 9001"),
+          image: {
+            src: "",
+            alt: "معاينة شهادة ISO 9001",
+          },
+          fileUrl: "",
+          openUrl: "",
+          order: 1,
+        },
+        {
+          id: "gdp-compliance",
+          isVisible: true,
+          title: "سجل امتثال GDP",
+          subtitle: "ممارسات التوزيع الجيد",
+          issuer: "قسم ضمان الجودة",
+          date: "سجل مراجعة سنوي",
+          icon: editableIcon("أيقونة سجل امتثال GDP"),
+          image: {
+            src: "",
+            alt: "معاينة سجل امتثال GDP",
+          },
+          fileUrl: "",
+          openUrl: "",
+          order: 2,
+        },
+        {
+          id: "cold-chain-validation",
+          isVisible: true,
+          title: "سجل تحقق سلسلة التبريد",
+          subtitle: "تخزين وتوزيع بدرجات حرارة مضبوطة",
+          issuer: "وحدة الجودة في داميرا فارما",
+          date: "دورة تحقق حالية",
+          icon: editableIcon("أيقونة سجل تحقق سلسلة التبريد"),
+          image: {
+            src: "",
+            alt: "معاينة سجل تحقق سلسلة التبريد",
+          },
+          fileUrl: "",
+          openUrl: "",
+          order: 3,
         },
       ],
     },

@@ -237,6 +237,8 @@ model PageContentSection {
 
   sectionKey String // Fixed section key, e.g. "hero", "atAGlance", "catalog"
   order      Int // Rendering order (1, 2, 3...)
+  isVisible       Boolean @default(true)
+  navigationLabel String?
 
   // Field storage
   fields PageContentField[]

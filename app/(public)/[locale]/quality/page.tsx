@@ -10,6 +10,7 @@ import { QualityHeroSection } from "@/components/public/sections/quality/Quality
 import { ComplianceDetailsSection } from "@/components/public/sections/quality/ComplianceDetailsSection";
 import { EthicsComplianceSection } from "@/components/public/sections/quality/EthicsComplianceSection";
 import { QmsArchitectureSection } from "@/components/public/sections/quality/QmsArchitectureSection";
+import { QualityCertificatesSection } from "@/components/public/sections/quality/QualityCertificatesSection";
 
 import type { Locale } from "@/i18n/config";
 import { getManagedPublicPageData } from "@/lib/content/public-ui";
@@ -47,18 +48,34 @@ export default async function QualityPage({ params }: QualityPageProps) {
 
   return (
     <>
-      <section id="quality-overview" className="scroll-mt-32">
-        <QualityHeroSection data={pageData.hero} />
-      </section>
-      <section id="quality-compliance" className="scroll-mt-32">
-        <ComplianceDetailsSection data={pageData.complianceDetails} />
-      </section>
-      <section id="quality-qms" className="scroll-mt-32">
-        <QmsArchitectureSection data={pageData.qmsArchitecture} />
-      </section>
-      <section id="quality-ethics" className="scroll-mt-32">
-        <EthicsComplianceSection data={pageData.ethicsCompliance} />
-      </section>
+      {pageData.visibility.hero !== false && (
+        <section id="quality-overview" className="scroll-mt-32">
+          <QualityHeroSection data={pageData.hero} />
+        </section>
+      )}
+      {pageData.visibility.complianceDetails !== false && (
+        <section id="quality-compliance" className="scroll-mt-32">
+          <ComplianceDetailsSection data={pageData.complianceDetails} />
+        </section>
+      )}
+      {pageData.visibility.qmsArchitecture !== false && (
+        <section id="quality-qms" className="scroll-mt-32">
+          <QmsArchitectureSection data={pageData.qmsArchitecture} />
+        </section>
+      )}
+      {pageData.visibility.certificates !== false && (
+        <section id="quality-certificates" className="scroll-mt-32">
+          <QualityCertificatesSection
+            data={pageData.certificates}
+            locale={currentLocale}
+          />
+        </section>
+      )}
+      {pageData.visibility.ethicsCompliance !== false && (
+        <section id="quality-ethics" className="scroll-mt-32">
+          <EthicsComplianceSection data={pageData.ethicsCompliance} />
+        </section>
+      )}
     </>
   );
 }

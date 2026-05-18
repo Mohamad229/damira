@@ -71,6 +71,25 @@ const FIXED_ARRAY_PATHS = new Set([
   "about.legacySuccess.stats.items",
 ]);
 
+const ARRAY_LENGTH_LIMITS = new Map<string, number>([
+  ["about.companyOverview.images", 3],
+]);
+
+const ARRAY_HELPERS = new Map<string, string>([
+  ["about.companyOverview.images", "You can add up to 3 images."],
+]);
+
+const FIELD_HELPERS = new Map<string, string>([
+  [
+    "services.serviceItems.items.*.headerLabel",
+    "Text shown in the site header dropdown. Falls back to the title if empty.",
+  ],
+  [
+    "services.serviceItems.items.*.anchorId",
+    "URL hash target for this service. Use a short slug like regulatory; it is saved as services-regulatory.",
+  ],
+]);
+
 function getEditorPathKey(
   context: VisualJsonFieldEditorProps["sanitizerContext"] | undefined,
   path: string[],
@@ -82,11 +101,42 @@ function getEditorPathKey(
   return [context.pageKey, context.sectionKey, ...path].join(".");
 }
 
+function getEditorPathPattern(
+  context: VisualJsonFieldEditorProps["sanitizerContext"] | undefined,
+  path: string[],
+) {
+  return getEditorPathKey(
+    context,
+    path.map((part) => (/^\d+$/.test(part) ? "*" : part)),
+  );
+}
+
 function isFixedArrayPath(
   context: VisualJsonFieldEditorProps["sanitizerContext"] | undefined,
   path: string[],
 ) {
   return FIXED_ARRAY_PATHS.has(getEditorPathKey(context, path));
+}
+
+function getArrayLengthLimit(
+  context: VisualJsonFieldEditorProps["sanitizerContext"] | undefined,
+  path: string[],
+) {
+  return ARRAY_LENGTH_LIMITS.get(getEditorPathKey(context, path)) ?? null;
+}
+
+function getArrayHelper(
+  context: VisualJsonFieldEditorProps["sanitizerContext"] | undefined,
+  path: string[],
+) {
+  return ARRAY_HELPERS.get(getEditorPathKey(context, path)) ?? null;
+}
+
+function getFieldHelper(
+  context: VisualJsonFieldEditorProps["sanitizerContext"] | undefined,
+  path: string[],
+) {
+  return FIELD_HELPERS.get(getEditorPathPattern(context, path)) ?? null;
 }
 
 function isPlainObject(value: unknown): value is Record<string, JsonValue> {
@@ -286,9 +336,18 @@ function EditorNode({
         : (arrayValue[0] ?? "");
 
     const isFixedArray = isFixedArrayPath(sanitizerContext, path);
+    const arrayLimit = getArrayLengthLimit(sanitizerContext, path);
+    const arrayHelper = getArrayHelper(sanitizerContext, path);
+    const canAddItem = arrayLimit === null || arrayValue.length < arrayLimit;
 
     return (
       <div className="space-y-3">
+        {arrayHelper ? (
+          <p className="rounded-xl border border-primary/10 bg-primary/5 px-3 py-2 text-xs font-medium text-muted-foreground">
+            {arrayHelper}
+          </p>
+        ) : null}
+
         {arrayValue.map((item, index) => (
           <div
             key={itemKey(path, index, item)}
@@ -383,6 +442,7 @@ function EditorNode({
             variant="outline"
             size="sm"
             className="gap-2 rounded-full border-primary/20 bg-primary/5 text-primary hover:bg-primary/10"
+            disabled={!canAddItem}
             onClick={() =>
               onChange([...arrayValue, createItemFromTemplate(itemTemplate)])
             }
@@ -432,6 +492,11 @@ function EditorNode({
                 <Label className="text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground">
                   {humanizeKey(nestedKey)}
                 </Label>
+                {getFieldHelper(sanitizerContext, [...path, nestedKey]) ? (
+                  <p className="text-xs leading-5 text-muted-foreground">
+                    {getFieldHelper(sanitizerContext, [...path, nestedKey])}
+                  </p>
+                ) : null}
                 <EditorNode
                   value={nestedValue}
                   template={nestedTemplate}

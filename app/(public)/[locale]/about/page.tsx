@@ -42,21 +42,31 @@ export default async function AboutPage({ params }: AboutPageProps) {
 
   return (
     <>
-      <section id="about-overview" className="scroll-mt-32">
-        <AboutHeroSection data={pageData.hero} />
-      </section>
-      <section id="about-company-overview" className="scroll-mt-32">
-        <CompanyOverviewSection data={pageData.companyOverview} />
-      </section>
-      <section id="about-vision-mission" className="scroll-mt-32">
-        <AboutVisionMissionSection data={pageData.visionMission} />
-      </section>
-      <section id="about-values" className="scroll-mt-32">
-        <CoreValuesSection data={pageData.coreValues} />
-      </section>
-      <section id="about-legacy-success" className="scroll-mt-32">
-        <LegacySuccessSection data={pageData.legacySuccess} />
-      </section>
+      {pageData.visibility.hero !== false && (
+        <section id="about-overview" className="scroll-mt-32">
+          <AboutHeroSection data={pageData.hero} />
+        </section>
+      )}
+      {pageData.visibility.companyOverview !== false && (
+        <section id="about-company-overview" className="scroll-mt-32">
+          <CompanyOverviewSection data={pageData.companyOverview} />
+        </section>
+      )}
+      {pageData.visibility.visionMission !== false && (
+        <section id="about-vision-mission" className="scroll-mt-32">
+          <AboutVisionMissionSection data={pageData.visionMission} />
+        </section>
+      )}
+      {pageData.visibility.coreValues !== false && (
+        <section id="about-values" className="scroll-mt-32">
+          <CoreValuesSection data={pageData.coreValues} />
+        </section>
+      )}
+      {pageData.visibility.legacySuccess !== false && (
+        <section id="about-legacy-success" className="scroll-mt-32">
+          <LegacySuccessSection data={pageData.legacySuccess} />
+        </section>
+      )}
     </>
   );
 }

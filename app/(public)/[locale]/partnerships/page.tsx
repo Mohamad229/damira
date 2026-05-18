@@ -51,24 +51,32 @@ export default async function PartnershipsPage({
 
   return (
     <>
-      <section id="partners-overview" className="scroll-mt-32">
-        <PartnershipsHeroSection data={pageData.hero} />
-      </section>
+      {pageData.visibility.hero !== false && (
+        <section id="partners-overview" className="scroll-mt-32">
+          <PartnershipsHeroSection data={pageData.hero} />
+        </section>
+      )}
 
-      <section id="partners-why" className="scroll-mt-32">
-        <WhyPartnerSection data={pageData.whyPartner} />
-      </section>
+      {pageData.visibility.whyPartner !== false && (
+        <section id="partners-why" className="scroll-mt-32">
+          <WhyPartnerSection data={pageData.whyPartner} />
+        </section>
+      )}
 
-      <section id="partners-advantage" className="scroll-mt-32">
-        <PartnershipAdvantageSection data={pageData.advantage} />
-      </section>
+      {pageData.visibility.advantage !== false && (
+        <section id="partners-advantage" className="scroll-mt-32">
+          <PartnershipAdvantageSection data={pageData.advantage} />
+        </section>
+      )}
 
-      <section id="partners-inquiry" className="scroll-mt-32">
-        <PartnershipInquirySection
-          data={pageData.partnershipForm}
-          locale={currentLocale}
-        />
-      </section>
+      {pageData.visibility.partnershipForm !== false && (
+        <section id="partners-inquiry" className="scroll-mt-32">
+          <PartnershipInquirySection
+            data={pageData.partnershipForm}
+            locale={currentLocale}
+          />
+        </section>
+      )}
     </>
   );
 }

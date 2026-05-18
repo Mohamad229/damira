@@ -6,6 +6,7 @@ import bcrypt from "bcryptjs";
 
 import {
   ACTIVE_PAGE_SECTIONS,
+  getDefaultSectionNavigationLabel,
   type ActivePageKey,
 } from "../lib/content/page-definitions";
 import { getPublicUiData } from "../lib/content/public-ui/mock-data";
@@ -37,6 +38,7 @@ type PageSeedInput = {
   sections: Array<{
     sectionKey: string;
     order: number;
+    navigationLabel: string;
     data: unknown;
   }>;
 };
@@ -115,6 +117,8 @@ async function upsertPageContent({
         contentId: content.id,
         sectionKey: sectionInput.sectionKey,
         order: sectionInput.order,
+        isVisible: true,
+        navigationLabel: sectionInput.navigationLabel,
       },
       update: {
         order: sectionInput.order,
@@ -163,6 +167,11 @@ async function seedStructuredPageContent() {
         sections: ACTIVE_PAGE_SECTIONS[pageKey].map((sectionKey, index) => ({
           sectionKey,
           order: index + 1,
+          navigationLabel: getDefaultSectionNavigationLabel(
+            pageKey,
+            sectionKey,
+            locale,
+          ),
           data: pageRecord[sectionKey],
         })),
       });

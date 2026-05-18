@@ -159,7 +159,8 @@
       "errorTitle": "خطأ في الإرسال",
       "genericError": "تعذر معالجة طلبك حالياً."
     }
-  },"header": {
+  },
+  "header": {
     "mainNav": "التنقل الرئيسي",
     "toggleNavigation": "فتح وإغلاق قائمة التنقل",
     "switchLanguage": "تبديل اللغة",
@@ -190,6 +191,8 @@
       },
       "quality": {
         "qualityManagementSystem": "نظام إدارة الجودة",
+        "qmsArchitecture": "بنية نظام إدارة الجودة",
+        "certifications": "الشهادات",
         "ethicsCompliance": "الأخلاقيات والامتثال"
       },
       "partnerships": {

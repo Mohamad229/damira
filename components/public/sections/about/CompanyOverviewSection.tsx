@@ -1,48 +1,54 @@
 import { CmsImage } from "@/components/public/sections/base/CmsImage";
 import { SectionReveal } from "@/components/public/sections/base/SectionReveal";
-import type { ContentSectionData } from "@/components/public/sections/base/types";
+import type {
+  ContentSectionData,
+  SectionMedia,
+} from "@/components/public/sections/base/types";
 import { cn } from "@/lib/utils";
 
 interface CompanyOverviewSectionProps {
   data: ContentSectionData;
 }
 
-function getImage(
-  data: ContentSectionData,
-  index: number,
-  fallbackSrc: string,
-  fallbackAlt: string,
-) {
-  const image = data.images?.[index];
+function getRenderableImages(data: ContentSectionData): SectionMedia[] {
+  return (
+    data.images
+      ?.slice(0, 3)
+      .filter((image): image is SectionMedia => Boolean(image?.src?.trim())) ??
+    []
+  );
+}
 
-  return {
-    src: image?.src || fallbackSrc,
-    alt: image?.alt || fallbackAlt,
-  };
+function OverviewImageFrame({
+  image,
+  className,
+  sizes,
+}: {
+  image: SectionMedia;
+  className: string;
+  sizes: string;
+}) {
+  return (
+    <div
+      className={cn(
+        "relative overflow-hidden bg-[#eef6fb]",
+        "shadow-[0_20px_35px_-30px_rgba(15,23,42,0.65)]",
+        className,
+      )}
+    >
+      <CmsImage
+        src={image.src}
+        alt={image.alt}
+        fill
+        sizes={sizes}
+        className="object-cover"
+      />
+    </div>
+  );
 }
 
 export function CompanyOverviewSection({ data }: CompanyOverviewSectionProps) {
-  const firstImage = getImage(
-    data,
-    0,
-    "/images/about/company-lab.jpg",
-    "Healthcare laboratory operations",
-  );
-
-  const secondImage = getImage(
-    data,
-    1,
-    "/images/about/company-facility.jpg",
-    "Healthcare distribution facility",
-  );
-
-  const thirdImage = getImage(
-    data,
-    2,
-    "/images/about/company-medical.jpg",
-    "Medical healthcare equipment",
-  );
-
+  const images = getRenderableImages(data);
   const title =
     data.title || "A New Healthcare Platform with Deep Operational Roots";
 
@@ -67,8 +73,9 @@ export function CompanyOverviewSection({ data }: CompanyOverviewSectionProps) {
             className={cn(
               "grid items-center",
               "gap-[48px] md:gap-[58px]",
-              "lg:grid-cols-[0.92fr_1fr] lg:gap-[56px]",
-              "xl:grid-cols-[0.9fr_1fr] xl:gap-[72px]",
+              images.length > 0
+                ? "lg:grid-cols-[0.92fr_1fr] lg:gap-[56px] xl:grid-cols-[0.9fr_1fr] xl:gap-[72px]"
+                : "max-w-[850px]",
             )}
           >
             {/* Left content */}
@@ -155,115 +162,103 @@ export function CompanyOverviewSection({ data }: CompanyOverviewSectionProps) {
             </div>
 
             {/* Right image collage */}
-            <div
-              className={cn(
-                "grid grid-cols-2",
-                "gap-[12px] sm:gap-[14px] xl:gap-[16px]",
-                "min-h-[360px]",
-                "sm:min-h-[460px]",
-                "md:min-h-[500px]",
-                "lg:min-h-[470px]",
-                "xl:min-h-[512px]",
-              )}
-            >
-              {/* Left stack */}
-              <div className="flex flex-col gap-[12px] sm:gap-[14px] xl:gap-[16px]">
-                <div
-                  className={cn(
-                    "relative overflow-hidden bg-[#eef6fb]",
-                    "h-[145px] rounded-[12px]",
-                    "sm:h-[178px] sm:rounded-[14px]",
-                    "md:h-[195px]",
-                    "lg:h-[178px]",
-                    "xl:h-[192px]",
-                    "shadow-[0_20px_35px_-30px_rgba(15,23,42,0.65)]",
-                  )}
-                >
-                  <CmsImage
-                    src={firstImage.src}
-                    alt={firstImage.alt}
-                    fill
-                    sizes="(min-width: 1536px) 22vw, (min-width: 1024px) 38vw, 50vw"
-                    className="object-cover"
-                  />
-                </div>
-
-                <div
-                  className={cn(
-                    "relative overflow-hidden bg-[#eef6fb]",
-                    "h-[194px] rounded-[12px]",
-                    "sm:h-[250px] sm:rounded-[14px]",
-                    "md:h-[270px]",
-                    "lg:h-[238px]",
-                    "xl:h-[257px]",
-                    "shadow-[0_20px_35px_-30px_rgba(15,23,42,0.65)]",
-                  )}
-                >
-                  <CmsImage
-                    src={secondImage.src}
-                    alt={secondImage.alt}
-                    fill
-                    sizes="(min-width: 1536px) 22vw, (min-width: 1024px) 38vw, 50vw"
-                    className="object-cover"
-                  />
-                </div>
-              </div>
-
-              {/* Right stack */}
+            {images.length > 0 ? (
               <div
                 className={cn(
-                  "flex flex-col gap-[12px] sm:gap-[14px] xl:gap-[16px]",
-                  "pt-[34px]",
-                  "sm:pt-[44px]",
-                  "md:pt-[48px]",
-                  "lg:pt-[42px]",
-                  "xl:pt-[49px]",
+                  images.length === 1 ? "grid" : "grid grid-cols-2",
+                  "gap-[12px] sm:gap-[14px] xl:gap-[16px]",
+                  images.length === 1
+                    ? "min-h-[320px] sm:min-h-[420px] md:min-h-[480px] lg:min-h-[470px] xl:min-h-[512px]"
+                    : "min-h-[360px] sm:min-h-[460px] md:min-h-[500px] lg:min-h-[470px] xl:min-h-[512px]",
                 )}
               >
-                <div
-                  className={cn(
-                    "relative overflow-hidden bg-[#eef6fb]",
-                    "h-[194px] rounded-[12px]",
-                    "sm:h-[250px] sm:rounded-[14px]",
-                    "md:h-[270px]",
-                    "lg:h-[238px]",
-                    "xl:h-[257px]",
-                    "shadow-[0_20px_35px_-30px_rgba(15,23,42,0.65)]",
-                  )}
-                >
-                  <CmsImage
-                    src={thirdImage.src}
-                    alt={thirdImage.alt}
-                    fill
-                    sizes="(min-width: 1536px) 22vw, (min-width: 1024px) 38vw, 50vw"
-                    className="object-cover"
+                {images.length === 1 ? (
+                  <OverviewImageFrame
+                    image={images[0]}
+                    sizes="(min-width: 1536px) 44vw, (min-width: 1024px) 50vw, 100vw"
+                    className={cn(
+                      "min-h-[320px] rounded-[12px]",
+                      "sm:min-h-[420px] sm:rounded-[14px]",
+                      "md:min-h-[480px]",
+                      "lg:min-h-[470px]",
+                      "xl:min-h-[512px]",
+                    )}
                   />
-                </div>
+                ) : null}
 
-                {/* Optional badge/card if you want to enable it later */}
-                {/* 
-                <div
-                  className={cn(
-                    "flex flex-col justify-center rounded-[12px] bg-[#009fe3]",
-                    "h-[145px] px-[18px]",
-                    "sm:h-[178px] sm:rounded-[14px] sm:px-[22px]",
-                    "md:h-[195px]",
-                    "lg:h-[178px]",
-                    "xl:h-[193px] xl:px-[24px]",
-                    "shadow-[0_20px_35px_-30px_rgba(15,23,42,0.8)]",
-                  )}
-                >
-                  <p className="text-[28px] font-black leading-none tracking-[-0.04em] text-white sm:text-[32px] xl:text-[37px]">
-                    ISO &amp; FDA
-                  </p>
+                {images.length === 2 ? (
+                  images.map((image) => (
+                    <OverviewImageFrame
+                      key={`${image.src}-${image.alt}`}
+                      image={image}
+                      sizes="(min-width: 1536px) 22vw, (min-width: 1024px) 25vw, 50vw"
+                      className={cn(
+                        "min-h-[300px] rounded-[12px]",
+                        "sm:min-h-[420px] sm:rounded-[14px]",
+                        "md:min-h-[460px]",
+                        "lg:min-h-[440px]",
+                        "xl:min-h-[480px]",
+                      )}
+                    />
+                  ))
+                ) : null}
 
-                  <p className="mt-[12px] text-[13px] font-extrabold leading-none tracking-[-0.01em] text-white/90 sm:text-[15px] xl:mt-[17px] xl:text-[16px]">
-                    Certified Operations
-                  </p>
-                </div>
-                */}
+                {images.length >= 3 ? (
+                  <>
+                    {/* Left stack */}
+                    <div className="flex flex-col gap-[12px] sm:gap-[14px] xl:gap-[16px]">
+                      <OverviewImageFrame
+                        image={images[0]}
+                        sizes="(min-width: 1536px) 22vw, (min-width: 1024px) 38vw, 50vw"
+                        className={cn(
+                          "h-[145px] rounded-[12px]",
+                          "sm:h-[178px] sm:rounded-[14px]",
+                          "md:h-[195px]",
+                          "lg:h-[178px]",
+                          "xl:h-[192px]",
+                        )}
+                      />
+
+                      <OverviewImageFrame
+                        image={images[1]}
+                        sizes="(min-width: 1536px) 22vw, (min-width: 1024px) 38vw, 50vw"
+                        className={cn(
+                          "h-[194px] rounded-[12px]",
+                          "sm:h-[250px] sm:rounded-[14px]",
+                          "md:h-[270px]",
+                          "lg:h-[238px]",
+                          "xl:h-[257px]",
+                        )}
+                      />
+                    </div>
+
+                    {/* Right stack */}
+                    <div
+                      className={cn(
+                        "flex flex-col gap-[12px] sm:gap-[14px] xl:gap-[16px]",
+                        "pt-[34px]",
+                        "sm:pt-[44px]",
+                        "md:pt-[48px]",
+                        "lg:pt-[42px]",
+                        "xl:pt-[49px]",
+                      )}
+                    >
+                      <OverviewImageFrame
+                        image={images[2]}
+                        sizes="(min-width: 1536px) 22vw, (min-width: 1024px) 38vw, 50vw"
+                        className={cn(
+                          "h-[194px] rounded-[12px]",
+                          "sm:h-[250px] sm:rounded-[14px]",
+                          "md:h-[270px]",
+                          "lg:h-[238px]",
+                          "xl:h-[257px]",
+                        )}
+                      />
+                    </div>
+                  </>
+                ) : null}
               </div>
-            </div>
+            ) : null}
           </div>
         </div>
       </section>

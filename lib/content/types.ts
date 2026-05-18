@@ -12,7 +12,20 @@ export interface PageData {
   title: string;
   metaTitle?: string | null;
   metaDescription?: string | null;
-  [sectionKey: string]: SectionData | string | null | undefined;
+  visibility?: Record<string, boolean>;
+  navigationLabels?: Record<string, string>;
+  [sectionKey: string]:
+    | SectionData
+    | Record<string, boolean>
+    | Record<string, string>
+    | string
+    | null
+    | undefined;
+}
+
+export interface SectionSettings {
+  isVisible: boolean;
+  navigationLabel: string;
 }
 
 export interface GetPageContentResponse {
@@ -22,6 +35,7 @@ export interface GetPageContentResponse {
   metaTitle?: string | null;
   metaDescription?: string | null;
   sections: Record<string, SectionData>;
+  sectionSettings: Record<string, SectionSettings>;
 }
 
 export interface UpdatePageContentResponse {

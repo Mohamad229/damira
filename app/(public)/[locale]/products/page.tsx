@@ -89,22 +89,28 @@ export default async function ProductsPage({ params }: ProductsPageProps) {
 
   return (
     <>
-      <section id="products-overview" className="scroll-mt-32">
-        <ProductsHeroSection data={pageData.hero} />
-      </section>
-      <section id="products-pipeline" className="scroll-mt-32">
-        <PipelineSegmentsSection data={pageData.pipelineSegments} />
-      </section>
-      <section id="products-catalog" className="scroll-mt-32">
-        <ProductCatalogFilterSection
-          locale={currentLocale}
-          title={pageData.catalog.title}
-          description={pageData.catalog.description}
-          items={catalogItems}
-          columns={pageData.catalog.columns}
-          categoryOptions={categoryOptions}
-        />
-      </section>
+      {pageData.visibility.hero !== false && (
+        <section id="products-overview" className="scroll-mt-32">
+          <ProductsHeroSection data={pageData.hero} />
+        </section>
+      )}
+      {pageData.visibility.pipelineSegments !== false && (
+        <section id="products-pipeline" className="scroll-mt-32">
+          <PipelineSegmentsSection data={pageData.pipelineSegments} />
+        </section>
+      )}
+      {pageData.visibility.catalog !== false && (
+        <section id="products-catalog" className="scroll-mt-32">
+          <ProductCatalogFilterSection
+            locale={currentLocale}
+            title={pageData.catalog.title}
+            description={pageData.catalog.description}
+            items={catalogItems}
+            columns={pageData.catalog.columns}
+            categoryOptions={categoryOptions}
+          />
+        </section>
+      )}
     </>
   );
 }

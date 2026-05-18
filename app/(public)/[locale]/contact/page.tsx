@@ -40,18 +40,24 @@ export default async function ContactPage({ params }: ContactPageProps) {
 
   return (
     <>
-      <section id="contact-overview" className="scroll-mt-32">
-        <ContactHeroSection data={pageData.hero} />
-      </section>
-      <section id="contact-info" className="scroll-mt-32">
-        <ContactInfoSection data={pageData.contactInfo} />
-      </section>
-      <section id="contact-form" className="scroll-mt-32">
-        <ContactFormSection
-          data={pageData.contactForm}
-          locale={currentLocale}
-        />
-      </section>
+      {pageData.visibility.hero !== false && (
+        <section id="contact-overview" className="scroll-mt-32">
+          <ContactHeroSection data={pageData.hero} />
+        </section>
+      )}
+      {pageData.visibility.contactInfo !== false && (
+        <section id="contact-info" className="scroll-mt-32">
+          <ContactInfoSection data={pageData.contactInfo} />
+        </section>
+      )}
+      {pageData.visibility.contactForm !== false && (
+        <section id="contact-form" className="scroll-mt-32">
+          <ContactFormSection
+            data={pageData.contactForm}
+            locale={currentLocale}
+          />
+        </section>
+      )}
     </>
   );
 }

@@ -18,6 +18,7 @@ import {
 import { PageHeader } from "@/components/admin/page-header";
 import { LanguageTabs } from "@/components/admin/language-tabs";
 import { VisualJsonFieldEditor } from "@/components/admin/visual-json-field-editor";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -26,6 +27,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/toast";
 import {
   initializePageContent,
@@ -56,6 +59,13 @@ interface StructuredFormState {
   metaTitle?: string;
   metaDescription?: string;
   sections: Record<string, Record<string, string>>;
+  sectionSettings: Record<
+    string,
+    {
+      isVisible: boolean;
+      navigationLabel: string;
+    }
+  >;
 }
 
 function fieldValueToString(value: unknown): string {
@@ -87,13 +97,22 @@ function getSanitizedFieldString(value: unknown, template: unknown): string {
 
 function buildInitialState(
   pageDefinition: PageDefinition,
+  locale: Locale,
   content: GetPageContentResponse | null,
   sectionTemplates: Record<string, unknown>,
 ): StructuredFormState {
   const sections: Record<string, Record<string, string>> = {};
+  const sectionSettings: StructuredFormState["sectionSettings"] = {};
 
   for (const section of pageDefinition.sections) {
     sections[section.sectionKey] = {};
+    sectionSettings[section.sectionKey] = {
+      isVisible:
+        content?.sectionSettings?.[section.sectionKey]?.isVisible ?? true,
+      navigationLabel:
+        content?.sectionSettings?.[section.sectionKey]?.navigationLabel ??
+        section.navigationLabel[locale],
+    };
     const sectionData = content?.sections?.[section.sectionKey];
     const sectionTemplate = sectionTemplates[section.sectionKey];
 
@@ -113,17 +132,29 @@ function buildInitialState(
     metaTitle: content?.metaTitle ?? undefined,
     metaDescription: content?.metaDescription ?? undefined,
     sections,
+    sectionSettings,
   };
+}
+
+function isSectionChanged(
+  sectionKey: string,
+  current: StructuredFormState,
+  baseline: StructuredFormState,
+) {
+  return (
+    JSON.stringify(current.sections[sectionKey]) !==
+      JSON.stringify(baseline.sections[sectionKey]) ||
+    JSON.stringify(current.sectionSettings[sectionKey]) !==
+      JSON.stringify(baseline.sectionSettings[sectionKey])
+  );
 }
 
 function countChangedSections(
   current: StructuredFormState,
   baseline: StructuredFormState,
 ) {
-  return Object.keys(current.sections).filter(
-    (sectionKey) =>
-      JSON.stringify(current.sections[sectionKey]) !==
-      JSON.stringify(baseline.sections[sectionKey]),
+  return Object.keys(current.sections).filter((sectionKey) =>
+    isSectionChanged(sectionKey, current, baseline),
   ).length;
 }
 
@@ -140,8 +171,9 @@ export function StructuredPageEditorClient({
   const [isInitializing, startInitializing] = useTransition();
 
   const initialState = useMemo(
-    () => buildInitialState(pageDefinition, initialContent, sectionTemplates),
-    [pageDefinition, initialContent, sectionTemplates],
+    () =>
+      buildInitialState(pageDefinition, locale, initialContent, sectionTemplates),
+    [pageDefinition, locale, initialContent, sectionTemplates],
   );
 
   const [formState, setFormState] = useState<StructuredFormState>(initialState);
@@ -175,6 +207,35 @@ export function StructuredPageEditorClient({
         [sectionKey]: {
           ...previous.sections[sectionKey],
           [fieldKey]: nextValue,
+        },
+      },
+    }));
+  };
+
+  const setSectionVisibility = (sectionKey: string, isVisible: boolean) => {
+    setFormState((previous) => ({
+      ...previous,
+      sectionSettings: {
+        ...previous.sectionSettings,
+        [sectionKey]: {
+          ...previous.sectionSettings[sectionKey],
+          isVisible,
+        },
+      },
+    }));
+  };
+
+  const setSectionNavigationLabel = (
+    sectionKey: string,
+    navigationLabel: string,
+  ) => {
+    setFormState((previous) => ({
+      ...previous,
+      sectionSettings: {
+        ...previous.sectionSettings,
+        [sectionKey]: {
+          ...previous.sectionSettings[sectionKey],
+          navigationLabel,
         },
       },
     }));
@@ -300,6 +361,7 @@ export function StructuredPageEditorClient({
         locale,
         title: initialContent?.title ?? pageDefinition.label,
         sections,
+        sectionSettings: formState.sectionSettings,
       });
 
       if (!result.success) {
@@ -329,10 +391,14 @@ export function StructuredPageEditorClient({
 
     return pageDefinition.sections.filter((section) => {
       const sectionValues = formState.sections[section.sectionKey] ?? {};
+      const sectionSettings =
+        formState.sectionSettings[section.sectionKey] ?? {};
       const haystack = [
         section.label,
         section.description,
         section.sectionKey,
+        sectionSettings.navigationLabel,
+        sectionSettings.isVisible ? "visible" : "hidden",
         ...Object.values(section.fields).map((field) => field.label),
         ...Object.values(sectionValues),
       ]
@@ -342,7 +408,12 @@ export function StructuredPageEditorClient({
 
       return haystack.includes(adminSearchQuery);
     });
-  }, [adminSearchQuery, formState.sections, pageDefinition.sections]);
+  }, [
+    adminSearchQuery,
+    formState.sectionSettings,
+    formState.sections,
+    pageDefinition.sections,
+  ]);
 
   return (
     <div
@@ -455,9 +526,14 @@ export function StructuredPageEditorClient({
             </CardHeader>
             <CardContent className="space-y-1 pt-0">
               {pageDefinition.sections.map((section, index) => {
-                const isChanged =
-                  JSON.stringify(formState.sections[section.sectionKey]) !==
-                  JSON.stringify(baselineState.sections[section.sectionKey]);
+                const isChanged = isSectionChanged(
+                  section.sectionKey,
+                  formState,
+                  baselineState,
+                );
+                const isVisible =
+                  formState.sectionSettings[section.sectionKey]?.isVisible ??
+                  true;
 
                 return (
                   <a
@@ -473,6 +549,11 @@ export function StructuredPageEditorClient({
                       {index + 1}
                     </span>
                     <span className="min-w-0 flex-1 truncate font-medium">{section.label}</span>
+                    {!isVisible ? (
+                      <Badge variant="warning" className="shrink-0">
+                        Hidden
+                      </Badge>
+                    ) : null}
                     {isChanged ? <Circle className="h-2.5 w-2.5 fill-current" /> : null}
                   </a>
                 );
@@ -524,9 +605,16 @@ export function StructuredPageEditorClient({
             ) : null}
 
             {visibleSections.map((section, index) => {
-              const isChanged =
-                JSON.stringify(formState.sections[section.sectionKey]) !==
-                JSON.stringify(baselineState.sections[section.sectionKey]);
+              const isChanged = isSectionChanged(
+                section.sectionKey,
+                formState,
+                baselineState,
+              );
+              const sectionSettings =
+                formState.sectionSettings[section.sectionKey] ?? {
+                  isVisible: true,
+                  navigationLabel: section.navigationLabel[locale],
+                };
 
               return (
                 <details
@@ -560,6 +648,11 @@ export function StructuredPageEditorClient({
                               Modified
                             </span>
                           ) : null}
+                          {!sectionSettings.isVisible ? (
+                            <Badge variant="warning">
+                              Hidden from public page
+                            </Badge>
+                          ) : null}
                         </div>
                         <p className="mt-1 text-sm leading-6 text-muted-foreground">
                           {section.description ?? `Fixed section key: ${section.sectionKey}`}
@@ -570,6 +663,47 @@ export function StructuredPageEditorClient({
                   </summary>
 
                   <div className="border-t border-border/60 bg-background/55 px-5 py-5 sm:px-6">
+                    <div className="mb-5 grid gap-4 rounded-2xl border border-border bg-card p-4 md:grid-cols-[minmax(0,1fr)_minmax(220px,0.8fr)]">
+                      <Label className="flex items-start gap-3">
+                        <input
+                          type="checkbox"
+                          checked={sectionSettings.isVisible}
+                          onChange={(event) =>
+                            setSectionVisibility(
+                              section.sectionKey,
+                              event.target.checked,
+                            )
+                          }
+                          className="mt-0.5 h-4 w-4 rounded border-input accent-primary"
+                        />
+                        <span>
+                          <span className="block text-sm font-semibold">
+                            Show this section on public page
+                          </span>
+                          <span className="mt-1 block text-xs font-normal leading-5 text-muted-foreground">
+                            Hidden sections stay editable here and can be shown again later.
+                          </span>
+                        </span>
+                      </Label>
+
+                      <div className="space-y-2">
+                        <Label htmlFor={`nav-label-${section.sectionKey}`}>
+                          Header dropdown label
+                        </Label>
+                        <Input
+                          id={`nav-label-${section.sectionKey}`}
+                          value={sectionSettings.navigationLabel}
+                          placeholder={section.navigationLabel[locale]}
+                          onChange={(event) =>
+                            setSectionNavigationLabel(
+                              section.sectionKey,
+                              event.target.value,
+                            )
+                          }
+                        />
+                      </div>
+                    </div>
+
                     {Object.entries(section.fields).map(([fieldKey, fieldDef]) => (
                       <div key={fieldKey} className="space-y-3">
                         <div className="flex flex-wrap items-center justify-between gap-2">

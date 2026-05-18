@@ -191,6 +191,8 @@
       },
       "quality": {
         "qualityManagementSystem": "Quality Management System",
+        "qmsArchitecture": "QMS Architecture",
+        "certifications": "Certifications",
         "ethicsCompliance": "Ethics & Compliance"
       },
       "partnerships": {

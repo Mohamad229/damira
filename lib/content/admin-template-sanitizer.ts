@@ -22,11 +22,13 @@ const SERVICE_ICON_SECTIONS = new Set([
 ]);
 
 const ITEM_ICON_SECTIONS = new Set([
+  "services.serviceItems",
   "home.strategicFocus",
   "home.keyStrengths",
   "about.coreValues",
   "quality.complianceDetails",
   "quality.qmsArchitecture",
+  "quality.certificates",
   "quality.ethicsCompliance",
   "partnerships.whyPartner",
   "partnerships.partnershipForm",
@@ -35,6 +37,7 @@ const ITEM_ICON_SECTIONS = new Set([
 
 const ARRAY_LENGTH_LIMITS = new Map<string, number>([
   ["home.coverageReach.items", 4],
+  ["about.companyOverview.images", 3],
   ["about.legacySuccess.stats.items", 4],
   ["quality.complianceDetails.items", 2],
   ["quality.ethicsCompliance.items", 4],
@@ -202,6 +205,86 @@ function getArrayLengthLimit(context: SanitizerContext | undefined): number | nu
   return ARRAY_LENGTH_LIMITS.get(key) ?? null;
 }
 
+function slugifyAnchor(value: string): string {
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function normalizeServiceAnchorId(value: unknown, fallback: unknown): string {
+  const source =
+    typeof value === "string" && value.trim()
+      ? value
+      : typeof fallback === "string" && fallback.trim()
+        ? fallback
+        : "item";
+  const slug = slugifyAnchor(source);
+
+  if (!slug) {
+    return "services-item";
+  }
+
+  return slug.startsWith("services-") ? slug : `services-${slug}`;
+}
+
+function uniqueServiceAnchorId(anchorId: string, seen: Set<string>): string {
+  let candidate = anchorId;
+  let counter = 2;
+
+  while (seen.has(candidate)) {
+    candidate = `${anchorId}-${counter}`;
+    counter += 1;
+  }
+
+  seen.add(candidate);
+  return candidate;
+}
+
+function normalizeServiceItemRecord(
+  item: SanitizedJson,
+  seenAnchors: Set<string>,
+): SanitizedJson {
+  if (!isSanitizedRecord(item)) {
+    return item;
+  }
+
+  const fallbackAnchor = item.id || item.title || item.headerLabel;
+  const anchorId = uniqueServiceAnchorId(
+    normalizeServiceAnchorId(item.anchorId, fallbackAnchor),
+    seenAnchors,
+  );
+  const title = typeof item.title === "string" ? item.title.trim() : "";
+  const headerLabel =
+    typeof item.headerLabel === "string" && item.headerLabel.trim()
+      ? item.headerLabel.trim()
+      : title;
+
+  return {
+    ...item,
+    headerLabel,
+    anchorId,
+    href: `/services#${anchorId}`,
+  };
+}
+
+function normalizeContextualArray(
+  value: SanitizedJson[],
+  context: SanitizerContext | undefined,
+): SanitizedJson[] {
+  if (
+    context?.pageKey !== "services" ||
+    context.sectionKey !== "serviceItems" ||
+    (context.path ?? []).join(".") !== "items"
+  ) {
+    return value;
+  }
+
+  const seenAnchors = new Set<string>();
+  return value.map((item) => normalizeServiceItemRecord(item, seenAnchors));
+}
+
 export function emptyFromTemplate(template: SanitizedJson): SanitizedJson {
   if (Array.isArray(template)) {
     return [];
@@ -287,12 +370,21 @@ export function sanitizeValueAgainstTemplate(
     const limit = getArrayLengthLimit(context);
     const arrayValue = limit === null ? normalizedCurrent : normalizedCurrent.slice(0, limit);
 
-    return arrayValue.map((item, index) =>
-      sanitizeValueAgainstTemplate(item, itemTemplate, context ? {
-        pageKey: context.pageKey,
-        sectionKey: context.sectionKey,
-        path: [...(context.path ?? []), String(index)],
-      } : undefined),
+    return normalizeContextualArray(
+      arrayValue.map((item, index) =>
+        sanitizeValueAgainstTemplate(
+          item,
+          itemTemplate,
+          context
+            ? {
+                pageKey: context.pageKey,
+                sectionKey: context.sectionKey,
+                path: [...(context.path ?? []), String(index)],
+              }
+            : undefined,
+        ),
+      ),
+      context,
     );
   }
 

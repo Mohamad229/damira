@@ -43,6 +43,15 @@ export const updatePageContentSchema = z.object({
   metaTitle: z.string().optional(),
   metaDescription: z.string().optional(),
   sections: z.record(z.string(), z.record(z.string(), z.string().nullable())),
+  sectionSettings: z
+    .record(
+      z.string(),
+      z.object({
+        isVisible: z.boolean().optional(),
+        navigationLabel: z.string().nullable().optional(),
+      }),
+    )
+    .optional(),
 });
 
 export type UpdatePageContent = z.infer<typeof updatePageContentSchema>;
