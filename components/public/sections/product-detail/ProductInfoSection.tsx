@@ -74,6 +74,7 @@ export function ProductInfoSection({ data }: ProductInfoSectionProps) {
         <div
           className={cn(
             "relative z-10 grid w-full items-center pt-16",
+            "max-w-full overflow-hidden",
             "gap-[42px] md:gap-[50px]",
             "px-4 sm:px-6 md:px-8",
             "lg:grid-cols-[minmax(0,0.88fr)_minmax(420px,1.12fr)] lg:gap-[56px]",
@@ -83,10 +84,10 @@ export function ProductInfoSection({ data }: ProductInfoSectionProps) {
           )}
         >
           {/* Product image carousel */}
-          <div className="order-2 space-y-[14px] sm:space-y-[16px] xl:space-y-[18px]">
+          <div className="order-2 min-w-0 max-w-full space-y-[14px] overflow-hidden sm:space-y-[16px] xl:space-y-[18px]">
             <div
               className={cn(
-                "group relative overflow-hidden",
+                "group relative w-full max-w-full overflow-hidden",
                 "rounded-[18px] sm:rounded-[22px] xl:rounded-[30px]",
                 "border border-[#dce9f6] bg-white",
                 "h-[300px]",
@@ -120,7 +121,7 @@ export function ProductInfoSection({ data }: ProductInfoSectionProps) {
                     onClick={handleLeftControl}
                     aria-label={isRtl ? "Next product image" : "Previous product image"}
                     className={cn(
-                      "absolute left-[12px] top-1/2 flex -translate-y-1/2 items-center justify-center rounded-full",
+                      "absolute left-[10px] top-1/2 z-10 flex -translate-y-1/2 items-center justify-center rounded-full",
                       "h-[38px] w-[38px] sm:h-[40px] sm:w-[40px] xl:h-[42px] xl:w-[42px]",
                       "border border-[#dce9f6] bg-white/90 text-[#071329]",
                       "shadow-[0_14px_28px_-22px_rgba(15,23,42,0.7)] backdrop-blur",
@@ -137,7 +138,7 @@ export function ProductInfoSection({ data }: ProductInfoSectionProps) {
                     onClick={handleRightControl}
                     aria-label={isRtl ? "Previous product image" : "Next product image"}
                     className={cn(
-                      "absolute right-[12px] top-1/2 flex -translate-y-1/2 items-center justify-center rounded-full",
+                      "absolute right-[10px] top-1/2 z-10 flex -translate-y-1/2 items-center justify-center rounded-full",
                       "h-[38px] w-[38px] sm:h-[40px] sm:w-[40px] xl:h-[42px] xl:w-[42px]",
                       "border border-[#dce9f6] bg-white/90 text-[#071329]",
                       "shadow-[0_14px_28px_-22px_rgba(15,23,42,0.7)] backdrop-blur",
@@ -180,7 +181,7 @@ export function ProductInfoSection({ data }: ProductInfoSectionProps) {
             {hasMultipleImages ? (
               <div
                 className={cn(
-                  "flex gap-[10px] overflow-x-auto pb-[4px]",
+                  "flex max-w-full gap-[10px] overflow-x-auto overscroll-x-contain pb-[4px]",
                   "[-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
                   "sm:gap-[12px]",
                 )}

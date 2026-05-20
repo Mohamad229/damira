@@ -320,7 +320,10 @@ export function ProductCatalogFilterSection({
           )}
         >
           {/* Categories */}
-          <div className="relative flex min-w-0 flex-nowrap items-center gap-2">
+          <div
+            ref={moreMenuRef}
+            className="relative flex w-full min-w-0 max-w-full flex-nowrap items-center gap-2 xl:w-auto"
+          >
             {visibleFilterOptions.map((category) => {
               const isActive = selectedCategory === category.value;
 
@@ -350,7 +353,7 @@ export function ProductCatalogFilterSection({
             })}
 
             {shouldShowMoreButton ? (
-              <div ref={moreMenuRef} className="relative shrink-0">
+              <div className="shrink-0">
                 <button
                   type="button"
                   onClick={() => setIsMoreOpen((current) => !current)}
@@ -385,11 +388,11 @@ export function ProductCatalogFilterSection({
                       exit={{ opacity: 0, y: 8, scale: 0.98 }}
                       transition={{ duration: 0.18 }}
                       className={cn(
-                        "absolute left-0 top-[calc(100%+10px)] z-30 rtl:left-auto rtl:right-0 rtl:text-right",
-                        "w-[260px] overflow-hidden rounded-[18px]",
+                        "absolute left-0 right-0 top-[calc(100%+10px)] z-30 max-w-[calc(100vw-32px)] rtl:text-right",
+                        "w-full overflow-hidden rounded-[18px]",
                         "border border-[#d9e4ef] bg-white",
                         "shadow-[0_22px_48px_-32px_rgba(15,23,42,0.45)]",
-                        "sm:w-[300px]",
+                        "sm:left-auto sm:right-0 sm:w-[300px] sm:max-w-[300px] rtl:sm:left-0 rtl:sm:right-auto",
                       )}
                     >
                       <div className="max-h-[315px] overflow-y-auto p-2">

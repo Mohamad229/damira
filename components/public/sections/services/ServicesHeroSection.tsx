@@ -30,6 +30,10 @@ function renderServicesTitle(title: string) {
   );
 }
 
+function containsArabic(value: string) {
+  return /[\u0600-\u06FF]/.test(value);
+}
+
 export function ServicesHeroSection({
   data,
   className,
@@ -40,6 +44,11 @@ export function ServicesHeroSection({
   const subtitle =
     data.subtitle ||
     "An end-to-end commercialization ecosystem designed to manage the complexities of specialized pharmaceutical supply chains.";
+
+  const actions = data.actions || [];
+  const isArabicContent = containsArabic(
+    [title, subtitle, data.eyebrow || "", ...actions.map((action) => action.label)].join(" "),
+  );
 
   return (
     <SectionReveal>
@@ -81,9 +90,11 @@ export function ServicesHeroSection({
           )}
         >
           <div
+            dir={isArabicContent ? "rtl" : "ltr"}
             className={cn(
               "w-full max-w-[780px]",
               "rtl:ms-0 rtl:me-auto rtl:text-right",
+              isArabicContent && "text-right",
             )}
           >
             {data.eyebrow ? (
@@ -134,29 +145,33 @@ export function ServicesHeroSection({
               </p>
             ) : null}
 
-            {data.actions?.length ? (
+            {actions.length ? (
               <div
+                dir="ltr"
                 className={cn(
                   "mt-[32px] flex w-full flex-col gap-3",
-                  "items-start",
-                  "sm:mt-[36px] sm:flex-row sm:flex-wrap sm:items-center sm:justify-start",
-                  "rtl:items-end rtl:sm:items-center",
+                  "sm:mt-[36px] sm:flex-row sm:flex-wrap sm:items-center",
+                  isArabicContent
+                    ? "items-end justify-start sm:justify-end"
+                    : "items-start justify-start sm:justify-start",
                   "lg:mt-[38px]",
                 )}
               >
-                {data.actions.map((action, index) => {
+                {actions.map((action, index) => {
                   const isPrimary = index === 0;
 
                   return (
                     <a
                       key={`${action.href}-${action.label}`}
                       href={action.href}
+                      dir={isArabicContent ? "rtl" : "ltr"}
                       className={cn(
                         "inline-flex items-center justify-center rounded-full",
                         "h-[48px] px-7",
                         "text-[14px] font-extrabold leading-none tracking-[-0.01em]",
                         "transition-all duration-300 ease-out hover:scale-[1.02] active:scale-[0.99]",
                         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#009fe3] focus-visible:ring-offset-2",
+                        isArabicContent && "self-end sm:self-auto",
                         "sm:h-[52px] sm:px-8 sm:text-[15px]",
                         "lg:h-[54px] lg:text-[16px]",
                         isPrimary

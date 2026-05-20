@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "next-intl";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
 import { SectionReveal } from "@/components/public/sections/base";
@@ -47,6 +48,8 @@ function getVisibleStatsCount() {
 }
 
 export function HomeStatsSection({ data }: HomeStatsSectionProps) {
+  const locale = useLocale();
+  const isRtl = locale === "ar";
   const items = data.items || [];
   const carouselRef = useRef<HTMLDivElement | null>(null);
 
@@ -119,6 +122,12 @@ export function HomeStatsSection({ data }: HomeStatsSectionProps) {
     scrollToStat(nextIndex);
   }
 
+  const handleLeftControl = isRtl ? goToNextStat : goToPreviousStat;
+  const handleRightControl = isRtl ? goToPreviousStat : goToNextStat;
+  const helperText = isRtl
+    ? "اسحب أو استخدم الأسهم لاستعراض جميع الإحصائيات"
+    : "Swipe or use arrows to explore all stats";
+
   function handleCarouselScroll() {
     const carousel = carouselRef.current;
 
@@ -176,6 +185,7 @@ export function HomeStatsSection({ data }: HomeStatsSectionProps) {
           <div className="relative overflow-hidden">
             <div
               ref={carouselRef}
+              dir="ltr"
               onScroll={handleCarouselScroll}
               className={cn(
                 "flex snap-x snap-mandatory overflow-x-auto scroll-smooth",
@@ -186,6 +196,7 @@ export function HomeStatsSection({ data }: HomeStatsSectionProps) {
               {items.map((item, index) => (
                 <article
                   key={item.id || index}
+                  dir={isRtl ? "rtl" : "ltr"}
                   className={cn(
                     "group relative flex shrink-0 snap-start flex-col items-center justify-start text-center",
                     "w-full rounded-[26px]",
@@ -226,11 +237,11 @@ export function HomeStatsSection({ data }: HomeStatsSectionProps) {
             <div className="mt-[26px] flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex flex-wrap items-center gap-4">
                 {hasMultipleSlides ? (
-                  <div className="flex items-center gap-3">
+                  <div dir="ltr" className="flex items-center gap-3">
                     <button
                       type="button"
-                      onClick={goToPreviousStat}
-                      aria-label="Previous stat"
+                      onClick={handleLeftControl}
+                      aria-label={isRtl ? "Next stat" : "Previous stat"}
                       className={cn(
                         "flex h-[40px] w-[40px] items-center justify-center rounded-full",
                         "border border-[#c8d9e8] bg-white text-[#11182d]",
@@ -239,13 +250,16 @@ export function HomeStatsSection({ data }: HomeStatsSectionProps) {
                         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#009fe3] focus-visible:ring-offset-2",
                       )}
                     >
-                      <ArrowLeft className="h-[17px] w-[17px] stroke-[2.4]" />
+                      <ArrowLeft
+                        className="h-[17px] w-[17px] stroke-[2.4]"
+                        style={{ transform: "none" }}
+                      />
                     </button>
 
                     <button
                       type="button"
-                      onClick={goToNextStat}
-                      aria-label="Next stat"
+                      onClick={handleRightControl}
+                      aria-label={isRtl ? "Previous stat" : "Next stat"}
                       className={cn(
                         "flex h-[40px] w-[40px] items-center justify-center rounded-full",
                         "border border-[#c8d9e8] bg-white text-[#11182d]",
@@ -254,14 +268,17 @@ export function HomeStatsSection({ data }: HomeStatsSectionProps) {
                         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#009fe3] focus-visible:ring-offset-2",
                       )}
                     >
-                      <ArrowRight className="h-[17px] w-[17px] stroke-[2.4]" />
+                      <ArrowRight
+                        className="h-[17px] w-[17px] stroke-[2.4]"
+                        style={{ transform: "none" }}
+                      />
                     </button>
                   </div>
                 ) : null}
 
                 {hasMultipleSlides ? (
                   <>
-                    <div className="flex items-center gap-[8px]">
+                    <div dir={isRtl ? "rtl" : "ltr"} className="flex items-center gap-[8px]">
                       {items.map((item, index) => {
                         const isDisabledDot = index > maxStartIndex;
                         const isActive = index === activeIndex;
@@ -285,7 +302,7 @@ export function HomeStatsSection({ data }: HomeStatsSectionProps) {
                       })}
                     </div>
 
-                    <span className="text-[13px] font-extrabold leading-none tracking-[-0.01em] text-[#64748b]">
+                    <span dir="ltr" className="text-[13px] font-extrabold leading-none tracking-[-0.01em] text-[#64748b]">
                       {visibleStatsLabel}
                     </span>
                   </>
@@ -294,7 +311,7 @@ export function HomeStatsSection({ data }: HomeStatsSectionProps) {
 
               {hasMultipleSlides ? (
                 <p className="text-[12px] font-semibold leading-none tracking-[-0.01em] text-[#64748b] sm:text-[13px]">
-                  Swipe or use arrows to explore all stats
+                  {helperText}
                 </p>
               ) : null}
             </div>

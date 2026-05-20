@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "next-intl";
 import {
   Activity,
   ArrowLeft,
@@ -49,6 +50,8 @@ function getVisibleCardsCount() {
 export function HomeStrategicFocusSection({
   data,
 }: HomeStrategicFocusSectionProps) {
+  const locale = useLocale();
+  const isRtl = locale === "ar";
   const items = data.items || [];
   const carouselRef = useRef<HTMLDivElement | null>(null);
 
@@ -121,6 +124,15 @@ export function HomeStrategicFocusSection({
     scrollToCard(nextIndex);
   }
 
+  const handleLeftControl = isRtl ? goToNextCard : goToPreviousCard;
+  const handleRightControl = isRtl ? goToPreviousCard : goToNextCard;
+  const portfolioLabel = isRtl
+    ? "عرض المحفظة كاملة"
+    : "View full portfolio";
+  const helperText = isRtl
+    ? "اسحب أو استخدم الأسهم لاستعراض مجالات التركيز"
+    : "Swipe or use arrows to explore all focus areas";
+
   function handleCarouselScroll() {
     const carousel = carouselRef.current;
 
@@ -186,8 +198,18 @@ export function HomeStrategicFocusSection({
               href="/products"
               className="group inline-flex w-fit items-center gap-4 text-[14px] font-semibold leading-none tracking-[-0.01em] text-[#009fe3] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:text-[#008ccc] md:gap-5 md:text-[15px]"
             >
-              <span>View full portfolio</span>
-              <ArrowRight className="h-4 w-4 stroke-[2.4] transition-transform duration-300 ease-out group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
+              <span>{portfolioLabel}</span>
+              {isRtl ? (
+                <ArrowLeft
+                  className="h-4 w-4 stroke-[2.4]"
+                  style={{ transform: "none" }}
+                />
+              ) : (
+                <ArrowRight
+                  className="h-4 w-4 stroke-[2.4]"
+                  style={{ transform: "none" }}
+                />
+              )}
             </Link>
           </div>
 
@@ -195,6 +217,7 @@ export function HomeStrategicFocusSection({
           <div className="relative overflow-hidden">
             <div
               ref={carouselRef}
+              dir="ltr"
               onScroll={handleCarouselScroll}
               className={cn(
                 "flex snap-x snap-mandatory overflow-x-auto scroll-smooth pb-[10px]",
@@ -208,6 +231,7 @@ export function HomeStrategicFocusSection({
                 return (
                   <article
                     key={item.id || `${item.title}-${index}`}
+                    dir={isRtl ? "rtl" : "ltr"}
                     className={cn(
                       "group relative flex shrink-0 snap-start flex-col overflow-hidden bg-white",
                       "w-full",
@@ -258,11 +282,11 @@ export function HomeStrategicFocusSection({
           <div className="mt-[28px] flex flex-col gap-5 md:flex-row md:items-center md:justify-between xl:mt-[30px]">
             <div className="flex flex-wrap items-center gap-4">
               {hasMultipleSlides ? (
-                <div className="flex items-center gap-3">
+                <div dir="ltr" className="flex items-center gap-3">
                   <button
                     type="button"
-                    onClick={goToPreviousCard}
-                    aria-label="Previous focus area"
+                    onClick={handleLeftControl}
+                    aria-label={isRtl ? "Next focus area" : "Previous focus area"}
                     className={cn(
                       "flex h-[40px] w-[40px] items-center justify-center rounded-full md:h-[42px] md:w-[42px]",
                       "border border-[#c8d9e8] bg-white text-[#11182d]",
@@ -271,13 +295,16 @@ export function HomeStrategicFocusSection({
                       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#009fe3] focus-visible:ring-offset-2",
                     )}
                   >
-                    <ArrowLeft className="h-[17px] w-[17px] stroke-[2.4] md:h-[18px] md:w-[18px]" />
+                    <ArrowLeft
+                      className="h-[17px] w-[17px] stroke-[2.4] md:h-[18px] md:w-[18px]"
+                      style={{ transform: "none" }}
+                    />
                   </button>
 
                   <button
                     type="button"
-                    onClick={goToNextCard}
-                    aria-label="Next focus area"
+                    onClick={handleRightControl}
+                    aria-label={isRtl ? "Previous focus area" : "Next focus area"}
                     className={cn(
                       "flex h-[40px] w-[40px] items-center justify-center rounded-full md:h-[42px] md:w-[42px]",
                       "border border-[#c8d9e8] bg-white text-[#11182d]",
@@ -286,7 +313,10 @@ export function HomeStrategicFocusSection({
                       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#009fe3] focus-visible:ring-offset-2",
                     )}
                   >
-                    <ArrowRight className="h-[17px] w-[17px] stroke-[2.4] md:h-[18px] md:w-[18px]" />
+                    <ArrowRight
+                      className="h-[17px] w-[17px] stroke-[2.4] md:h-[18px] md:w-[18px]"
+                      style={{ transform: "none" }}
+                    />
                   </button>
                 </div>
               ) : null}
@@ -326,7 +356,7 @@ export function HomeStrategicFocusSection({
 
             {hasMultipleSlides ? (
               <p className="text-[12px] font-semibold leading-none tracking-[-0.01em] text-[#64748b] md:text-[13px]">
-                Swipe or use arrows to explore all focus areas
+                {helperText}
               </p>
             ) : null}
           </div>

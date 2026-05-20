@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useLocale } from "next-intl";
 import {
   ArrowLeft,
   ArrowRight,
@@ -209,6 +210,8 @@ function getCarouselSlides(data: DashboardSuccessHighlightData) {
 export function HomeSuccessHighlightSection({
   data,
 }: HomeSuccessHighlightSectionProps) {
+  const locale = useLocale();
+  const isRtl = locale === "ar";
   const slides = useMemo(
     () => getCarouselSlides(data as DashboardSuccessHighlightData),
     [data],
@@ -235,6 +238,9 @@ export function HomeSuccessHighlightSection({
       currentIndex === slides.length - 1 ? 0 : currentIndex + 1,
     );
   }
+
+  const handleLeftControl = isRtl ? goToNextSlide : goToPreviousSlide;
+  const handleRightControl = isRtl ? goToPreviousSlide : goToNextSlide;
 
   return (
     <SectionReveal>
@@ -286,7 +292,7 @@ export function HomeSuccessHighlightSection({
                     "mb-[22px] inline-flex items-center gap-2 rounded-full bg-white",
                     "h-[30px] px-[12px]",
                     "text-[13px] font-bold leading-none tracking-[-0.01em] text-[#009fe3]",
-                    "shadow-[0_7px_18px_-14px_rgba(15,23,42,0.5)] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-[0_12px_24px_-16px_rgba(15,23,42,0.45)]",
+                    "shadow-[0_7px_18px_-14px_rgba(15,23,42,0.5)]",
                     "sm:mb-[24px] sm:text-[14px]",
                     "xl:mb-[27px]",
                   )}
@@ -343,15 +349,14 @@ export function HomeSuccessHighlightSection({
                       <li
                         key={bullet}
                         className={cn(
-                          "group/bullet flex items-start rounded-[16px]",
+                          "flex items-start",
                           "gap-[12px] sm:gap-[14px]",
                           "text-[14px] font-bold leading-[1.45] tracking-[-0.01em] text-[#33445f]",
                           "sm:text-[15px]",
-                          "px-2 py-1 -mx-2 transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-white/70",
                           "xl:text-[16px] xl:leading-[1.35]",
                         )}
                       >
-                        <CheckCircle2 className="mt-[1px] h-[18px] w-[18px] shrink-0 text-[#009fe3] stroke-[2.4] transition-transform duration-300 group-hover/bullet:scale-110 xl:h-[19px] xl:w-[19px]" />
+                        <CheckCircle2 className="mt-[1px] h-[18px] w-[18px] shrink-0 text-[#009fe3] stroke-[2.4] xl:h-[19px] xl:w-[19px]" />
                         <span>{bullet}</span>
                       </li>
                     ))}
@@ -361,39 +366,45 @@ export function HomeSuccessHighlightSection({
                 {/* Carousel controls */}
                 {hasMultipleSlides ? (
                   <div className="mt-[34px] flex flex-wrap items-center gap-4 xl:mt-[42px]">
-                    <div className="flex items-center gap-3">
+                    <div dir="ltr" className="flex items-center gap-3">
                       <button
                         type="button"
-                        onClick={goToPreviousSlide}
-                        aria-label="Previous success highlight"
+                        onClick={handleLeftControl}
+                        aria-label={isRtl ? "Next success highlight" : "Previous success highlight"}
                         className={cn(
                           "flex h-[40px] w-[40px] items-center justify-center rounded-full",
                           "border border-[#c8d9e8] bg-white text-[#11182d]",
-                          "transition-all duration-300 hover:-translate-y-1 hover:scale-[1.04] hover:border-[#009fe3] hover:text-[#009fe3]",
+                          "transition-all duration-300 hover:-translate-y-0.5 hover:border-[#009fe3] hover:text-[#009fe3]",
                           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#009fe3] focus-visible:ring-offset-2",
                           "xl:h-[42px] xl:w-[42px]",
                         )}
                       >
-                        <ArrowLeft className="h-[17px] w-[17px] stroke-[2.4] xl:h-[18px] xl:w-[18px]" />
+                        <ArrowLeft
+                          className="h-[17px] w-[17px] stroke-[2.4] xl:h-[18px] xl:w-[18px]"
+                          style={{ transform: "none" }}
+                        />
                       </button>
 
                       <button
                         type="button"
-                        onClick={goToNextSlide}
-                        aria-label="Next success highlight"
+                        onClick={handleRightControl}
+                        aria-label={isRtl ? "Previous success highlight" : "Next success highlight"}
                         className={cn(
                           "flex h-[40px] w-[40px] items-center justify-center rounded-full",
                           "border border-[#c8d9e8] bg-white text-[#11182d]",
-                          "transition-all duration-300 hover:-translate-y-1 hover:scale-[1.04] hover:border-[#009fe3] hover:text-[#009fe3]",
+                          "transition-all duration-300 hover:-translate-y-0.5 hover:border-[#009fe3] hover:text-[#009fe3]",
                           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#009fe3] focus-visible:ring-offset-2",
                           "xl:h-[42px] xl:w-[42px]",
                         )}
                       >
-                        <ArrowRight className="h-[17px] w-[17px] stroke-[2.4] xl:h-[18px] xl:w-[18px]" />
+                        <ArrowRight
+                          className="h-[17px] w-[17px] stroke-[2.4] xl:h-[18px] xl:w-[18px]"
+                          style={{ transform: "none" }}
+                        />
                       </button>
                     </div>
 
-                    <div className="flex items-center gap-[8px]">
+                    <div dir={isRtl ? "rtl" : "ltr"} className="flex items-center gap-[8px]">
                       {slides.map((slide, index) => (
                         <button
                           key={`${slide.title}-${index}`}
@@ -401,7 +412,7 @@ export function HomeSuccessHighlightSection({
                           onClick={() => setActiveIndex(index)}
                           aria-label={`Show success highlight ${index + 1}`}
                           className={cn(
-                            "h-[8px] rounded-full transition-all duration-300 hover:scale-110",
+                            "h-[8px] rounded-full transition-all duration-300",
                             index === activeIndex
                               ? "w-[30px] bg-[#009fe3]"
                               : "w-[8px] bg-[#c8d9e8] hover:bg-[#91caee]",
@@ -410,7 +421,7 @@ export function HomeSuccessHighlightSection({
                       ))}
                     </div>
 
-                    <span className="text-[13px] font-extrabold leading-none tracking-[-0.01em] text-[#64748b]">
+                    <span dir="ltr" className="text-[13px] font-extrabold leading-none tracking-[-0.01em] text-[#64748b]">
                       {String(activeIndex + 1).padStart(2, "0")} /{" "}
                       {String(slides.length).padStart(2, "0")}
                     </span>
@@ -422,13 +433,13 @@ export function HomeSuccessHighlightSection({
               <div className="flex justify-center lg:justify-end rtl:lg:justify-start">
                 <div
                   className={cn(
-                    "group w-full rounded-[18px] bg-white",
+                    "w-full rounded-[18px] bg-white",
                     "max-w-[520px]",
                     "px-[22px] py-[24px]",
                     "sm:px-[28px] sm:py-[30px]",
                     "md:px-[30px] md:py-[32px]",
                     "xl:px-[34px] xl:py-[34px]",
-                    "shadow-[0_22px_40px_-28px_rgba(15,23,42,0.65)] transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_28px_54px_-34px_rgba(15,23,42,0.68)]",
+                    "shadow-[0_22px_40px_-28px_rgba(15,23,42,0.65)]",
                   )}
                 >
                   <div className="mb-[26px] flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between xl:mb-[30px]">
@@ -463,7 +474,7 @@ export function HomeSuccessHighlightSection({
                           <div className="h-[8px] overflow-hidden rounded-full bg-[#edf2f7]">
                             <div
                               className={cn(
-                                "h-full rounded-full transition-all duration-500 group-hover:[filter:brightness(1.04)]",
+                                "h-full rounded-full transition-all duration-500",
                                 getProgressColor(metric.color),
                               )}
                               style={{

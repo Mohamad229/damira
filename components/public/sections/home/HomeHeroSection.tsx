@@ -1,4 +1,4 @@
-import { ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
@@ -32,6 +32,10 @@ function renderHeroTitle(title: string) {
   );
 }
 
+function containsArabic(value: string) {
+  return /[\u0600-\u06FF]/.test(value);
+}
+
 export function HomeHeroSection({ data, className }: HomeHeroSectionProps) {
   const title =
     data.title || "Building Specialized Healthcare Distribution Ecosystem";
@@ -44,12 +48,16 @@ export function HomeHeroSection({ data, className }: HomeHeroSectionProps) {
 
   const actions = data.actions || [];
 
+  const isArabicContent = containsArabic(
+    [title, subtitle, eyebrow, ...actions.map((action) => action.label)].join(" "),
+  );
+
   return (
     <SectionReveal>
       <section
         className={cn(
           "relative isolate overflow-hidden bg-[#f7fbff]",
-          "min-h-[754px]",
+          "min-h-[560px] sm:min-h-[680px] lg:min-h-[754px]",
           className,
         )}
       >
@@ -103,15 +111,17 @@ export function HomeHeroSection({ data, className }: HomeHeroSectionProps) {
           className={cn(
             "relative z-10 w-full",
             "px-4 sm:px-6 md:px-8 lg:px-[210px]",
-            "pt-[190px] md:pt-[190px] lg:pt-[190px] xl:pt-[190px]",
+            "pb-[68px] pt-[92px] sm:pb-[96px] sm:pt-[140px] md:pt-[160px] lg:pb-0 lg:pt-[190px]",
           )}
         >
           <div
+            dir={isArabicContent ? "rtl" : "ltr"}
             className={cn(
               "w-full",
               "max-w-[670px]",
               "mx-auto lg:mx-0",
               "rtl:text-right rtl:lg:ms-0 rtl:lg:me-auto",
+              isArabicContent && "text-right",
             )}
           >
             {/* Eyebrow */}
@@ -160,11 +170,13 @@ export function HomeHeroSection({ data, className }: HomeHeroSectionProps) {
             {/* Buttons */}
             {actions.length ? (
               <div
+                dir="ltr"
                 className={cn(
                   "mt-[40px] flex w-full flex-col gap-4",
-                  "items-start",
-                  "sm:flex-row sm:items-center sm:justify-start",
-                  "rtl:items-end rtl:sm:items-center",
+                  "sm:items-center",
+                  isArabicContent
+                    ? "items-end sm:flex-row-reverse sm:justify-start"
+                    : "items-start sm:flex-row sm:justify-start",
                 )}
               >
                 {actions.map((action, index) => {
@@ -174,10 +186,12 @@ export function HomeHeroSection({ data, className }: HomeHeroSectionProps) {
                     <Link
                       key={`${action.href}-${action.label}`}
                       href={action.href}
+                      dir={isArabicContent ? "rtl" : "ltr"}
                       className={cn(
                         "group inline-flex h-[56px] items-center justify-center rounded-full",
                         "text-[16px] font-bold transition-all duration-300",
                         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#009fe3] focus-visible:ring-offset-2",
+                        isArabicContent && "self-end sm:self-auto",
                         isPrimary
                           ? cn(
                               "min-w-[228px] gap-[32px] px-8",
@@ -196,7 +210,16 @@ export function HomeHeroSection({ data, className }: HomeHeroSectionProps) {
                       <span>{action.label}</span>
 
                       {isPrimary ? (
-                        <ArrowRight className="h-4 w-4 stroke-[2.5] transition-transform duration-300 ease-out group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
+                        <>
+                          <ArrowRight
+                            className="h-4 w-4 stroke-[2.5] transition-transform duration-300 ease-out group-hover:translate-x-1 rtl:hidden"
+                            style={{ transform: "none" }}
+                          />
+                          <ArrowLeft
+                            className="hidden h-4 w-4 stroke-[2.5] transition-transform duration-300 ease-out group-hover:-translate-x-1 rtl:block"
+                            style={{ transform: "none" }}
+                          />
+                        </>
                       ) : null}
                     </Link>
                   );
