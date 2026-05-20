@@ -33,7 +33,6 @@ interface ServiceItemData {
   title: string;
   subtitle?: string;
   description?: string;
-  icon?: { src: string; alt: string };
   image?: {
     src: string;
     alt: string;
@@ -836,7 +835,6 @@ const PUBLIC_UI_EN: PublicUiData = {
           title: "Structured Regulatory Affairs Execution",
           description:
             "Registration and compliance support for healthcare products entering regulated markets.",
-          icon: editableIcon("Regulatory service icon"),
           image: {
             src: "",
             alt: "Regulatory documentation",
@@ -860,7 +858,6 @@ const PUBLIC_UI_EN: PublicUiData = {
             "1,500 m2 facility with 9,000 m3 climate-controlled capacity.",
           description:
             "Validated storage and operating infrastructure for specialized healthcare portfolios.",
-          icon: editableIcon("Infrastructure service icon"),
           image: {
             src: "",
             alt: "Storage infrastructure",
@@ -882,7 +879,6 @@ const PUBLIC_UI_EN: PublicUiData = {
           title: "Hospital Access and Commercial Acceleration",
           description:
             "Commercial execution support for hospital access, stakeholder engagement, and launch growth.",
-          icon: editableIcon("Market access service icon"),
           image: {
             src: "",
             alt: "Market access strategy",
@@ -905,7 +901,6 @@ const PUBLIC_UI_EN: PublicUiData = {
           title: "Nationwide Delivery and Traceability",
           description:
             "Controlled logistics and delivery workflows with traceability across healthcare channels.",
-          icon: editableIcon("Logistics and distribution service icon"),
           image: {
             src: "",
             alt: "Distribution fleet",
@@ -928,7 +923,6 @@ const PUBLIC_UI_EN: PublicUiData = {
           title: "Pharmacovigilance and Materiovigilance Readiness",
           description:
             "Safety monitoring frameworks that support compliant post-market oversight.",
-          icon: editableIcon("Safety and vigilance service icon"),
           image: {
             src: "",
             alt: "Safety vigilance operations",
@@ -1947,7 +1941,6 @@ const PUBLIC_UI_AR: PublicUiData = {
           title: "تنفيذ منظم للشؤون التنظيمية",
           description:
             "دعم التسجيل والامتثال للمنتجات الصحية التي تدخل أسواقا منظمة.",
-          icon: editableIcon("أيقونة الخدمة التنظيمية"),
           image: {
             src: "",
             alt: "إعداد ملفات تنظيمية",
@@ -1970,7 +1963,6 @@ const PUBLIC_UI_AR: PublicUiData = {
           subtitle: "مرفق بمساحة 1,500 م2 وسعة تخزين مضبوطة 9,000 م3.",
           description:
             "بنية تشغيل وتخزين معتمدة لمحافظ الرعاية الصحية المتخصصة.",
-          icon: editableIcon("أيقونة خدمة البنية التحتية"),
           image: {
             src: "",
             alt: "بنية تخزين دوائية",
@@ -1992,7 +1984,6 @@ const PUBLIC_UI_AR: PublicUiData = {
           title: "الوصول للمشافي وتسريع الأداء التجاري",
           description:
             "دعم التنفيذ التجاري للوصول للمشافي والتواصل مع أصحاب القرار ونمو الإطلاق.",
-          icon: editableIcon("أيقونة الوصول للسوق"),
           image: {
             src: "",
             alt: "استراتيجية الوصول للسوق",
@@ -2015,7 +2006,6 @@ const PUBLIC_UI_AR: PublicUiData = {
           title: "تسليم وطني مع قابلية تتبع",
           description:
             "عمليات لوجستية وتوزيع مضبوطة مع قابلية تتبع عبر قنوات الرعاية الصحية.",
-          icon: editableIcon("أيقونة اللوجستيات والتوزيع"),
           image: {
             src: "",
             alt: "أسطول توزيع دوائي",
@@ -2038,7 +2028,6 @@ const PUBLIC_UI_AR: PublicUiData = {
           title: "جاهزية التيقظ الدوائي والمادي",
           description:
             "أطر مراقبة سلامة تدعم الإشراف المتوافق بعد طرح المنتجات في السوق.",
-          icon: editableIcon("أيقونة السلامة والتيقظ"),
           image: {
             src: "",
             alt: "متابعة السلامة والتيقظ الدوائي",

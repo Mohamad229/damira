@@ -1,7 +1,6 @@
 import type {
   ContentSectionData,
   SectionAction,
-  SectionIcon,
   SectionMedia,
 } from "@/components/public/sections/base/types";
 
@@ -17,7 +16,6 @@ export interface ServiceItemData {
   title: string;
   subtitle?: string;
   description?: string;
-  icon?: SectionIcon;
   image?: SectionMedia;
   features?: string[];
   cta?: SectionAction;
@@ -116,7 +114,6 @@ function toContentSectionData(item: NormalizedServiceItemData): ContentSectionDa
     subtitle: item.subtitle,
     body: item.description ? [item.description] : undefined,
     bullets: item.features,
-    icon: item.icon,
     image: item.image,
     actions: cta,
   };

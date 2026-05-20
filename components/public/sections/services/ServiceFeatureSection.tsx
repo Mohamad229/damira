@@ -1,12 +1,8 @@
-import { CheckCircle2, Package } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 
 import { Link } from "@/i18n/navigation";
 import { CmsImage } from "@/components/public/sections/base/CmsImage";
 import { SectionReveal } from "@/components/public/sections/base/SectionReveal";
-import {
-  isSectionMediaIcon,
-  SectionIconImage,
-} from "@/components/public/sections/base/SectionIconImage";
 import type { ContentSectionData } from "@/components/public/sections/base/types";
 import { cn } from "@/lib/utils";
 
@@ -216,29 +212,6 @@ export function ServiceFeatureSection({
                 ) : (
                   <div className="h-full w-full bg-[linear-gradient(135deg,#dceffb,#ffffff,#eef8f1)]" />
                 )}
-
-                {/* Small floating icon box */}
-                <div
-                  className={cn(
-                    "absolute flex items-center justify-center bg-white shadow-[0_16px_35px_-28px_rgba(15,23,42,0.75)]",
-                    "transition-all duration-500 ease-out group-hover/image:-translate-y-0.5 group-hover/image:scale-105",
-                    "left-[20px] top-[20px] h-[52px] w-[52px] rounded-[14px] rtl:left-auto rtl:right-[20px]",
-                    "sm:left-[24px] sm:top-[24px] sm:h-[58px] sm:w-[58px] rtl:sm:left-auto rtl:sm:right-[24px]",
-                    "xl:left-[32px] xl:top-[32px] xl:h-[64px] xl:w-[64px] xl:rounded-[16px] rtl:xl:left-auto rtl:xl:right-[32px]",
-                  )}
-                  style={{ color: accentColor }}
-                >
-                  {isSectionMediaIcon(data.icon) ? (
-                    <SectionIconImage
-                      icon={data.icon}
-                      width={34}
-                      height={34}
-                      className="h-[25px] w-[25px] object-contain transition-transform duration-500 ease-out group-hover/image:scale-105 sm:h-[29px] sm:w-[29px] xl:h-[32px] xl:w-[32px]"
-                    />
-                  ) : (
-                    <Package className="h-[25px] w-[25px] stroke-[2.2] transition-transform duration-500 ease-out group-hover/image:scale-105 sm:h-[29px] sm:w-[29px] xl:h-[32px] xl:w-[32px]" />
-                  )}
-                </div>
 
                 {/* Soft accent overlay */}
                 <div

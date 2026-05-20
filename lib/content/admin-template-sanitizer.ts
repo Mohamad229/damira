@@ -22,7 +22,6 @@ const SERVICE_ICON_SECTIONS = new Set([
 ]);
 
 const ITEM_ICON_SECTIONS = new Set([
-  "services.serviceItems",
   "home.strategicFocus",
   "home.keyStrengths",
   "about.coreValues",
