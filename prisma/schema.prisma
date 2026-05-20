@@ -235,8 +235,8 @@ model PageContentSection {
   contentId String
   content   PageContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
 
-  sectionKey String // Fixed section key, e.g. "hero", "atAGlance", "catalog"
-  order      Int // Rendering order (1, 2, 3...)
+  sectionKey      String // Fixed section key, e.g. "hero", "atAGlance", "catalog"
+  order           Int // Rendering order (1, 2, 3...)
   isVisible       Boolean @default(true)
   navigationLabel String?
 
