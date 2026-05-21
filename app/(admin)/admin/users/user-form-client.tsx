@@ -256,6 +256,7 @@ export function UserFormClient({ mode, user }: UserFormClientProps) {
         <Button
           type="button"
           variant="outline"
+          nativeButton={false}
           render={<Link href="/admin/users" />}
           disabled={isSubmitting}
         >

@@ -405,6 +405,7 @@ export function FormsTableClient({
             <Button
               variant="ghost"
               size="sm"
+              nativeButton={false}
               render={<Link href={`/admin/forms/${row.original.id}`} />}
             >
               <Eye className="h-4 w-4" />

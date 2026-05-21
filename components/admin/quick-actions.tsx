@@ -55,6 +55,7 @@ export function QuickActions({ className }: QuickActionsProps) {
               variant="outline"
               size="lg"
               className="w-full justify-start gap-2"
+              nativeButton={false}
               render={<Link href={action.href} />}
             >
               <Icon className="size-4" strokeWidth={1.75} />
