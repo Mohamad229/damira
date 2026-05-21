@@ -31,7 +31,6 @@ export function SidebarProvider({ children }: { children: ReactNode }) {
   // Restore collapsed state from localStorage after mount
   // Use layoutEffect to avoid cascading renders while ensuring sync before paint
   useLayoutEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- Intentional for hydration handling
     setHasMounted(true);
     const stored = localStorage.getItem(SIDEBAR_COLLAPSED_KEY);
     if (stored === "true") {

@@ -42,7 +42,7 @@ export default async function PublicLayout({ children, params }: Props) {
     description:
       currentLocale === "ar"
         ? "شركة داميرا فارما تقدم حلول دوائية موثوقة في مصر والمنطقة."
-        : "Damira Pharma delivers trusted pharmaceutical solutions across Egypt and the MENA region.",
+        : "Damira Pharma delivers trusted pharmaceutical solutions across Syria and the MENA region.",
     contactPoint: [
       {
         "@type": "ContactPoint",

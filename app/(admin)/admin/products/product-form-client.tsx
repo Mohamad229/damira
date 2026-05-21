@@ -1,5 +1,6 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -1450,11 +1451,14 @@ function FormSection({
   children,
 }: FormSectionProps) {
   return (
-    <div className="border rounded-lg overflow-hidden">
+    <div className="relative overflow-visible rounded-lg border">
       <button
         type="button"
         onClick={onToggle}
-        className="w-full bg-muted/50 hover:bg-muted px-4 py-3 flex items-center justify-between transition-colors"
+        className={cn(
+          "w-full bg-muted/50 hover:bg-muted px-4 py-3 flex items-center justify-between transition-colors",
+          expanded ? "rounded-t-lg" : "rounded-lg",
+        )}
         aria-expanded={expanded}
         aria-label={`${expanded ? "Collapse" : "Expand"} ${title} section`}
       >
@@ -1462,6 +1466,7 @@ function FormSection({
           <div className="text-muted-foreground">{icon}</div>
           <h2 className="font-semibold">{title}</h2>
         </div>
+
         {expanded ? (
           <ChevronUp
             className="h-5 w-5 text-muted-foreground"
@@ -1474,6 +1479,7 @@ function FormSection({
           />
         )}
       </button>
+
       {expanded && <div className="p-4">{children}</div>}
     </div>
   );

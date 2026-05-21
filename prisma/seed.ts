@@ -22,8 +22,8 @@ const adapter = new PrismaPg({ connectionString: databaseUrl });
 const prisma = new PrismaClient({ adapter });
 const isProduction = process.env.NODE_ENV === "production";
 const seedAdminEmail =
-  process.env.SEED_ADMIN_EMAIL || "admin@damirapharma.com";
-const seedAdminPassword = process.env.SEED_ADMIN_PASSWORD;
+  process.env.SEED_ADMIN_EMAIL || "admin@damirapharma.com"; // Default email for local development, must be overridden in production
+const seedAdminPassword = process.env.SEED_ADMIN_PASSWORD || "admin123"; // Default password for local development, must be overridden in production
 
 if (isProduction && !seedAdminPassword) {
   throw new Error("SEED_ADMIN_PASSWORD is required when seeding production.");
